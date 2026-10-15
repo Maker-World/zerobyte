@@ -45,8 +45,14 @@ const createBackupRunPayload = async ({
 	const source = assembleVolumeExecutionSource(volume);
 
 	const repositoryConfig = await decryptRepositoryConfig(repository.config);
-	const encryptedResticPassword = await resticDeps.getOrganizationResticPassword(organizationId);
-	const resticPassword = await resticDeps.resolveSecret(encryptedResticPassword);
+	let resticPassword: string;
+
+	if (repositoryConfig.isExistingRepository && repositoryConfig.customPassword) {
+		resticPassword = repositoryConfig.customPassword;
+	} else {
+		const encryptedResticPassword = await resticDeps.getOrganizationResticPassword(organizationId);
+		resticPassword = await resticDeps.resolveSecret(encryptedResticPassword);
+	}
 
 	return {
 		jobId,
