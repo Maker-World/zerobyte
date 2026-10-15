@@ -11,11 +11,14 @@ import { resolveAuthBaseURL } from "~/server/lib/auth/request-base-url";
 
 type IsTrustedOrigin = (url: string) => boolean;
 
-const editableOidcConfigSchema = z.looseObject({
-	clientId: z.string(),
-	clientSecret: z.string().optional(),
-	discoveryEndpoint: z.string().optional(),
-});
+const editableOidcConfigSchema = z.preprocess(
+	(value) => (typeof value === "string" ? JSON.parse(value) : value),
+	z.looseObject({
+		clientId: z.string(),
+		clientSecret: z.string().optional(),
+		discoveryEndpoint: z.string().optional(),
+	}),
+);
 
 export async function checkSsoDiscovery(
 	issuer: string,
