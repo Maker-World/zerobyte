@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
 	startLocalAgent: vi.fn(async () => undefined),
 	stopAgentController: vi.fn(async () => undefined),
 	startup: vi.fn(async () => undefined),
+	activateScheduledJobs: vi.fn(async () => undefined),
 	stopScheduler: vi.fn(async () => undefined),
 	findVolumes: vi.fn(async () => [{ shortId: "local-volume", organizationId: "org-1", name: "Local volume" }]),
 	unmountVolume: vi.fn(async () => ({ status: "unmounted", error: undefined })),
@@ -37,7 +38,10 @@ vi.mock("../../agents/agents.service", () => ({
 }));
 
 vi.mock("../migrations", () => ({ runMigrations: mocks.runMigrations }));
-vi.mock("../startup", () => ({ prepareStartup: mocks.startup, activateScheduledJobs: async () => undefined }));
+vi.mock("../startup", () => ({
+	prepareStartup: mocks.startup,
+	activateScheduledJobs: mocks.activateScheduledJobs,
+}));
 
 beforeEach(() => {
 	for (const mock of Object.values(mocks)) {
@@ -65,6 +69,32 @@ test("the Nitro plugin bootstraps once and shuts down on close", async () => {
 		mocks.unmountVolume.mock.invocationCallOrder[0]!,
 	);
 });
+
+test.each(["startup", "startLocalAgent", "activateScheduledJobs"] as const)(
+	"requests wait for %s before reaching the application",
+	async (phase) => {
+		const startup = Promise.withResolvers<undefined>();
+		mocks[phase].mockReturnValueOnce(startup.promise);
+		const fetch = vi.fn(() => new Response("ready"));
+		const { default: bootstrapPlugin } = await import("../../../../nitro/plugins/bootstrap");
+		const app = fromPartial<Parameters<typeof bootstrapPlugin>[0]>({ hooks: { hook: vi.fn() }, fetch });
+		const starting = bootstrapPlugin(app);
+		const request = new Request("http://zerobyte.test/api/v1/backups");
+		const response = app.fetch(request);
+
+		try {
+			await vi.waitFor(() => expect(mocks[phase]).toHaveBeenCalledOnce());
+			expect(fetch).not.toHaveBeenCalled();
+		} finally {
+			startup.resolve(undefined);
+			await starting;
+			await response;
+		}
+
+		expect(fetch).toHaveBeenCalledExactlyOnceWith(request);
+		expect(await (await response).text()).toBe("ready");
+	},
+);
 
 test("scheduler failure still stops the agent before failing shutdown", async () => {
 	const schedulerError = new Error("scheduler stop failed");

@@ -7,8 +7,17 @@ import { toMessage } from "../../server/utils/errors";
 export default definePlugin(async (nitroApp) => {
 	nitroApp.hooks.hook("close", shutdown);
 
-	await bootstrapApplication().catch((err) => {
+	const ready = bootstrapApplication().catch((err) => {
 		logger.error(`Bootstrap failed: ${toMessage(err)}`);
 		process.exit(1);
 	});
+
+	const handleRequest = nitroApp.fetch;
+
+	nitroApp.fetch = async (request) => {
+		await ready;
+		return handleRequest(request);
+	};
+
+	await ready;
 });
