@@ -17,10 +17,10 @@ export const Route = createFileRoute("/(dashboard)/backups/$backupId/edit")({
 		return schedule;
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Backup Jobs", href: "/backups" },
-			{ label: match.loaderData?.name || "Job Details", href: `/backups/${match.params.backupId}` },
-			{ label: "Edit" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.backupJobs"), href: "/backups" },
+			{ label: match.loaderData?.name || t("breadcrumb.jobDetails"), href: `/backups/${match.params.backupId}` },
+			{ label: t("common.edit") },
 		],
 	},
 	head: ({ loaderData }) => ({

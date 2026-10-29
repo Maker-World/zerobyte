@@ -11,7 +11,10 @@ export const Route = createFileRoute("/(dashboard)/settings/machines/connect")({
 	},
 	component: RouteComponent,
 	staticData: {
-		breadcrumb: () => [{ label: "Settings", href: "/settings?scope=organization" }, { label: "Connect machine" }],
+		breadcrumb: (_match, t) => [
+			{ label: t("nav.settings"), href: "/settings?scope=organization" },
+			{ label: t("breadcrumb.connectMachine") },
+		],
 	},
 	head: () => ({ meta: [{ title: "Zerobyte - Connect machine" }] }),
 });

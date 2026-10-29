@@ -5,6 +5,7 @@ import { Button } from "~/client/components/ui/button";
 import { authClient } from "~/client/lib/auth-client";
 import { logger } from "~/client/lib/logger";
 import { LOGIN_ERROR_CODES, PASSKEY_LOGIN_FAILED_ERROR, type LoginErrorCode } from "~/lib/sso-errors";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PasskeySignInButtonProps = {
 	onSignIn: () => Promise<void>;
@@ -29,6 +30,7 @@ function getPasskeyLoginErrorCode(code: string | undefined): LoginErrorCode {
 
 export function PasskeySignInButton({ onSignIn }: PasskeySignInButtonProps) {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const passkeyLoginMutation = useMutation<void, PasskeySignInError>({
 		mutationFn: async () => {
 			const { error } = await authClient.signIn.passkey();
@@ -58,7 +60,7 @@ export function PasskeySignInButton({ onSignIn }: PasskeySignInButtonProps) {
 			onClick={() => passkeyLoginMutation.mutate()}
 		>
 			<Fingerprint className="h-4 w-4 mr-2" />
-			Sign in with passkey
+			{t("auth.signInWithPasskey")}
 		</Button>
 	);
 }

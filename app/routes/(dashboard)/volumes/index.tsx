@@ -10,7 +10,7 @@ export const Route = createFileRoute("/(dashboard)/volumes/")({
 		await context.queryClient.ensureQueryData(listVolumesOptions());
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Sources" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.sources") }],
 	},
 	head: () => ({
 		meta: [

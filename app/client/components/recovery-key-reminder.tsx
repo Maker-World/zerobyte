@@ -4,6 +4,7 @@ import { AlertTriangle, X } from "lucide-react";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
 import { Button, buttonVariants } from "~/client/components/ui/button";
 import { Alert, AlertDescription } from "~/client/components/ui/alert";
+import { useTranslation } from "~/client/lib/i18n";
 
 const THIRTY_DAYS_IN_SECONDS = 30 * 24 * 60 * 60;
 
@@ -33,6 +34,7 @@ export function isRecoveryKeyReminderDue(
 const getDismissalCookieName = (organizationId: string) => `recovery_key_reminder_dismissed_${organizationId}`;
 
 export function RecoveryKeyReminder({ organization, canDownloadRecoveryKey }: Props) {
+	const { t } = useTranslation();
 	const dismissalCookieName = getDismissalCookieName(organization.id);
 	const [dismissed, setDismissed] = useCookieState(dismissalCookieName, false, THIRTY_DAYS_IN_SECONDS);
 	const reminderDue = isRecoveryKeyReminderDue(organization);
@@ -49,14 +51,13 @@ export function RecoveryKeyReminder({ organization, canDownloadRecoveryKey }: Pr
 			data-recovery-key-reminder
 			// oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
 			role="region"
-			aria-label="Recovery key reminder"
+			aria-label={t("recoveryKeyReminder.label")}
 			className="absolute inset-x-0 top-16.25 z-40 h-14 rounded-none border-r-0 border-t-0 px-0 py-0"
 		>
 			<div className="flex h-full w-full items-center gap-3 px-3 sm:px-8">
 				<AlertTriangle className="size-3.5 shrink-0 text-alert-warning" />
 				<AlertDescription className="min-w-0 flex-1 truncate">
-					Your recovery key was last exported over a year ago. Download a fresh copy and store it somewhere
-					safe.
+					{t("recoveryKeyReminder.message")}
 				</AlertDescription>
 				<div className="flex shrink-0 items-center gap-2">
 					<Link
@@ -65,13 +66,13 @@ export function RecoveryKeyReminder({ organization, canDownloadRecoveryKey }: Pr
 						hash="recovery-key"
 						className={reviewOptionsClassName}
 					>
-						Review recovery key
+						{t("recoveryKeyReminder.review")}
 					</Link>
 					<Button
 						type="button"
 						variant="ghost"
 						size="icon"
-						aria-label="Dismiss recovery key reminder"
+						aria-label={t("recoveryKeyReminder.dismiss")}
 						onClick={() => setDismissed(true)}
 					>
 						<X className="size-4" />

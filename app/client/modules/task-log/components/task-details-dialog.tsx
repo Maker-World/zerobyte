@@ -7,6 +7,7 @@ import {
 	TaskLogTarget,
 	type TaskLogItem,
 } from "./task-log-shared";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function TaskDetailsDialog({
 	task,
@@ -18,7 +19,8 @@ export function TaskDetailsDialog({
 	onOpenChange: (open: boolean) => void;
 }) {
 	const { formatDateTimeWithSeconds } = useTimeFormat();
-	const taskType = task ? taskLogKindLabels[task.kind] : null;
+	const { t } = useTranslation();
+	const taskType = task ? t(taskLogKindLabels[task.kind]) : null;
 	const durationSeconds = task ? getTaskDurationSeconds(task, now) : null;
 	const duration = durationSeconds === null ? null : formatDuration(durationSeconds);
 
@@ -28,46 +30,46 @@ export function TaskDetailsDialog({
 				{task && (
 					<>
 						<DialogHeader className="border-b px-6 py-5 pr-12">
-							<DialogTitle>Task details</DialogTitle>
+							<DialogTitle>{t("taskLog.taskDetails")}</DialogTitle>
 							<DialogDescription className="truncate">
 								{taskType} · {task.target.label}
 							</DialogDescription>
 						</DialogHeader>
 						<div className="min-h-0 overflow-y-auto px-6 py-5 overscroll-contain">
 							<dl className="grid grid-cols-[minmax(7rem,auto)_1fr] gap-x-5 gap-y-3 text-sm">
-								<dt className="text-muted-foreground">Task type</dt>
+								<dt className="text-muted-foreground">{t("taskLog.taskType")}</dt>
 								<dd className="font-medium">{taskType}</dd>
-								<dt className="text-muted-foreground">Target</dt>
+								<dt className="text-muted-foreground">{t("taskLog.target")}</dt>
 								<dd>
 									<TaskLogTarget target={task.target} />
 								</dd>
-								<dt className="text-muted-foreground">Outcome</dt>
+								<dt className="text-muted-foreground">{t("taskLog.outcome")}</dt>
 								<dd>
 									<OutcomeStatus outcome={task.outcome} />
 								</dd>
-								<dt className="text-muted-foreground">Lifecycle</dt>
+								<dt className="text-muted-foreground">{t("taskLog.lifecycle")}</dt>
 								<dd>{task.status}</dd>
-								<dt className="text-muted-foreground">Created</dt>
+								<dt className="text-muted-foreground">{t("taskLog.created")}</dt>
 								<dd className="tabular-nums">{formatDateTimeWithSeconds(task.createdAt)}</dd>
-								<dt className="text-muted-foreground">Started</dt>
+								<dt className="text-muted-foreground">{t("taskLog.started")}</dt>
 								<dd className="tabular-nums">
 									{task.startedAt === null
-										? "Not started"
+										? t("taskLog.notStarted")
 										: formatDateTimeWithSeconds(task.startedAt)}
 								</dd>
-								<dt className="text-muted-foreground">Finished</dt>
+								<dt className="text-muted-foreground">{t("taskLog.finished")}</dt>
 								<dd className="tabular-nums">
 									{task.finishedAt === null
-										? "Not finished"
+										? t("taskLog.notFinished")
 										: formatDateTimeWithSeconds(task.finishedAt)}
 								</dd>
-								<dt className="text-muted-foreground">Duration</dt>
+								<dt className="text-muted-foreground">{t("taskLog.duration")}</dt>
 								<dd className="tabular-nums">{duration}</dd>
 							</dl>
 							{task.message && (
 								<div className="mt-5 rounded-md border bg-muted/40 p-4">
 									<p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-										Details
+										{t("taskLog.details")}
 									</p>
 									<p className="whitespace-pre-wrap wrap-break-word text-sm leading-relaxed">
 										{task.message}

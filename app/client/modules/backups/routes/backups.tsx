@@ -21,8 +21,10 @@ import { SortableCard } from "~/client/components/sortable-card";
 import { BackupCard } from "../components/backup-card";
 import { Link } from "@tanstack/react-router";
 import { useActiveBackupTasks } from "../backup-tasks";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function BackupsPage() {
+	const { t } = useTranslation();
 	const { data: schedules } = useSuspenseQuery({
 		...listBackupSchedulesOptions(),
 	});
@@ -82,13 +84,13 @@ export function BackupsPage() {
 		return (
 			<EmptyState
 				icon={CalendarClock}
-				title="No backup job"
-				description="Backup jobs help you automate the process of backing up your volumes on a regular schedule to ensure your data is safe and secure."
+				title={t("backups.emptyTitle")}
+				description={t("backups.emptyDescription")}
 				button={
 					<Button>
 						<Link to="/backups/create" className="flex items-center">
 							<Plus className="h-4 w-4 mr-2" />
-							Create a backup job
+							{t("backups.create")}
 						</Link>
 					</Button>
 				}
@@ -122,7 +124,7 @@ export function BackupsPage() {
 										<Plus className="h-6 w-6 text-muted-foreground group-hover:text-foreground transition-colors" />
 									</div>
 									<span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-										Create a backup job
+										{t("backups.create")}
 									</span>
 								</div>
 							</div>

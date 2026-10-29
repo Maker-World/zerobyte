@@ -4,7 +4,7 @@ import {
 	type DateFormatPreference,
 	type TimeFormatPreference,
 } from "@zerobyte/core/utils";
-import { formatDistanceToNow, isValid } from "date-fns";
+import { formatDistanceToNow, isValid, type Locale } from "date-fns";
 
 export type DateInput = Date | string | number | null | undefined;
 
@@ -157,16 +157,22 @@ function formatTime(date: DateInput, options: DateFormatOptions = {}): string {
 	return formatValidDate(date, (validDate) => formatConfiguredTime(validDate, options));
 }
 
+type TimeAgoOptions = {
+	locale?: Locale;
+	justNowLabel?: string;
+};
+
 // 5 minutes ago
-function formatTimeAgo(date: DateInput, now = Date.now()): string {
+function formatTimeAgo(date: DateInput, now = Date.now(), options: TimeAgoOptions = {}): string {
 	return formatValidDate(date, (validDate) => {
 		if (Math.abs(now - validDate.getTime()) < 120_000) {
-			return "just now";
+			return options.justNowLabel ?? "just now";
 		}
 
 		const timeAgo = formatDistanceToNow(validDate, {
 			addSuffix: true,
 			includeSeconds: true,
+			locale: options.locale,
 		});
 
 		return timeAgo.replace("about ", "").replace("over ", "").replace("almost ", "").replace("less than ", "");

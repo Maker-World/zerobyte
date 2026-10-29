@@ -5,7 +5,7 @@ export const Route = createFileRoute("/(dashboard)/volumes/create")({
 	component: RouteComponent,
 	errorComponent: () => <div>Failed to load source creation</div>,
 	staticData: {
-		breadcrumb: () => [{ label: "Sources", href: "/volumes" }, { label: "Create" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.sources"), href: "/volumes" }, { label: t("common.create") }],
 	},
 	head: () => ({
 		meta: [

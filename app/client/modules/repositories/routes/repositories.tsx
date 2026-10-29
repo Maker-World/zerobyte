@@ -23,6 +23,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { RepositoryBackend } from "@zerobyte/core/restic";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
 import { dataTableFeatures } from "~/client/lib/data-table";
+import { useTranslation } from "~/client/lib/i18n";
 
 type RepositoryRow = {
 	id: string;
@@ -37,7 +38,7 @@ const repositoryColumnHelper = createColumnHelper<typeof dataTableFeatures, Repo
 const repositoryColumns = repositoryColumnHelper.columns([
 	repositoryColumnHelper.accessor("name", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Name" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.name" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => (
 			<div className="flex items-center gap-2">
@@ -47,7 +48,7 @@ const repositoryColumns = repositoryColumnHelper.columns([
 	}),
 	repositoryColumnHelper.accessor("type", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Backend" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.backend" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => (
 			<span className="flex items-center gap-2 text-muted-foreground">
@@ -60,7 +61,7 @@ const repositoryColumns = repositoryColumnHelper.columns([
 	repositoryColumnHelper.accessor((row) => row.compressionMode || "off", {
 		id: "compressionMode",
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Compression" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.compression" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => (
 			<span className="text-muted-foreground text-xs bg-primary/10 rounded-md px-2 py-1">
@@ -72,7 +73,7 @@ const repositoryColumns = repositoryColumnHelper.columns([
 	repositoryColumnHelper.accessor((row) => row.status || "unknown", {
 		id: "status",
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Status" sortDirection={column.getIsSorted()} center />
+			<DataTableSortHeader column={column} title="common.status" sortDirection={column.getIsSorted()} center />
 		),
 		cell: ({ row }) => (
 			<StatusDot
@@ -94,6 +95,7 @@ const repositoryColumns = repositoryColumnHelper.columns([
 const defaultRepositorySorting: SortingState = [{ id: "name", desc: false }];
 
 export function RepositoriesPage() {
+	const { t } = useTranslation();
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useCookieState("sorting_repositories", defaultRepositorySorting);
 
@@ -123,12 +125,12 @@ export function RepositoriesPage() {
 		return (
 			<EmptyState
 				icon={Database}
-				title="No repository"
-				description="Repositories are remote storage locations where you can backup your volumes securely. Encrypted and optimized for storage efficiency."
+				title={t("repositories.emptyTitle")}
+				description={t("repositories.emptyDescription")}
 				button={
 					<Button onClick={() => navigate({ to: "/repositories/create" })}>
 						<Plus size={16} className="mr-2" />
-						Create repository
+						{t("repositories.create")}
 					</Button>
 				}
 			/>
@@ -145,26 +147,26 @@ export function RepositoriesPage() {
 				<span className="flex flex-col sm:flex-row items-stretch md:items-center gap-2 flex-wrap">
 					<Input
 						className="w-full lg:w-45 min-w-45"
-						placeholder="Search…"
+						placeholder={t("common.searchPlaceholder")}
 						value={search}
 						onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
 					/>
 					<Select value={status} onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All status" />
+							<SelectValue placeholder={t("common.allStatus")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="healthy">Healthy</SelectItem>
-							<SelectItem value="error">Error</SelectItem>
-							<SelectItem value="unknown">Unknown</SelectItem>
+							<SelectItem value="healthy">{t("status.healthy")}</SelectItem>
+							<SelectItem value="error">{t("status.error")}</SelectItem>
+							<SelectItem value="unknown">{t("status.unknown")}</SelectItem>
 						</SelectContent>
 					</Select>
 					<Select value={type} onValueChange={(value) => table.getColumn("type")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All backends" />
+							<SelectValue placeholder={t("common.allBackends")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="local">Local</SelectItem>
+							<SelectItem value="local">{t("repositories.local")}</SelectItem>
 							<SelectItem value="sftp">SFTP</SelectItem>
 							<SelectItem value="s3">S3</SelectItem>
 							<SelectItem value="gcs">Google Cloud Storage</SelectItem>
@@ -173,13 +175,13 @@ export function RepositoriesPage() {
 					{hasFilters && (
 						<Button onClick={clearFilters} className="w-full lg:w-auto mt-2 lg:mt-0 lg:ml-2">
 							<RotateCcw className="h-4 w-4 mr-2" />
-							Clear filters
+							{t("common.clearFilters")}
 						</Button>
 					)}
 				</span>
 				<Button onClick={() => navigate({ to: "/repositories/create" })}>
 					<Plus size={16} className="mr-2" />
-					Create Repository
+					{t("repositories.create")}
 				</Button>
 			</div>
 			<div className="overflow-x-auto">
@@ -209,10 +211,10 @@ export function RepositoriesPage() {
 						<TableRow className={cn({ hidden: !hasNoFilteredRepositories })}>
 							<TableCell colSpan={4} className="text-center py-12">
 								<div className="flex flex-col items-center gap-3">
-									<p className="text-muted-foreground">No repositories match your filters.</p>
+									<p className="text-muted-foreground">{t("repositories.noMatchFilters")}</p>
 									<Button onClick={clearFilters} variant="outline" size="sm">
 										<RotateCcw className="h-4 w-4 mr-2" />
-										Clear filters
+										{t("common.clearFilters")}
 									</Button>
 								</div>
 							</TableCell>
@@ -242,11 +244,11 @@ export function RepositoriesPage() {
 			</div>
 			<div className="px-4 py-2 text-sm text-muted-foreground bg-card-header flex justify-end border-t">
 				{hasNoFilteredRepositories ? (
-					"No repositories match filters."
+					t("repositories.noMatchFilters")
 				) : (
 					<span>
-						<span className="text-strong-accent">{rows.length}</span> repositor
-						{rows.length === 1 ? "y" : "ies"}
+						<span className="text-strong-accent">{rows.length}</span>{" "}
+						{rows.length === 1 ? t("repositories.countSingular") : t("repositories.countPlural")}
 					</span>
 				)}
 			</div>

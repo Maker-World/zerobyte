@@ -13,13 +13,13 @@ export const Route = createFileRoute("/(dashboard)/notifications/$notificationId
 		return notification;
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Notifications", href: "/notifications" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.notifications"), href: "/notifications" },
 			{
-				label: match.loaderData?.name || "Notification Details",
+				label: match.loaderData?.name || t("breadcrumb.notificationDetails"),
 				href: `/notifications/${match.params.notificationId}`,
 			},
-			{ label: "Edit" },
+			{ label: t("common.edit") },
 		],
 	},
 	head: ({ loaderData }) => ({

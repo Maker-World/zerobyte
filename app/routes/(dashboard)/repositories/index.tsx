@@ -12,7 +12,7 @@ export const Route = createFileRoute("/(dashboard)/repositories/")({
 	},
 	errorComponent: RouteError,
 	staticData: {
-		breadcrumb: () => [{ label: "Repositories" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.repositories") }],
 	},
 	head: () => ({
 		meta: [

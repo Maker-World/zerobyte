@@ -5,7 +5,10 @@ export const Route = createFileRoute("/(dashboard)/repositories/create")({
 	component: RouteComponent,
 	errorComponent: () => <div>Failed to load repository creation</div>,
 	staticData: {
-		breadcrumb: () => [{ label: "Repositories", href: "/repositories" }, { label: "Create" }],
+		breadcrumb: (_match, t) => [
+			{ label: t("nav.repositories"), href: "/repositories" },
+			{ label: t("common.create") },
+		],
 	},
 	head: () => ({
 		meta: [

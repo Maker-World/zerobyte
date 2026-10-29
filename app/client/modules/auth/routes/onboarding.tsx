@@ -20,6 +20,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { normalizeUsername } from "~/lib/username";
 import { z } from "zod";
 import { inferDateTimePreferences } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 const onboardingSchema = z.object({
 	username: z.string().min(2).max(30).transform(normalizeUsername),
@@ -35,6 +36,7 @@ type OnboardingFormValues = z.input<typeof onboardingSchema>;
 
 export function OnboardingPage() {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const [submitting, setSubmitting] = useState(false);
 
 	const form = useForm<OnboardingFormValues>({
@@ -51,7 +53,7 @@ export function OnboardingPage() {
 		if (values.password !== values.confirmPassword) {
 			form.setError("confirmPassword", {
 				type: "manual",
-				message: "Passwords do not match",
+				message: t("auth.passwordsDoNotMatch"),
 			});
 			return;
 		}
@@ -78,17 +80,17 @@ export function OnboardingPage() {
 		});
 
 		if (data?.token) {
-			toast.success("Admin user created successfully!");
+			toast.success(t("auth.onboarding.created"));
 			void navigate({ to: "/download-recovery-key" });
 		} else if (error) {
 			logger.error(error);
-			const errorMessage = error.message ?? "Unknown error";
-			toast.error("Failed to create admin user", { description: errorMessage });
+			const errorMessage = error.message ?? t("common.unknownError");
+			toast.error(t("auth.onboarding.createFailed"), { description: errorMessage });
 		}
 	};
 
 	return (
-		<AuthLayout title="Welcome to Zerobyte" description="Create the admin user to get started">
+		<AuthLayout title={t("auth.onboarding.title")} description={t("auth.onboarding.description")}>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 					<FormField
@@ -96,7 +98,7 @@ export function OnboardingPage() {
 						name="email"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Email</FormLabel>
+								<FormLabel>{t("auth.email")}</FormLabel>
 								<FormControl>
 									<Input
 										{...field}
@@ -105,7 +107,7 @@ export function OnboardingPage() {
 										disabled={submitting}
 									/>
 								</FormControl>
-								<FormDescription>Enter your email address</FormDescription>
+								<FormDescription>{t("auth.onboarding.emailDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -115,11 +117,11 @@ export function OnboardingPage() {
 						name="username"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Username</FormLabel>
+								<FormLabel>{t("auth.username")}</FormLabel>
 								<FormControl>
 									<Input {...field} type="text" placeholder="admin" disabled={submitting} />
 								</FormControl>
-								<FormDescription>Choose a username for the admin account</FormDescription>
+								<FormDescription>{t("auth.onboarding.usernameDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -129,16 +131,16 @@ export function OnboardingPage() {
 						name="password"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Password</FormLabel>
+								<FormLabel>{t("auth.password")}</FormLabel>
 								<FormControl>
 									<Input
 										{...field}
 										type="password"
-										placeholder="Enter a secure password"
+										placeholder={t("auth.onboarding.passwordPlaceholder")}
 										disabled={submitting}
 									/>
 								</FormControl>
-								<FormDescription>Password must be at least 8 characters long.</FormDescription>
+								<FormDescription>{t("auth.onboarding.passwordDescription")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -148,12 +150,12 @@ export function OnboardingPage() {
 						name="confirmPassword"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Confirm Password</FormLabel>
+								<FormLabel>{t("auth.confirmPassword")}</FormLabel>
 								<FormControl>
 									<Input
 										{...field}
 										type="password"
-										placeholder="Re-enter your password"
+										placeholder={t("auth.onboarding.confirmPasswordPlaceholder")}
 										disabled={submitting}
 									/>
 								</FormControl>
@@ -162,7 +164,7 @@ export function OnboardingPage() {
 						)}
 					/>
 					<Button type="submit" className="w-full" loading={submitting}>
-						Create admin user
+						{t("auth.onboarding.submit")}
 					</Button>
 				</form>
 			</Form>

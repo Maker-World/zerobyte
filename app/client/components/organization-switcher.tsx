@@ -12,6 +12,7 @@ import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "~/c
 import { authClient } from "~/client/lib/auth-client";
 import { useMutation } from "@tanstack/react-query";
 import { useOrganizationContext } from "../hooks/use-org-context";
+import { useTranslation } from "~/client/lib/i18n";
 
 function getOrganizationInitials(name?: string): string {
 	const trimmedName = name?.trim();
@@ -29,6 +30,7 @@ function getOrganizationInitials(name?: string): string {
 
 export function OrganizationSwitcher() {
 	const { isMobile } = useSidebar();
+	const { t } = useTranslation();
 	const { organizations, activeOrganization } = useOrganizationContext();
 
 	const switchOrganizationMutation = useMutation({
@@ -37,8 +39,8 @@ export function OrganizationSwitcher() {
 			if (error) throw new Error(error.message);
 		},
 		onError: (error) => {
-			const message = error instanceof Error ? error.message : "Unexpected error while switching organizations";
-			toast.error("Failed to switch organization", { description: message });
+			const message = error instanceof Error ? error.message : t("organizationSwitcher.unexpectedError");
+			toast.error(t("organizationSwitcher.switchFailed"), { description: message });
 		},
 	});
 
@@ -74,7 +76,9 @@ export function OrganizationSwitcher() {
 							</div>
 							<div className="grid flex-1 text-left text-sm leading-tight">
 								<span className="truncate font-medium">{activeOrganization?.name}</span>
-								<span className="truncate text-xs">{organizations.length} organizations</span>
+								<span className="truncate text-xs">
+									{t("organizationSwitcher.count", { count: organizations.length })}
+								</span>
 							</div>
 							<ChevronsUpDown className="ml-auto group-data-[collapsible=icon]:hidden" />
 						</SidebarMenuButton>
@@ -85,7 +89,9 @@ export function OrganizationSwitcher() {
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="text-muted-foreground text-xs">Organizations</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-muted-foreground text-xs">
+							{t("organizationSwitcher.organizations")}
+						</DropdownMenuLabel>
 						{organizations.map((organization) => (
 							<DropdownMenuItem
 								key={organization.id}
@@ -108,7 +114,7 @@ export function OrganizationSwitcher() {
 								</div>
 								<span className="min-w-0 flex-1 truncate">{organization.name}</span>
 								<DropdownMenuShortcut>
-									{organization.id === activeOrganization?.id && "Current"}
+									{organization.id === activeOrganization?.id && t("common.current")}
 								</DropdownMenuShortcut>
 							</DropdownMenuItem>
 						))}

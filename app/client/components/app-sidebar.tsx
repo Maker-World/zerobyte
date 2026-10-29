@@ -42,14 +42,15 @@ import { cn } from "~/client/lib/utils";
 import { APP_VERSION, RCLONE_VERSION, RESTIC_VERSION, SHOUTRRR_VERSION } from "~/client/lib/version";
 import { OrganizationSwitcher } from "./organization-switcher";
 import { ReleaseNotesDialog } from "./release-notes-dialog";
+import { type TranslationKey, useTranslation } from "~/client/lib/i18n";
 
 const items = [
-	{ title: "Sources", url: "/volumes", icon: HardDrive },
-	{ title: "Repositories", url: "/repositories", icon: Database },
-	{ title: "Backups", url: "/backups", icon: CalendarClock },
-	{ title: "Notifications", url: "/notifications", icon: Bell },
-	{ title: "Activity", url: "/activity", icon: ListChecks },
-] as const;
+	{ titleKey: "nav.sources", url: "/volumes", icon: HardDrive },
+	{ titleKey: "nav.repositories", url: "/repositories", icon: Database },
+	{ titleKey: "nav.backups", url: "/backups", icon: CalendarClock },
+	{ titleKey: "nav.notifications", url: "/notifications", icon: Bell },
+	{ titleKey: "nav.activity", url: "/activity", icon: ListChecks },
+] as const satisfies readonly { titleKey: TranslationKey; url: string; icon: typeof User }[];
 
 const settingsScopeIcons: Record<SettingsScope, typeof User> = {
 	personal: User,
@@ -64,6 +65,7 @@ const sidebarPanelClassName = "absolute inset-0 flex min-h-0 flex-col bg-sidebar
 
 export function AppSidebar() {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const { state, open, setOpen, isMobile, setOpenMobile } = useSidebar();
 	const { updates, hasUpdate, isFetching, error: updatesError, checkForUpdates } = useUpdates();
 	const { runtime } = useSystemInfo();
@@ -97,10 +99,12 @@ export function AppSidebar() {
 		releaseUrl = `https://github.com/nicotsx/zerobyte/releases/tag/${displayVersion}`;
 	}
 
-	const availableVersion = updates?.latestVersion ?? "New version";
-	const versionStatus = hasUpdate ? `${availableVersion} available` : "Up to date";
-	const versionCheckStatus = updatesError ? "Last check failed" : versionStatus;
-	const versionCheckLabel = `Check for updates. ${versionCheckStatus}. Current version ${displayVersion}.`;
+	const availableVersion = updates?.latestVersion ?? t("sidebar.newVersion");
+	const versionStatus = hasUpdate
+		? t("sidebar.versionAvailable", { version: availableVersion })
+		: t("sidebar.upToDate");
+	const versionCheckStatus = updatesError ? t("sidebar.lastCheckFailed") : versionStatus;
+	const versionCheckLabel = t("sidebar.versionCheckLabel", { status: versionCheckStatus, version: displayVersion });
 
 	useEffect(() => {
 		if (isMobile) {
@@ -149,7 +153,7 @@ export function AppSidebar() {
 
 		const result = await checkForUpdates();
 		if (result.error) {
-			toast.error("Failed to check for updates");
+			toast.error(t("sidebar.checkUpdatesFailed"));
 			return;
 		}
 
@@ -158,7 +162,9 @@ export function AppSidebar() {
 			return;
 		}
 
-		toast.success("Zerobyte is up to date", { description: `You're running ${displayVersion}.` });
+		toast.success(t("sidebar.zerobyteUpToDate"), {
+			description: t("sidebar.runningVersion", { version: displayVersion }),
+		});
 	};
 
 	const mainPanelInert = isSettingsMode;
@@ -192,8 +198,8 @@ export function AppSidebar() {
 								<SidebarMenu>
 									{items.map((item) => (
 										<SidebarNavigationItem
-											key={item.title}
-											title={item.title}
+											key={item.url}
+											title={t(item.titleKey)}
 											isCollapsed={isCollapsed}
 										>
 											<Link
@@ -207,7 +213,7 @@ export function AppSidebar() {
 														active={isActive}
 														isCollapsed={isCollapsed}
 														icon={item.icon}
-														label={item.title}
+														label={t(item.titleKey)}
 													/>
 												)}
 											</Link>
@@ -228,12 +234,12 @@ export function AppSidebar() {
 										onClick={rememberSettingsReturnLocation}
 										className={footerActionClassName}
 										activeProps={{ className: activeFooterActionClassName }}
-										aria-label="Settings"
+										aria-label={t("nav.settings")}
 									>
 										<Settings className="size-4" />
 									</Link>
 								</TooltipTrigger>
-								<TooltipContent side={footerOverlaySide}>Settings</TooltipContent>
+								<TooltipContent side={footerOverlaySide}>{t("nav.settings")}</TooltipContent>
 							</Tooltip>
 							{isMobile && versionButton}
 							{!isMobile && (
@@ -267,7 +273,7 @@ export function AppSidebar() {
 												<span className="font-mono">{SHOUTRRR_VERSION}</span>
 											</div>
 											<span className="text-[10px] text-muted-foreground">
-												{hasUpdate ? "Open release notes" : "Click to check for updates"}
+												{hasUpdate ? t("sidebar.openReleaseNotes") : t("sidebar.clickToCheck")}
 											</span>
 										</div>
 									</HoverCardContent>
@@ -289,7 +295,7 @@ export function AppSidebar() {
 					<SidebarHeader className="h-16.25 shrink-0 justify-center border-b border-border/80 px-4 dark:border-border/50">
 						<div className="flex items-center gap-2 font-semibold">
 							<Settings className="size-4 shrink-0 text-strong-accent" />
-							<span className="group-data-[collapsible=icon]:hidden">Settings</span>
+							<span className="group-data-[collapsible=icon]:hidden">{t("nav.settings")}</span>
 						</div>
 					</SidebarHeader>
 					<SidebarContent className="border-r p-2">
@@ -302,8 +308,8 @@ export function AppSidebar() {
 
 										return (
 											<SidebarNavigationItem
-												key={item.title}
-												title={item.title}
+												key={item.scope}
+												title={t(item.titleKey)}
 												isCollapsed={isCollapsed}
 											>
 												<Link
@@ -319,7 +325,7 @@ export function AppSidebar() {
 														active={isActive}
 														isCollapsed={isCollapsed}
 														icon={icon}
-														label={item.title}
+														label={t(item.titleKey)}
 													/>
 												</Link>
 											</SidebarNavigationItem>
@@ -332,10 +338,10 @@ export function AppSidebar() {
 					<SidebarFooter className="border-t border-r border-border/80 p-2 dark:border-border/50">
 						<SidebarMenu>
 							<SidebarMenuItem>
-								<SidebarMenuButton asChild className="h-10" tooltip="Back">
+								<SidebarMenuButton asChild className="h-10" tooltip={t("common.back")}>
 									<button type="button" onClick={handleSettingsBack}>
 										<ArrowLeft className="size-4" />
-										<span>Back</span>
+										<span>{t("common.back")}</span>
 									</button>
 								</SidebarMenuButton>
 							</SidebarMenuItem>

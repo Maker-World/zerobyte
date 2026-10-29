@@ -24,6 +24,7 @@ import {
 import { useLiveClock } from "./hooks/use-live-clock";
 import { useTaskLogLiveUpdates } from "./hooks/use-task-log-live-updates";
 import { taskHistoryQueryOptions } from "./task-history-query";
+import { useTranslation } from "~/client/lib/i18n";
 
 export { getTaskLogPagination };
 export type { TaskLogKind, TaskLogOutcome };
@@ -132,14 +133,15 @@ function TaskLogPageContent({
 		setSelection(null);
 	}
 
+	const { t } = useTranslation();
 	const refresh = async () => {
 		const result = await history.refetch();
 		if (result.isError) {
-			toast.error("Failed to refresh activity", { description: result.error.message });
+			toast.error(t("taskLog.refreshFailed"), { description: result.error.message });
 			return;
 		}
 
-		toast.success("Activity refreshed");
+		toast.success(t("taskLog.refreshed"));
 	};
 
 	return (
@@ -153,14 +155,14 @@ function TaskLogPageContent({
 								onKindChange(value === "all" ? undefined : (value as TaskLogKind))
 							}
 						>
-							<SelectTrigger aria-label="Task type" className="w-full sm:w-52">
+							<SelectTrigger aria-label={t("taskLog.taskType")} className="w-full sm:w-52">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All task types</SelectItem>
+								<SelectItem value="all">{t("taskLog.allTaskTypes")}</SelectItem>
 								{kindOptions.map((option) => (
 									<SelectItem key={option.value} value={option.value}>
-										{option.label}
+										{t(option.label)}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -171,14 +173,14 @@ function TaskLogPageContent({
 								onOutcomeChange(value === "all" ? undefined : (value as TaskLogOutcome))
 							}
 						>
-							<SelectTrigger aria-label="Outcome" className="w-full sm:w-44">
+							<SelectTrigger aria-label={t("taskLog.outcome")} className="w-full sm:w-44">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All outcomes</SelectItem>
+								<SelectItem value="all">{t("taskLog.allOutcomes")}</SelectItem>
 								{outcomeOptions.map((option) => (
 									<SelectItem key={option.value} value={option.value}>
-										{option.label}
+										{t(option.label)}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -188,7 +190,7 @@ function TaskLogPageContent({
 						{page > 1 && (
 							<Button variant="outline" size="sm" onClick={showLatest}>
 								<CircleAlert className="mr-2 h-4 w-4" />
-								View latest activity
+								{t("taskLog.viewLatest")}
 							</Button>
 						)}
 						<Tooltip>
@@ -196,14 +198,14 @@ function TaskLogPageContent({
 								<Button
 									variant="outline"
 									size="icon"
-									aria-label="Refresh activity"
+									aria-label={t("taskLog.refresh")}
 									onClick={() => void refresh()}
 									disabled={history.isFetching}
 								>
 									<RefreshCw className={cn({ "animate-spin": history.isFetching })} />
 								</Button>
 							</TooltipTrigger>
-							<TooltipContent>Refresh activity</TooltipContent>
+							<TooltipContent>{t("taskLog.refresh")}</TooltipContent>
 						</Tooltip>
 					</div>
 				</div>

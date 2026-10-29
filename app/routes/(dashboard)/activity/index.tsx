@@ -27,7 +27,7 @@ export const Route = createFileRoute("/(dashboard)/activity/")({
 		return response.data;
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Activity" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.activity") }],
 	},
 	head: () => ({
 		meta: [

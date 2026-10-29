@@ -3,29 +3,30 @@ import { Ban, Check, CircleX, Clock3, LoaderCircle, TriangleAlert, type LucideIc
 import { cn } from "~/client/lib/utils";
 import type { TaskHistoryOutcome } from "~/schemas/task-history";
 import type { ActivityTaskKind } from "~/schemas/tasks";
+import { type TranslationKey, useTranslation } from "~/client/lib/i18n";
 
 export type TaskLogKind = ActivityTaskKind;
 export type TaskLogOutcome = TaskHistoryOutcome;
 export type TaskLogItem = ListTaskHistoryResponse["items"][number];
 
 export const taskLogKindLabels = {
-	backup: "Backup",
-	restore: "Restore",
-	deleteSnapshots: "Delete snapshots",
-	tagSnapshots: "Update snapshot tags",
-	doctor: "Repository doctor",
-	mirrorSync: "Mirror sync",
-	forget: "Apply retention policy",
-} satisfies Record<TaskLogKind, string>;
+	backup: "taskLog.kinds.backup",
+	restore: "taskLog.kinds.restore",
+	deleteSnapshots: "taskLog.kinds.deleteSnapshots",
+	tagSnapshots: "taskLog.kinds.tagSnapshots",
+	doctor: "taskLog.kinds.doctor",
+	mirrorSync: "taskLog.kinds.mirrorSync",
+	forget: "taskLog.kinds.forget",
+} satisfies Record<TaskLogKind, TranslationKey>;
 
 export const taskLogOutcomeLabels = {
-	running: "Running",
-	success: "Success",
-	warning: "Warning",
-	error: "Error",
-	cancelled: "Cancelled",
-	stale: "Stale",
-} satisfies Record<TaskLogOutcome, string>;
+	running: "taskLog.outcomes.running",
+	success: "taskLog.outcomes.success",
+	warning: "taskLog.outcomes.warning",
+	error: "taskLog.outcomes.error",
+	cancelled: "taskLog.outcomes.cancelled",
+	stale: "taskLog.outcomes.stale",
+} satisfies Record<TaskLogOutcome, TranslationKey>;
 
 export const getTaskDurationSeconds = (
 	item: Pick<TaskLogItem, "outcome" | "createdAt" | "startedAt" | "finishedAt">,
@@ -65,8 +66,9 @@ const outcomePresentation = {
 } satisfies Record<TaskLogOutcome, { icon: LucideIcon; iconClassName: string }>;
 
 export function OutcomeStatus({ outcome }: { outcome: TaskLogItem["outcome"] }) {
+	const { t } = useTranslation();
 	if (outcome === null) {
-		return <span className="text-sm text-muted-foreground">Not recorded</span>;
+		return <span className="text-sm text-muted-foreground">{t("taskLog.notRecorded")}</span>;
 	}
 
 	const presentation = outcomePresentation[outcome];
@@ -75,7 +77,7 @@ export function OutcomeStatus({ outcome }: { outcome: TaskLogItem["outcome"] }) 
 	return (
 		<span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-foreground">
 			<Icon aria-hidden="true" className={cn("size-3.5 stroke-[2.25]", presentation.iconClassName)} />
-			{taskLogOutcomeLabels[outcome]}
+			{t(taskLogOutcomeLabels[outcome])}
 		</span>
 	);
 }

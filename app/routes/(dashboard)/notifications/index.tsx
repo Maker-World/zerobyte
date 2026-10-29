@@ -9,7 +9,7 @@ export const Route = createFileRoute("/(dashboard)/notifications/")({
 		await context.queryClient.ensureQueryData({ ...listNotificationDestinationsOptions() });
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Notifications" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.notifications") }],
 	},
 	head: () => ({
 		meta: [

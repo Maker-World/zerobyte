@@ -1,9 +1,10 @@
+import type { TranslationKey } from "~/client/lib/i18n";
 import type { Permission } from "~/lib/permission-policy";
 
 export type SettingsScope = "personal" | "organization" | "instance";
 
 type SettingsScopeNavigationItem = {
-	title: string;
+	titleKey: TranslationKey;
 	scope: SettingsScope;
 };
 
@@ -22,9 +23,9 @@ type SettingsPermissionChecker = {
 };
 
 export const settingsScopeNavigationItems = [
-	{ title: "Personal", scope: "personal" },
-	{ title: "Organization", scope: "organization" },
-	{ title: "Instance", scope: "instance" },
+	{ titleKey: "settings.scopes.personal", scope: "personal" },
+	{ titleKey: "settings.scopes.organization", scope: "organization" },
+	{ titleKey: "settings.scopes.instance", scope: "instance" },
 ] as const satisfies readonly SettingsScopeNavigationItem[];
 
 export function getSettingsScopeAvailability(permissions: SettingsPermissionChecker): SettingsScopeAvailability {

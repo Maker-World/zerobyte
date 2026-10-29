@@ -14,10 +14,13 @@ export const Route = createFileRoute("/(dashboard)/repositories/$repositoryId/ed
 		return repository;
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Repositories", href: "/repositories" },
-			{ label: match.loaderData?.name || "Repository", href: `/repositories/${match.params.repositoryId}` },
-			{ label: "Edit" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.repositories"), href: "/repositories" },
+			{
+				label: match.loaderData?.name || t("breadcrumb.repository"),
+				href: `/repositories/${match.params.repositoryId}`,
+			},
+			{ label: t("common.edit") },
 		],
 	},
 	head: ({ loaderData }) => ({

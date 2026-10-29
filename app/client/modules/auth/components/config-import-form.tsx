@@ -13,12 +13,14 @@ import {
 	CONFIG_TRANSFER_PASSPHRASE_MAX_LENGTH,
 	CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH,
 } from "~/lib/config-transfer";
+import { useTranslation } from "~/client/lib/i18n";
 
 type ConfigImportFormProps = {
 	onSuccess: (warnings: string[]) => void;
 };
 
 export function ConfigImportForm({ onSuccess }: ConfigImportFormProps) {
+	const { t } = useTranslation();
 	const [importFile, setImportFile] = useState<File | null>(null);
 	const [exportPassphrase, setExportPassphrase] = useState("");
 	const importConfig = useMutation({
@@ -27,7 +29,7 @@ export function ConfigImportForm({ onSuccess }: ConfigImportFormProps) {
 			onSuccess(data.warnings);
 		},
 		onError: (error) => {
-			toast.error("Failed to import configuration", { description: parseError(error)?.message });
+			toast.error(t("configImport.failed"), { description: parseError(error)?.message });
 		},
 	});
 
@@ -35,17 +37,17 @@ export function ConfigImportForm({ onSuccess }: ConfigImportFormProps) {
 		event.preventDefault();
 
 		if (!importFile) {
-			toast.error("Export file is required");
+			toast.error(t("configImport.fileRequired"));
 			return;
 		}
 
 		if (importFile.size > CONFIG_TRANSFER_MAX_FILE_BYTES) {
-			toast.error("Export file is too large");
+			toast.error(t("configImport.fileTooLarge"));
 			return;
 		}
 
 		if (exportPassphrase.length < CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH) {
-			toast.error(`Export passphrase must be at least ${CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH} characters`);
+			toast.error(t("configImport.passphraseMin", { min: CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH }));
 			return;
 		}
 
@@ -61,16 +63,12 @@ export function ConfigImportForm({ onSuccess }: ConfigImportFormProps) {
 	return (
 		<form onSubmit={handleSubmit} className="space-y-4">
 			<div className="space-y-1">
-				<h2 className="text-sm font-medium">Import a previous configuration</h2>
-				<p className="text-xs text-muted-foreground">
-					Use a passphrase-protected export from another Zerobyte instance. Exports contain settings and
-					credentials, not backup data. Imported local paths require review, and dependent schedules stay
-					disabled until you validate them on this server.
-				</p>
+				<h2 className="text-sm font-medium">{t("configImport.title")}</h2>
+				<p className="text-xs text-muted-foreground">{t("configImport.description")}</p>
 			</div>
 
 			<div className="space-y-2">
-				<Label htmlFor="config-file">Encrypted export file</Label>
+				<Label htmlFor="config-file">{t("configImport.file")}</Label>
 				<Input
 					id="config-file"
 					type="file"
@@ -84,26 +82,24 @@ export function ConfigImportForm({ onSuccess }: ConfigImportFormProps) {
 			</div>
 
 			<div className="space-y-2">
-				<Label htmlFor="export-passphrase">Export passphrase</Label>
+				<Label htmlFor="export-passphrase">{t("configImport.passphrase")}</Label>
 				<SecretInput
 					id="export-passphrase"
 					value={exportPassphrase}
 					onChange={(event) => setExportPassphrase(event.target.value)}
-					placeholder="Enter the passphrase used to protect this export"
+					placeholder={t("configImport.passphrasePlaceholder")}
 					autoComplete="off"
 					minLength={CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH}
 					maxLength={CONFIG_TRANSFER_PASSPHRASE_MAX_LENGTH}
 					required
 					disabled={importConfig.isPending}
 				/>
-				<p className="text-xs text-muted-foreground">
-					This is the export passphrase, not your account password or either instance&apos;s APP_SECRET.
-				</p>
+				<p className="text-xs text-muted-foreground">{t("configImport.passphraseHint")}</p>
 			</div>
 
 			<Button type="submit" variant="outline" loading={importConfig.isPending} className="w-full">
 				<Upload size={16} className="mr-2" />
-				Import
+				{t("configImport.import")}
 			</Button>
 		</form>
 	);
