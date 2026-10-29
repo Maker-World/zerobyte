@@ -25,7 +25,7 @@ import {
 import { useTranslation } from "~/client/lib/i18n";
 
 export function UserManagement({ currentUser }: { currentUser: { id: string } | undefined | null }) {
-	const { t } = useTranslation();
+	const { t, tDynamic } = useTranslation();
 	const [search, setSearch] = useState("");
 	const [userToDelete, setUserToDelete] = useState<string | null>(null);
 	const [userToBan, setUserToBan] = useState<{ id: string; name: string; isBanned: boolean } | null>(null);
@@ -161,7 +161,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 										</div>
 									</TableCell>
 									<TableCell>
-										<Badge>{user.role}</Badge>
+										<Badge>{tDynamic(`roles.${user.role}`, user.role ?? "")}</Badge>
 									</TableCell>
 									<TableCell>
 										<Badge

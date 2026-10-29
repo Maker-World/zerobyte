@@ -46,7 +46,7 @@ type Props = {
 };
 
 export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
-	const { t } = useTranslation();
+	const { t, tDynamic } = useTranslation();
 	const originQuery = useServerFn(getOrigin);
 	const { data } = useSuspenseQuery({ queryKey: ["app-origin"], queryFn: originQuery, initialData: initialOrigin });
 
@@ -342,7 +342,9 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 							{invitations.map((invitation) => (
 								<TableRow key={invitation.id}>
 									<TableCell className="font-medium">{invitation.email}</TableCell>
-									<TableCell className="uppercase">{invitation.role}</TableCell>
+									<TableCell className="uppercase">
+										{tDynamic(`roles.${invitation.role}`, invitation.role)}
+									</TableCell>
 									<TableCell>
 										<span
 											className={cn(`text-xs font-medium px-2 py-0.5 rounded border`, {

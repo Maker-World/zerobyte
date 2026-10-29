@@ -24,7 +24,7 @@ type Props = {
 };
 
 export function PendingInvitationsSection({ initialInvitations, userEmail }: Props) {
-	const { t } = useTranslation();
+	const { t, tDynamic } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const [selectedInvitationProviders, setSelectedInvitationProviders] = useState<Record<string, string>>({});
 
@@ -90,7 +90,9 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 								return (
 									<TableRow key={invitation.id}>
 										<TableCell className="font-medium">{invitation.organizationName}</TableCell>
-										<TableCell className="uppercase">{invitation.role}</TableCell>
+										<TableCell className="uppercase">
+											{tDynamic(`roles.${invitation.role}`, invitation.role)}
+										</TableCell>
 										<TableCell>{formatDateTime(new Date(invitation.expiresAt))}</TableCell>
 										<TableCell className="text-right">
 											<div className="flex justify-end gap-2">

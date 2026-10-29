@@ -1838,6 +1838,12 @@ export const en = {
 		readOnly:
 			"The volume backing this backup is mounted read-only. Restoring to the original location is unavailable. Restore it to a custom location, or download it instead.",
 	},
+	roles: {
+		admin: "Admin",
+		member: "Member",
+		owner: "Owner",
+		user: "User",
+	},
 };
 
 export type Messages = typeof en;

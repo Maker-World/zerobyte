@@ -32,7 +32,7 @@ type Props = {
 };
 
 export function OrgMembersSection({ initialMembers }: Props) {
-	const { t } = useTranslation();
+	const { t, tDynamic } = useTranslation();
 	const { activeMember } = useOrganizationContext();
 	const [memberToRemove, setMemberToRemove] = useState<{ id: string; name: string } | null>(null);
 
@@ -93,7 +93,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 										</div>
 									</TableCell>
 									<TableCell>
-										<Badge variant="outline">{member.role}</Badge>
+										<Badge variant="outline">{tDynamic(`roles.${member.role}`, member.role)}</Badge>
 									</TableCell>
 									<TableCell className="text-right">
 										<div className="flex justify-end gap-2">
