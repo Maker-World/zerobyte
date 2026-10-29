@@ -25,12 +25,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { useOrganizationContext } from "~/client/hooks/use-org-context";
 import { cn } from "~/client/lib/utils";
 import { parseError } from "~/client/lib/errors";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	initialMembers?: GetOrgMembersResponse;
 };
 
 export function OrgMembersSection({ initialMembers }: Props) {
+	const { t } = useTranslation();
 	const { activeMember } = useOrganizationContext();
 	const [memberToRemove, setMemberToRemove] = useState<{ id: string; name: string } | null>(null);
 
@@ -41,21 +43,23 @@ export function OrgMembersSection({ initialMembers }: Props) {
 	const updateRole = useMutation({
 		...updateMemberRoleMutation(),
 		onSuccess: () => {
-			toast.success("Member role updated");
+			toast.success(t("settings.orgMembersSection.memberRoleUpdated"));
 		},
 		onError: (error) => {
-			toast.error("Failed to update role", { description: parseError(error)?.message });
+			toast.error(t("settings.orgMembersSection.failedToUpdateRole"), {
+				description: parseError(error)?.message,
+			});
 		},
 	});
 
 	const removeMember = useMutation({
 		...removeOrgMemberMutation(),
 		onSuccess: () => {
-			toast.success("Member removed from organization");
+			toast.success(t("settings.orgMembersSection.memberRemovedFromOrganization"));
 			setMemberToRemove(null);
 		},
 		onError: (error) => {
-			toast.error("Failed to remove member", { description: error.message });
+			toast.error(t("settings.orgMembersSection.failedToRemoveMember"), { description: error.message });
 		},
 	});
 
@@ -65,15 +69,15 @@ export function OrgMembersSection({ initialMembers }: Props) {
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>Member</TableHead>
-							<TableHead>Role</TableHead>
-							<TableHead className="text-right">Actions</TableHead>
+							<TableHead>{t("settings.orgMembersSection.member")}</TableHead>
+							<TableHead>{t("settings.orgMembersSection.role")}</TableHead>
+							<TableHead className="text-right">{t("common.actions")}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						<TableRow className={cn({ hidden: members.length > 0 })}>
 							<TableCell colSpan={3} className="text-center text-sm text-muted-foreground">
-								No members found.
+								{t("settings.orgMembersSection.noMembersFound")}
 							</TableCell>
 						</TableRow>
 						{members.map((member) => {
@@ -96,7 +100,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Demote to Member"
+												title={t("settings.orgMembersSection.demoteToMember")}
 												className={cn({ hidden: member.role !== "admin" || isSelf })}
 												disabled={updateRole.isPending}
 												onClick={() =>
@@ -111,7 +115,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Promote to Admin"
+												title={t("settings.orgMembersSection.promoteToAdmin")}
 												className={cn({ hidden: member.role !== "member" || isSelf })}
 												disabled={updateRole.isPending}
 												onClick={() =>
@@ -132,7 +136,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 													<Button
 														variant="ghost"
 														size="icon"
-														title="Remove member"
+														title={t("settings.orgMembersSection.removeMember")}
 														className={cn({ hidden: isOwner || isSelf })}
 														onClick={() =>
 															setMemberToRemove({
@@ -146,16 +150,17 @@ export function OrgMembersSection({ initialMembers }: Props) {
 												</AlertDialogTrigger>
 												<AlertDialogContent>
 													<AlertDialogHeader>
-														<AlertDialogTitle>Remove member</AlertDialogTitle>
+														<AlertDialogTitle>
+															{t("settings.orgMembersSection.removeMember")}
+														</AlertDialogTitle>
 														<AlertDialogDescription>
-															Are you sure you want to remove{" "}
-															<strong>{memberToRemove?.name}</strong> from this
-															organization? They will lose access to all organization
-															resources.
+															{t("settings.orgMembersSection.areYouSureYou")}
+															<strong>{memberToRemove?.name}</strong>{" "}
+															{t("settings.orgMembersSection.fromThisOrganizationThey")}
 														</AlertDialogDescription>
 													</AlertDialogHeader>
 													<AlertDialogFooter>
-														<AlertDialogCancel>Cancel</AlertDialogCancel>
+														<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 														<AlertDialogAction
 															className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 															disabled={removeMember.isPending}
@@ -165,7 +170,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 																})
 															}
 														>
-															Remove
+															{t("settings.orgMembersSection.remove")}
 														</AlertDialogAction>
 													</AlertDialogFooter>
 												</AlertDialogContent>

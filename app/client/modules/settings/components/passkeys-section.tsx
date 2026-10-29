@@ -30,6 +30,7 @@ import { authClient } from "~/client/lib/auth-client";
 import { logger } from "~/client/lib/logger";
 import { useTimeFormat } from "~/client/lib/datetime";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PasskeyEntry = {
 	id: string;
@@ -39,6 +40,7 @@ type PasskeyEntry = {
 };
 
 export function PasskeysSection() {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const isSecureContext = getIsSecureContext();
 	const { data: passkeys, isPending } = useQuery({
@@ -65,13 +67,13 @@ export function PasskeysSection() {
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			toast.success("Passkey added");
+			toast.success(t("settings.passkeysSection.passkeyAdded"));
 			setAddDialogOpen(false);
 			setNewPasskeyName("");
 		},
 		onError: (error: Error) => {
 			logger.error(error);
-			toast.error("Failed to add passkey", { description: error.message });
+			toast.error(t("settings.passkeysSection.failedToAddPasskey"), { description: error.message });
 		},
 	});
 
@@ -81,13 +83,13 @@ export function PasskeysSection() {
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			toast.success("Passkey renamed");
+			toast.success(t("settings.passkeysSection.passkeyRenamed"));
 			setRenameTarget(null);
 			setRenameValue("");
 		},
 		onError: (error: Error) => {
 			logger.error(error);
-			toast.error("Failed to rename passkey", { description: error.message });
+			toast.error(t("settings.passkeysSection.failedToRenamePasskey"), { description: error.message });
 		},
 	});
 
@@ -100,12 +102,12 @@ export function PasskeysSection() {
 			setDeletePasskeyOpen(false);
 		},
 		onSuccess: () => {
-			toast.success("Passkey deleted");
+			toast.success(t("settings.passkeysSection.passkeyDeleted"));
 			setDeleteTarget(null);
 		},
 		onError: (error: Error) => {
 			logger.error(error);
-			toast.error("Failed to delete passkey", { description: error.message });
+			toast.error(t("settings.passkeysSection.failedToDeletePasskey"), { description: error.message });
 		},
 	});
 
@@ -122,7 +124,7 @@ export function PasskeysSection() {
 		if (!renameTarget) return;
 		const name = renameValue.trim();
 		if (!name) {
-			toast.error("Name is required");
+			toast.error(t("settings.apiKeysSection.nameIsRequired"));
 			return;
 		}
 		renamePasskeyMutation.mutate({ id: renameTarget.id, name });
@@ -138,37 +140,35 @@ export function PasskeysSection() {
 			<div className="border-t border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<Fingerprint className="size-5" />
-					Passkeys
+					{t("settings.passkeysSection.passkeys")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">
-					Sign in faster and more securely with passkeys stored on your device or password manager. You can
-					add more than one.
-				</CardDescription>
+				<CardDescription className="mt-1.5">{t("settings.passkeysSection.signInFasterAnd")}</CardDescription>
 			</div>
 			<CardContent className="p-6 space-y-4">
 				<div className="flex items-start justify-between gap-4">
 					<p className="text-xs text-muted-foreground max-w-xl">
-						Passkeys use your device's biometrics or screen lock instead of a password. They are
-						phishing-resistant and cannot be reused across sites.
+						{t("settings.passkeysSection.passkeysUseYourDevice")}
 					</p>
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<span className="inline-flex">
 								<Button onClick={() => setAddDialogOpen(true)} disabled={!isSecureContext}>
 									<Plus className="h-4 w-4 mr-2" />
-									Add passkey
+									{t("settings.passkeysSection.addPasskey")}
 								</Button>
 							</span>
 						</TooltipTrigger>
 						<TooltipContent className={cn({ hidden: isSecureContext })}>
-							<p>Passkeys can only be added over HTTPS or from localhost.</p>
+							<p>{t("settings.passkeysSection.passkeysCanOnlyBe")}</p>
 						</TooltipContent>
 					</Tooltip>
 				</div>
 
-				<p className={cn("text-sm text-muted-foreground", { hidden: !isPending })}>Loading passkeys...</p>
+				<p className={cn("text-sm text-muted-foreground", { hidden: !isPending })}>
+					{t("settings.passkeysSection.loadingPasskeys")}
+				</p>
 				<p className={cn("text-sm text-muted-foreground", { hidden: passkeys && passkeys.length > 0 })}>
-					No passkeys yet. Add one to enable passwordless sign-in.
+					{t("settings.passkeysSection.noPasskeysYetAdd")}
 				</p>
 				<ul
 					className={cn("divide-y divide-border/50 rounded-md border border-border/50", {
@@ -178,9 +178,13 @@ export function PasskeysSection() {
 					{passkeys?.map((p) => (
 						<li key={p.id} className="flex items-center justify-between gap-4 p-3">
 							<div className="min-w-0 flex-1">
-								<p className="text-sm font-medium truncate">{p.name?.trim() || "Unnamed passkey"}</p>
+								<p className="text-sm font-medium truncate">
+									{p.name?.trim() || t("settings.passkeysSection.unnamedPasskey")}
+								</p>
 								<p className="text-xs text-muted-foreground">
-									Added {formatDateTime(new Date(p.createdAt))}
+									{t("settings.passkeysSection.added", {
+										dateTime: formatDateTime(new Date(p.createdAt)),
+									})}
 								</p>
 							</div>
 							<div className="flex gap-2">
@@ -224,29 +228,27 @@ export function PasskeysSection() {
 				<DialogContent>
 					<form onSubmit={handleAddPasskey}>
 						<DialogHeader>
-							<DialogTitle>Add a passkey</DialogTitle>
-							<DialogDescription>
-								Give this passkey a name so you can recognize it later (e.g. "MacBook Touch ID").
-							</DialogDescription>
+							<DialogTitle>{t("settings.passkeysSection.addAPasskey")}</DialogTitle>
+							<DialogDescription>{t("settings.passkeysSection.giveThisPasskeyA")}</DialogDescription>
 						</DialogHeader>
 						<div className="space-y-4 py-4">
 							<div className="space-y-2">
-								<Label htmlFor="passkey-name">Name (optional)</Label>
+								<Label htmlFor="passkey-name">{t("settings.passkeysSection.nameOptional")}</Label>
 								<Input
 									id="passkey-name"
 									value={newPasskeyName}
 									onChange={(e) => setNewPasskeyName(e.target.value)}
-									placeholder="My Laptop"
+									placeholder={t("settings.passkeysSection.myLaptop")}
 								/>
 							</div>
 						</div>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={() => setAddDialogOpen(false)}>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 							<Button type="submit" loading={addPasskeyMutation.isPending} disabled={!isSecureContext}>
 								<Fingerprint className="h-4 w-4 mr-2" />
-								Add passkey
+								{t("settings.passkeysSection.addPasskey")}
 							</Button>
 						</DialogFooter>
 					</form>
@@ -265,12 +267,12 @@ export function PasskeysSection() {
 				<DialogContent>
 					<form onSubmit={handleRename}>
 						<DialogHeader>
-							<DialogTitle>Rename passkey</DialogTitle>
-							<DialogDescription>Choose a name to recognize this passkey.</DialogDescription>
+							<DialogTitle>{t("settings.passkeysSection.renamePasskey")}</DialogTitle>
+							<DialogDescription>{t("settings.passkeysSection.chooseANameTo")}</DialogDescription>
 						</DialogHeader>
 						<div className="space-y-4 py-4">
 							<div className="space-y-2">
-								<Label htmlFor="passkey-rename">Name</Label>
+								<Label htmlFor="passkey-rename">{t("common.name")}</Label>
 								<Input
 									id="passkey-rename"
 									value={renameValue}
@@ -281,10 +283,10 @@ export function PasskeysSection() {
 						</div>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={() => setRenameTarget(null)}>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 							<Button type="submit" loading={renamePasskeyMutation.isPending}>
-								Save
+								{t("settings.passkeysSection.save")}
 							</Button>
 						</DialogFooter>
 					</form>
@@ -294,14 +296,17 @@ export function PasskeysSection() {
 			<AlertDialog open={deletePasskeyOpen} onOpenChange={setDeletePasskeyOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete passkey?</AlertDialogTitle>
+						<AlertDialogTitle>{t("settings.passkeysSection.deletePasskey")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will remove "{deleteTarget?.name?.trim() || "this passkey"}" from your account. You
-							won't be able to use it to sign in anymore.
+							{t("settings.passkeysSection.thisWillRemove", {
+								name: deleteTarget?.name?.trim() || t("settings.passkeysSection.thisPasskey"),
+							})}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={deletePasskeyMutation.isPending}>Cancel</AlertDialogCancel>
+						<AlertDialogCancel disabled={deletePasskeyMutation.isPending}>
+							{t("common.cancel")}
+						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={(e) => {
 								e.preventDefault();
@@ -309,7 +314,7 @@ export function PasskeysSection() {
 							}}
 							disabled={deletePasskeyMutation.isPending}
 						>
-							Delete
+							{t("settings.passkeysSection.delete")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

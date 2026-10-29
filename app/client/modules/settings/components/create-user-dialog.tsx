@@ -19,6 +19,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "~/client/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/client/components/ui/select";
 import { authClient } from "~/client/lib/auth-client";
+import { useTranslation } from "~/client/lib/i18n";
 
 const createUserSchema = z.object({
 	name: z.string().min(1),
@@ -35,6 +36,7 @@ interface CreateUserDialogProps {
 }
 
 export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
+	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
 	const form = useForm<CreateUserFormValues>({
@@ -63,13 +65,13 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 			}
 		},
 		onSuccess: () => {
-			toast.success("User created successfully");
+			toast.success(t("settings.createUserDialog.userCreatedSuccessfully"));
 			setIsOpen(false);
 			form.reset();
 			onUserCreated?.();
 		},
 		onError: (error: Error) => {
-			toast.error("Failed to create user", { description: error.message });
+			toast.error(t("settings.createUserDialog.failedToCreateUser"), { description: error.message });
 		},
 	});
 
@@ -78,7 +80,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 			<DialogTrigger asChild>
 				<Button size="sm">
 					<Plus className="mr-2 h-4 w-4" />
-					Create User
+					{t("settings.createUserDialog.createUser")}
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-106.25">
@@ -90,9 +92,9 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 						<DialogHeader>
 							<DialogTitle className="flex items-center gap-2">
 								<UserPlus className="h-5 w-5" />
-								Create New User
+								{t("settings.createUserDialog.createNewUser")}
 							</DialogTitle>
-							<DialogDescription>Fill in the details to create a new user account.</DialogDescription>
+							<DialogDescription>{t("settings.createUserDialog.fillInTheDetails")}</DialogDescription>
 						</DialogHeader>
 						<div className="grid gap-4 py-4">
 							<FormField
@@ -198,11 +200,11 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								onClick={() => setIsOpen(false)}
 								disabled={createUserMutation.isPending}
 							>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 							<Button type="submit" loading={createUserMutation.isPending}>
 								<UserPlus className="mr-2 h-4 w-4" />
-								Create User
+								{t("settings.createUserDialog.createUser")}
 							</Button>
 						</DialogFooter>
 					</form>

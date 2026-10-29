@@ -25,6 +25,7 @@ import { DateTimeFormatSection } from "../components/date-time-format-section";
 import { usePermissions } from "~/client/hooks/use-permissions";
 import { RecoveryKeySection } from "../components/recovery-key-section";
 import { MachinesSection } from "../components/machines-section";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	activeScope: "personal" | "organization";
@@ -36,6 +37,7 @@ type Props = {
 };
 
 function OrganizationDetailsSection() {
+	const { t } = useTranslation();
 	const { activeOrganization } = useOrganizationContext();
 
 	return (
@@ -43,12 +45,12 @@ function OrganizationDetailsSection() {
 			<div className="border-b border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<Fingerprint className="size-5" />
-					Organization Details
+					{t("settings.settings.organizationDetails")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">Reference details for the active organization</CardDescription>
+				<CardDescription className="mt-1.5">{t("settings.settings.referenceDetailsForThe")}</CardDescription>
 			</div>
 			<CardContent className="p-6 space-y-2">
-				<Label htmlFor="organization-id">Organization ID</Label>
+				<Label htmlFor="organization-id">{t("settings.settings.organizationId")}</Label>
 				<Input
 					id="organization-id"
 					value={activeOrganization.id}
@@ -68,6 +70,7 @@ export function SettingsPage({
 	initialSsoSettings,
 	initialOrigin,
 }: Props) {
+	const { t } = useTranslation();
 	const [currentPassword, setCurrentPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -93,7 +96,7 @@ export function SettingsPage({
 				},
 				onError: ({ error }) => {
 					logger.error(error);
-					toast.error("Logout failed", { description: error.message });
+					toast.error(t("layout.logoutFailed"), { description: error.message });
 				},
 			},
 		});
@@ -103,12 +106,12 @@ export function SettingsPage({
 		e.preventDefault();
 
 		if (newPassword !== confirmPassword) {
-			toast.error("Passwords do not match");
+			toast.error(t("auth.passwordsDoNotMatch"));
 			return;
 		}
 
 		if (newPassword.length < 8) {
-			toast.error("Password must be at least 8 characters long");
+			toast.error(t("settings.settings.passwordMustBeAt"));
 			return;
 		}
 
@@ -118,13 +121,13 @@ export function SettingsPage({
 			revokeOtherSessions: true,
 			fetchOptions: {
 				onSuccess: () => {
-					toast.success("Password changed successfully. You will be logged out.");
+					toast.success(t("settings.settings.passwordChangedSuccessfullyYou"));
 					setTimeout(() => {
 						void handleLogout();
 					}, 1500);
 				},
 				onError: ({ error }) => {
-					toast.error("Failed to change password", {
+					toast.error(t("settings.settings.failedToChangePassword"), {
 						description: error.message,
 					});
 				},
@@ -146,17 +149,19 @@ export function SettingsPage({
 						<div className="border-b border-border/50 bg-card-header p-6">
 							<CardTitle className="flex items-center gap-2">
 								<User className="size-5" />
-								Account Information
+								{t("settings.settings.accountInformation")}
 							</CardTitle>
-							<CardDescription className="mt-1.5">Your account details</CardDescription>
+							<CardDescription className="mt-1.5">
+								{t("settings.settings.yourAccountDetails")}
+							</CardDescription>
 						</div>
 						<CardContent className="p-6 space-y-4">
 							<div className="space-y-2">
-								<Label htmlFor="username">Username</Label>
+								<Label htmlFor="username">{t("auth.username")}</Label>
 								<Input id="username" value={appContext.user?.username} disabled className="max-w-md" />
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="email">Email</Label>
+								<Label htmlFor="email">{t("auth.email")}</Label>
 								<Input
 									id="email"
 									type="email"
@@ -183,16 +188,18 @@ export function SettingsPage({
 								<div className="border-t border-border/50 bg-card-header p-6">
 									<CardTitle className="flex items-center gap-2">
 										<KeyRound className="size-5" />
-										Change Password
+										{t("settings.settings.changePassword")}
 									</CardTitle>
 									<CardDescription className="mt-1.5">
-										Update your password to keep your account secure
+										{t("settings.settings.updateYourPasswordTo")}
 									</CardDescription>
 								</div>
 								<CardContent className="p-6">
 									<form onSubmit={handleChangePassword} className="space-y-4">
 										<div className="space-y-2">
-											<Label htmlFor="current-password">Current Password</Label>
+											<Label htmlFor="current-password">
+												{t("settings.settings.currentPassword")}
+											</Label>
 											<Input
 												id="current-password"
 												type="password"
@@ -203,7 +210,7 @@ export function SettingsPage({
 											/>
 										</div>
 										<div className="space-y-2">
-											<Label htmlFor="new-password">New Password</Label>
+											<Label htmlFor="new-password">{t("settings.settings.newPassword")}</Label>
 											<Input
 												id="new-password"
 												type="password"
@@ -214,11 +221,13 @@ export function SettingsPage({
 												minLength={8}
 											/>
 											<p className="text-xs text-muted-foreground">
-												Must be at least 8 characters long
+												{t("settings.settings.mustBeAtLeast")}
 											</p>
 										</div>
 										<div className="space-y-2">
-											<Label htmlFor="confirm-password">Confirm New Password</Label>
+											<Label htmlFor="confirm-password">
+												{t("settings.settings.confirmNewPassword")}
+											</Label>
 											<Input
 												id="confirm-password"
 												type="password"
@@ -231,7 +240,7 @@ export function SettingsPage({
 										</div>
 										<Button type="submit" loading={isChangingPassword} className="mt-4">
 											<KeyRound size={16} className="mr-2" />
-											Change Password
+											{t("settings.settings.changePassword")}
 										</Button>
 									</form>
 								</CardContent>
@@ -257,10 +266,10 @@ export function SettingsPage({
 							<div className="border-b border-border/50 bg-card-header p-6">
 								<CardTitle className="flex items-center gap-2 text-balance">
 									<MonitorCog className="size-5" />
-									Machines
+									{t("settings.machinesSection.machines")}
 								</CardTitle>
 								<CardDescription className="mt-1.5 text-pretty">
-									Connect and manage remote machines for this organization
+									{t("settings.settings.connectAndManageRemote")}
 								</CardDescription>
 							</div>
 							<CardContent className="min-w-0 p-6">
@@ -273,10 +282,10 @@ export function SettingsPage({
 							<div className="border-b border-border/50 bg-card-header p-6">
 								<CardTitle className="flex items-center gap-2">
 									<Building2 className="size-5" />
-									Members
+									{t("settings.settings.members")}
 								</CardTitle>
 								<CardDescription className="mt-1.5">
-									Manage organization members and roles
+									{t("settings.settings.manageOrganizationMembersAnd")}
 								</CardDescription>
 							</div>
 							<CardContent className="p-6">
@@ -290,9 +299,11 @@ export function SettingsPage({
 							<div className="border-b border-border/50 bg-card-header p-6">
 								<CardTitle className="flex items-center gap-2">
 									<SettingsIcon className="size-5" />
-									Single Sign-On
+									{t("settings.settings.singleSignOn")}
 								</CardTitle>
-								<CardDescription className="mt-1.5">Configure OIDC provider settings</CardDescription>
+								<CardDescription className="mt-1.5">
+									{t("settings.settings.configureOidcProviderSettings")}
+								</CardDescription>
 							</div>
 							<CardContent className="p-6">
 								<SsoSettingsSection

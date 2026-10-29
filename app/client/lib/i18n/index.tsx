@@ -23,7 +23,7 @@ type Leaves<T, Prefix extends string = ""> = {
 }[keyof T & string];
 
 export type TranslationKey = Leaves<Messages>;
-export type TranslationParams = Record<string, string | number>;
+export type TranslationParams = Record<string, string | number | null | undefined>;
 export type TFunction = (key: TranslationKey, params?: TranslationParams) => string;
 
 export function isLanguage(value: unknown): value is Language {
@@ -48,7 +48,9 @@ function lookup(dictionary: Messages, key: string): string | undefined {
 
 function interpolate(message: string, params?: TranslationParams) {
 	if (!params) return message;
-	return message.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match));
+	return message.replace(/\{(\w+)\}/g, (match, name: string) =>
+		name in params ? String(params[name] ?? "") : match,
+	);
 }
 
 export function translate(language: Language, key: TranslationKey, params?: TranslationParams) {

@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/cli
 import { getMachineDisplayName } from "~/lib/machine-name";
 import { CreateMachineForm, DeploymentInstructions } from "../components/machine-setup-forms";
 import { MachineConnectionSuccess } from "../components/machine-connection-success";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Agent = ListAgentsResponse[number];
 type Enrollment = Pick<Agent, "id" | "credentialVersion" | "name"> & { issuedAt: number };
@@ -21,6 +22,7 @@ type Enrollment = Pick<Agent, "id" | "credentialVersion" | "name"> & { issuedAt:
 const steps = ["Name your machine", "Connect", "Connected"];
 
 export function MachineSetupPage({ agentId }: { agentId?: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [targetId, setTargetId] = useState(agentId);
 	const [credential, setCredential] = useState<CreateRemoteAgentResponse | null>(null);
@@ -134,7 +136,11 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 						</CardTitle>
 					</div>
 					<CardDescription>
-						Step {currentStep + 1} of {steps.length} · {steps[currentStep]}
+						{t("settings.machineSetup.stepOf", {
+							value: currentStep + 1,
+							length: steps.length,
+							value2: steps[currentStep],
+						})}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="min-w-0 space-y-6">
@@ -151,10 +157,9 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 						<>
 							{agentsQuery.isError && (
 								<Alert variant="destructive">
-									<AlertTitle>Could not check the connection</AlertTitle>
+									<AlertTitle>{t("settings.machineSetup.couldNotCheckThe")}</AlertTitle>
 									<AlertDescription>
-										Check your connection to Zerobyte, then try again. Success will appear once the
-										machine is ready.
+										{t("settings.machineSetup.checkYourConnectionTo")}
 									</AlertDescription>
 									<Button
 										variant="outline"
@@ -162,7 +167,7 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 										onClick={() => void agentsQuery.refetch()}
 										loading={agentsQuery.isFetching}
 									>
-										Retry connection check
+										{t("settings.machineSetup.retryConnectionCheck")}
 									</Button>
 								</Alert>
 							)}
@@ -171,35 +176,35 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 								<>
 									{agentsQuery.isPending && (
 										<output className="block text-sm text-muted-foreground">
-											Loading machine…
+											{t("settings.machineSetup.loadingMachine")}
 										</output>
 									)}
 									{hasFreshStatus && !target && (
 										<Alert variant="destructive">
-											<AlertTitle>Machine unavailable</AlertTitle>
+											<AlertTitle>{t("settings.machineSetup.machineUnavailable")}</AlertTitle>
 											<AlertDescription>
-												This machine no longer exists or belongs to another organization. Return
-												to Settings to choose a machine.
+												{t("settings.machineSetup.thisMachineNoLonger")}
 											</AlertDescription>
 										</Alert>
 									)}
 									{target && (
 										<div className="space-y-5">
 											<Alert variant="warning">
-												<AlertTitle>Reconnect {machineName}</AlertTitle>
+												<AlertTitle>
+													{t("settings.machineSetup.reconnect", { machineName: machineName })}
+												</AlertTitle>
 												<AlertDescription>
-													This disconnects the machine until you finish setup. Reconnect
-													between backup runs. Your folders and Sources will be kept.
+													{t("settings.machineSetup.thisDisconnectsTheMachine")}
 												</AlertDescription>
 											</Alert>
 											{rotateCredential.isError && (
 												<p role="alert" className="text-sm text-destructive">
-													Could not get a new connection code. Try again.
+													{t("settings.machineSetup.couldNotGetA")}
 												</p>
 											)}
 											<div className="flex justify-end gap-2 pt-4 border-t">
 												<Button variant="secondary" onClick={backToMachines}>
-													Cancel
+													{t("common.cancel")}
 												</Button>
 												<Button
 													disabled={!hasFreshStatus}
@@ -208,7 +213,7 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 														rotateCredential.mutate({ path: { agentId: target.id } })
 													}
 												>
-													Get new connection code{" "}
+													{t("settings.machineSetup.getNewConnectionCode")}
 													<ArrowRight className="ml-2" aria-hidden="true" />
 												</Button>
 											</div>
@@ -220,16 +225,17 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 							{(expired || unavailable) && (
 								<Alert variant="warning">
 									<AlertTitle>
-										{expired ? "Connection code expired" : "Connection code no longer valid"}
+										{expired
+											? t("settings.machineSetup.connectionCodeExpired")
+											: t("settings.machineSetup.connectionCodeNoLonger")}
 									</AlertTitle>
 									<AlertDescription>
-										{expired && "Get a fresh code to continue connecting this machine."}
-										{!expired &&
-											"The machine was removed, revoked, or another connection code was issued. This code can no longer connect it."}
+										{expired && t("settings.machineSetup.getAFreshCode")}
+										{!expired && t("settings.machineSetup.theMachineWasRemoved")}
 									</AlertDescription>
 									{target && (
 										<Button variant="outline" className="mt-3" onClick={replaceCode}>
-											Reconnect machine
+											{t("settings.machineSetup.reconnectMachine")}
 										</Button>
 									)}
 								</Alert>
@@ -237,15 +243,17 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 							{credential && !expired && !unavailable && (
 								<Alert>
 									<Loader2 className="animate-spin" aria-hidden="true" />
-									<AlertTitle>Waiting for {machineName} to connect…</AlertTitle>
+									<AlertTitle>
+										{t("settings.machineSetup.waitingForToConnect", { machineName: machineName })}
+									</AlertTitle>
 									{target?.status === "degraded" && (
 										<AlertDescription>
-											Couldn’t finish connecting. Check the setup on your machine and try again.
+											{t("settings.machineSetup.couldnTFinishConnecting")}
 										</AlertDescription>
 									)}
 									{consumed && target?.status === "offline" && (
 										<AlertDescription>
-											Make sure the software is running on your machine.
+											{t("settings.machineSetup.makeSureTheSoftware")}
 										</AlertDescription>
 									)}
 								</Alert>
@@ -254,7 +262,7 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 							{(credential || !target) && (
 								<div className="flex justify-end gap-2 pt-4 border-t">
 									<Button variant="secondary" onClick={backToMachines}>
-										Back to machines
+										{t("settings.machineSetup.backToMachines")}
 									</Button>
 								</div>
 							)}

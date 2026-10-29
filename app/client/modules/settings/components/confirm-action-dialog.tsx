@@ -9,6 +9,7 @@ import {
 	AlertDialogTitle,
 } from "~/client/components/ui/alert-dialog";
 import { Button } from "~/client/components/ui/button";
+import { useTranslation } from "~/client/lib/i18n";
 
 export type ConfirmActionDialogProps = {
 	open: boolean;
@@ -25,6 +26,7 @@ export type ConfirmActionDialogProps = {
 };
 
 export function ConfirmActionDialog(props: ConfirmActionDialogProps) {
+	const { t } = useTranslation();
 	return (
 		<AlertDialog open={props.open} onOpenChange={props.onOpenChange}>
 			<AlertDialogContent
@@ -47,7 +49,7 @@ export function ConfirmActionDialog(props: ConfirmActionDialogProps) {
 					</p>
 				)}
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 					<Button variant={props.variant} loading={props.pending} onClick={props.onConfirm}>
 						{props.confirmLabel}
 					</Button>

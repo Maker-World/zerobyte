@@ -25,6 +25,7 @@ import { Switch } from "~/client/components/ui/switch";
 import { usePermissions } from "~/client/hooks/use-permissions";
 import type { AppContext } from "~/context";
 import { UserManagement } from "./user-management";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	appContext: AppContext;
@@ -51,14 +52,17 @@ export function InstanceSettings({ appContext }: Props) {
 }
 
 function UserManagementSection({ currentUser }: { currentUser: { id: string } | undefined | null }) {
+	const { t } = useTranslation();
 	return (
 		<Card className="p-0 gap-0">
 			<div className="border-b border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<Users className="size-5" />
-					User Management
+					{t("settings.instanceSettings.userManagement")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">Manage users, roles and permissions</CardDescription>
+				<CardDescription className="mt-1.5">
+					{t("settings.instanceSettings.manageUsersRolesAnd")}
+				</CardDescription>
 			</div>
 			<UserManagement currentUser={currentUser} />
 		</Card>
@@ -71,14 +75,17 @@ type SystemSettingsSectionProps = {
 };
 
 function SystemSettingsSection({ showPasswordLoginSettings, showRegistrationSettings }: SystemSettingsSectionProps) {
+	const { t } = useTranslation();
 	return (
 		<Card className="p-0 gap-0">
 			<div className="border-b border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<SettingsIcon className="size-5" />
-					System Settings
+					{t("settings.instanceSettings.systemSettings")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">Manage system-wide settings</CardDescription>
+				<CardDescription className="mt-1.5">
+					{t("settings.instanceSettings.manageSystemWideSettings")}
+				</CardDescription>
 			</div>
 			<CardContent className="p-6 space-y-6">
 				{showRegistrationSettings && <RegistrationSettingsSection />}
@@ -89,6 +96,7 @@ function SystemSettingsSection({ showPasswordLoginSettings, showRegistrationSett
 }
 
 function RegistrationSettingsSection() {
+	const { t } = useTranslation();
 	const registrationStatus = useSuspenseQuery({
 		...getRegistrationStatusOptions(),
 	});
@@ -96,10 +104,10 @@ function RegistrationSettingsSection() {
 	const updateRegistrationStatusMutation = useMutation({
 		...setRegistrationStatusMutation(),
 		onSuccess: () => {
-			toast.success("Registration settings updated");
+			toast.success(t("settings.instanceSettings.registrationSettingsUpdated"));
 		},
 		onError: (error) => {
-			toast.error("Failed to update registration settings", {
+			toast.error(t("settings.instanceSettings.failedToUpdateRegistration"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -109,9 +117,11 @@ function RegistrationSettingsSection() {
 		<div className="flex items-center justify-between">
 			<div className="space-y-0.5">
 				<Label htmlFor="enable-registrations" className="text-base">
-					Enable new user registrations
+					{t("settings.instanceSettings.enableNewUserRegistrations")}
 				</Label>
-				<p className="text-sm text-muted-foreground max-w-2xl">When enabled, new users can sign up</p>
+				<p className="text-sm text-muted-foreground max-w-2xl">
+					{t("settings.instanceSettings.whenEnabledNewUsers")}
+				</p>
 			</div>
 			<Switch
 				id="enable-registrations"
@@ -124,6 +134,7 @@ function RegistrationSettingsSection() {
 }
 
 function PasswordLoginSettingsSection({ showDivider }: { showDivider: boolean }) {
+	const { t } = useTranslation();
 	const [showDisablePasswordLoginConfirm, setShowDisablePasswordLoginConfirm] = useState(false);
 
 	let passwordLoginSectionClassName = "flex items-center justify-between";
@@ -138,10 +149,10 @@ function PasswordLoginSettingsSection({ showDivider }: { showDivider: boolean })
 	const updatePasswordLoginStatusMutation = useMutation({
 		...setPasswordLoginStatusMutation(),
 		onSuccess: () => {
-			toast.success("Login settings updated");
+			toast.success(t("settings.instanceSettings.loginSettingsUpdated"));
 		},
 		onError: (error) => {
-			toast.error("Failed to update login settings", {
+			toast.error(t("settings.instanceSettings.failedToUpdateLogin"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -156,11 +167,10 @@ function PasswordLoginSettingsSection({ showDivider }: { showDivider: boolean })
 			<div className={passwordLoginSectionClassName}>
 				<div className="space-y-0.5">
 					<Label htmlFor="enable-password-login" className="text-base">
-						Enable password login
+						{t("settings.instanceSettings.enablePasswordLogin")}
 					</Label>
 					<p className="text-sm text-muted-foreground max-w-2xl">
-						When disabled, the username and password form is hidden on the login page. Users can still sign
-						in via SSO or passkeys.
+						{t("settings.instanceSettings.whenDisabledTheUsername")}
 					</p>
 				</div>
 				<Switch
@@ -180,21 +190,21 @@ function PasswordLoginSettingsSection({ showDivider }: { showDivider: boolean })
 			<AlertDialog open={showDisablePasswordLoginConfirm} onOpenChange={setShowDisablePasswordLoginConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Disable password login?</AlertDialogTitle>
+						<AlertDialogTitle>{t("settings.instanceSettings.disablePasswordLogin")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							If you do not have SSO or a passkey configured, disabling password login can lock you out of
-							this instance. You can recover by running&nbsp;
-							<code>docker exec -it zerobyte bun run cli enable-password-login</code> on the server.
+							{t("settings.instanceSettings.ifYouDoNot")}
+							<code>docker exec -it zerobyte bun run cli enable-password-login</code>{" "}
+							{t("settings.instanceSettings.onTheServer")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={() => {
 								updatePasswordLoginDisabled(true);
 							}}
 						>
-							Disable password login
+							{t("settings.instanceSettings.disablePasswordLogin2")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

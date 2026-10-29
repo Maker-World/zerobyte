@@ -10,6 +10,7 @@ import { SecretInput } from "~/client/components/ui/secret-input";
 import { downloadFile } from "~/client/lib/download";
 import { PasswordProtectedActionDialog } from "~/client/modules/settings/components/password-protected-action-dialog";
 import { CONFIG_TRANSFER_PASSPHRASE_MAX_LENGTH, CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH } from "~/lib/config-transfer";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	hasPassword: boolean;
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props) {
+	const { t } = useTranslation();
 	const [exportPassphrase, setExportPassphrase] = useState("");
 	const [exportPassphraseConfirmation, setExportPassphraseConfirmation] = useState("");
 	const exportConfiguration = useMutation(exportConfigMutation());
@@ -29,18 +31,22 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 	const generatePassphrase = () => {
 		setExportPassphrase(crypto.randomUUID().replaceAll("-", ""));
 		setExportPassphraseConfirmation("");
-		toast.info("Strong passphrase generated", {
-			description: "Save it somewhere safe, then confirm it below before exporting.",
+		toast.info(t("settings.configExportDialog.strongPassphraseGenerated"), {
+			description: t("settings.configExportDialog.saveItSomewhereSafe"),
 		});
 	};
 
 	const validateExport = () => {
 		if (exportPassphrase.length < CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH) {
-			toast.error(`Export passphrase must be at least ${CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH} characters`);
+			toast.error(
+				t("settings.configExportDialog.exportPassphraseMustBe", {
+					CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH: CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH,
+				}),
+			);
 			return false;
 		}
 		if (exportPassphrase !== exportPassphraseConfirmation) {
-			toast.error("Export passphrases do not match");
+			toast.error(t("settings.configExportDialog.exportPassphrasesDoNot"));
 			return false;
 		}
 
@@ -55,15 +61,15 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 			},
 		});
 		downloadFile({ content, contentType: "text/plain", fileName: "zerobyte-config.zbex" });
-		toast.success("Encrypted configuration exported successfully");
+		toast.success(t("settings.configExportDialog.encryptedConfigurationExportedSuccessfully"));
 	};
 	const action = {
-		title: "Export Encrypted Configuration",
-		description: "Export a configuration file encrypted with a dedicated passphrase.",
+		title: t("settings.configExportDialog.exportEncryptedConfiguration"),
+		description: t("settings.configExportDialog.exportAConfigurationFile"),
 		trigger: (
 			<Button variant="outline">
 				<Download className="mr-2 size-4" />
-				Export encrypted config
+				{t("settings.configExportDialog.exportEncryptedConfig")}
 			</Button>
 		),
 		submitLabel: "Export",
@@ -84,18 +90,15 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 			<div className="space-y-4">
 				<Alert variant="warning">
 					<AlertTriangle className="size-5" />
-					<AlertTitle>Configuration only</AlertTitle>
-					<AlertDescription>
-						This export does not include backup data or volume contents. Preserve and migrate local
-						repository directories separately.
-					</AlertDescription>
+					<AlertTitle>{t("settings.configExportDialog.configurationOnly")}</AlertTitle>
+					<AlertDescription>{t("settings.configExportDialog.thisExportDoesNot")}</AlertDescription>
 				</Alert>
 
 				<div className="space-y-2">
 					<div className="flex items-center justify-between gap-2">
-						<Label htmlFor="config-export-passphrase">Export passphrase</Label>
+						<Label htmlFor="config-export-passphrase">{t("configImport.passphrase")}</Label>
 						<Button type="button" variant="outline" size="sm" onClick={generatePassphrase}>
-							Generate strong passphrase
+							{t("settings.configExportDialog.generateStrongPassphrase")}
 						</Button>
 					</div>
 					<SecretInput
@@ -108,12 +111,12 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 						maxLength={CONFIG_TRANSFER_PASSPHRASE_MAX_LENGTH}
 						required
 					/>
-					<p className="text-xs text-muted-foreground">
-						You will need this passphrase to import the file. Zerobyte cannot recover it for you.
-					</p>
+					<p className="text-xs text-muted-foreground">{t("settings.configExportDialog.youWillNeedThis")}</p>
 				</div>
 				<div className="space-y-2">
-					<Label htmlFor="config-export-passphrase-confirmation">Confirm export passphrase</Label>
+					<Label htmlFor="config-export-passphrase-confirmation">
+						{t("settings.configExportDialog.confirmExportPassphrase")}
+					</Label>
 					<SecretInput
 						id="config-export-passphrase-confirmation"
 						value={exportPassphraseConfirmation}

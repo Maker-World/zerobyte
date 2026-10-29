@@ -13,6 +13,7 @@ import { Input } from "~/client/components/ui/input";
 import { Label } from "~/client/components/ui/label";
 import { authClient } from "~/client/lib/auth-client";
 import { logger } from "~/client/lib/logger";
+import { useTranslation } from "~/client/lib/i18n";
 
 type TwoFactorDisableDialogProps = {
 	open: boolean;
@@ -21,6 +22,7 @@ type TwoFactorDisableDialogProps = {
 };
 
 export const TwoFactorDisableDialog = ({ open, onOpenChange, onSuccess }: TwoFactorDisableDialogProps) => {
+	const { t } = useTranslation();
 	const [password, setPassword] = useState("");
 	const [isDisabling, setIsDisabling] = useState(false);
 
@@ -28,7 +30,7 @@ export const TwoFactorDisableDialog = ({ open, onOpenChange, onSuccess }: TwoFac
 		e.preventDefault();
 
 		if (!password) {
-			toast.error("Password is required");
+			toast.error(t("auth.passwordRequired"));
 			return;
 		}
 
@@ -46,11 +48,11 @@ export const TwoFactorDisableDialog = ({ open, onOpenChange, onSuccess }: TwoFac
 
 		if (error) {
 			logger.error(error);
-			toast.error("Failed to disable 2FA", { description: error.message });
+			toast.error(t("settings.twoFactorDisableDialog.failedToDisable2fa"), { description: error.message });
 			return;
 		}
 
-		toast.success("Two-factor authentication disabled successfully");
+		toast.success(t("settings.twoFactorDisableDialog.twoFactorAuthenticationDisabled"));
 		handleClose();
 		onSuccess();
 	};
@@ -65,31 +67,28 @@ export const TwoFactorDisableDialog = ({ open, onOpenChange, onSuccess }: TwoFac
 			<DialogContent>
 				<form onSubmit={handleDisable}>
 					<DialogHeader>
-						<DialogTitle>Disable Two-Factor Authentication</DialogTitle>
-						<DialogDescription>
-							Are you sure you want to disable 2FA? Your account will be less secure. Enter your password
-							to confirm.
-						</DialogDescription>
+						<DialogTitle>{t("settings.twoFactorDisableDialog.disableTwoFactorAuthentication")}</DialogTitle>
+						<DialogDescription>{t("settings.twoFactorDisableDialog.areYouSureYou")}</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
 						<div className="space-y-2">
-							<Label htmlFor="disable-password">Your password</Label>
+							<Label htmlFor="disable-password">{t("settings.backupCodesDialog.yourPassword")}</Label>
 							<Input
 								id="disable-password"
 								type="password"
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
-								placeholder="Enter your password"
+								placeholder={t("recoveryKey.passwordPlaceholder")}
 								required
 							/>
 						</div>
 					</div>
 					<DialogFooter>
 						<Button type="button" variant="outline" onClick={handleClose}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button type="submit" variant="destructive" loading={isDisabling}>
-							Disable 2FA
+							{t("settings.twoFactorDisableDialog.disable2fa")}
 						</Button>
 					</DialogFooter>
 				</form>
