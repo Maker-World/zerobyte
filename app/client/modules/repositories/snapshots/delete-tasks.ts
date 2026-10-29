@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { ListSnapshotsResponse } from "~/client/api-client";
 import { listSnapshotsQueryKey } from "~/client/api-client/@tanstack/react-query.gen";
+import { translateForDocument } from "~/client/lib/i18n";
 import {
 	taskEventsOptions,
 	useActiveTasks,
@@ -39,13 +40,17 @@ const applyDeleteSnapshotsTaskFinished = (queryClient: QueryClient, task: Delete
 
 	if (task.status === "succeeded") {
 		const deletedSnapshotIds = task.result?.deletedSnapshotIds ?? task.input.snapshotIds;
-		const message = isSingleSnapshot ? "Snapshot deleted" : "Snapshots deleted";
+		const message = isSingleSnapshot
+			? translateForDocument("snapshotTasks.snapshotDeleted")
+			: translateForDocument("snapshotTasks.snapshotsDeleted");
 		removeSnapshotsFromCache(queryClient, task.input.repositoryId, deletedSnapshotIds);
 		toast.success(message);
 		return;
 	}
 
-	const message = isSingleSnapshot ? "Failed to delete snapshot" : "Failed to delete snapshots";
+	const message = isSingleSnapshot
+		? translateForDocument("snapshotTasks.deleteSnapshotFailed")
+		: translateForDocument("snapshotTasks.deleteSnapshotsFailed");
 	const description = task.error ?? undefined;
 	toast.error(message, { description });
 };

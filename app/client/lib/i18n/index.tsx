@@ -66,6 +66,15 @@ export function translateDynamic(language: Language, key: string, fallback: stri
 	return interpolate(message, params);
 }
 
+/**
+ * Translates outside of React components (e.g. toast helpers) using the language applied to the document
+ */
+export function translateForDocument(key: TranslationKey, params?: TranslationParams) {
+	const language =
+		typeof document === "undefined" ? DEFAULT_LANGUAGE : resolveLanguage(document.documentElement.lang);
+	return translate(language, key, params);
+}
+
 type I18nContextValue = {
 	language: Language;
 	setLanguage: (language: Language) => void;

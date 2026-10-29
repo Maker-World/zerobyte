@@ -1,6 +1,7 @@
 import { ByteSize } from "~/client/components/bytes-size";
 import type { FileEntry } from "~/client/components/file-tree-model";
 import { useTimeFormat } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 const GO_MODE_SETUID = 1 << 23;
 const GO_MODE_SETGID = 1 << 22;
@@ -16,12 +17,13 @@ function formatPermissions(mode: number) {
 }
 
 export function SnapshotEntryDetails({ entry }: { entry: FileEntry }) {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 
 	return (
 		<section
 			className="shrink-0 border-t bg-muted/30 px-4 py-3"
-			aria-label="Selected entry details"
+			aria-label={t("components.snapshotEntryDetails.selectedEntryDetails")}
 			aria-live="polite"
 		>
 			<div className="mb-2 truncate text-sm font-medium" title={entry.path}>
@@ -29,23 +31,23 @@ export function SnapshotEntryDetails({ entry }: { entry: FileEntry }) {
 			</div>
 			<dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
 				<div>
-					<dt className="text-muted-foreground">Type</dt>
-					<dd className="mt-0.5 capitalize">{entry.type === "dir" ? "Directory" : entry.type}</dd>
+					<dt className="text-muted-foreground">{t("common.type")}</dt>
+					<dd className="mt-0.5 capitalize">{entry.type === "dir" ? t("volumes.directory") : entry.type}</dd>
 				</div>
 				<div>
-					<dt className="text-muted-foreground">Size</dt>
+					<dt className="text-muted-foreground">{t("backups.mirrorSyncDialog.size")}</dt>
 					<dd className="mt-0.5">
 						{entry.size === undefined ? "-" : <ByteSize bytes={entry.size} base={1024} />}
 					</dd>
 				</div>
 				<div>
-					<dt className="text-muted-foreground">Modified</dt>
+					<dt className="text-muted-foreground">{t("components.snapshotEntryDetails.modified")}</dt>
 					<dd className="mt-0.5">
 						{entry.modifiedAt === undefined ? "-" : formatDateTime(new Date(entry.modifiedAt))}
 					</dd>
 				</div>
 				<div>
-					<dt className="text-muted-foreground">Permissions</dt>
+					<dt className="text-muted-foreground">{t("components.snapshotEntryDetails.permissions")}</dt>
 					<dd className="mt-0.5 font-mono">
 						{entry.mode === undefined ? "-" : formatPermissions(entry.mode)}
 					</dd>

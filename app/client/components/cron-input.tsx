@@ -5,6 +5,7 @@ import { FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "
 import { Input } from "~/client/components/ui/input";
 import { useTimeFormat } from "~/client/lib/datetime";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 interface CronInputProps {
 	value: string;
@@ -13,6 +14,7 @@ interface CronInputProps {
 }
 
 export function CronInput({ value, onChange, error }: CronInputProps) {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const { isValid, nextRuns, parseError } = useMemo(() => {
 		if (!value) {
@@ -45,7 +47,7 @@ export function CronInput({ value, onChange, error }: CronInputProps) {
 
 	return (
 		<FormItem className="md:col-span-2">
-			<FormLabel>Cron expression</FormLabel>
+			<FormLabel>{t("components.cronInput.cronExpression")}</FormLabel>
 			<FormControl>
 				<div className="relative">
 					<Input
@@ -70,13 +72,14 @@ export function CronInput({ value, onChange, error }: CronInputProps) {
 				</div>
 			</FormControl>
 			<FormDescription>
-				Standard cron format: <code className="bg-muted px-1 rounded">minute hour day month day-of-week</code>.
+				{t("components.cronInput.standardCronFormat")}{" "}
+				<code className="bg-muted px-1 rounded">minute hour day month day-of-week</code>.
 			</FormDescription>
 			{value && !isValid && parseError && <p className="text-xs text-destructive mt-1">{parseError}</p>}
 			{isValid && nextRuns.length > 0 && (
 				<div className="mt-2 p-3 rounded-md bg-muted/50 border border-border">
 					<p className="text-xs font-medium mb-2 text-muted-foreground uppercase tracking-wider">
-						Next 5 executions:
+						{t("components.cronInput.next5Executions")}
 					</p>
 					<ul className="space-y-1">
 						{nextRuns.map((date, i) => (

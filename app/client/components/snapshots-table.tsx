@@ -34,6 +34,7 @@ import { parseError } from "~/client/lib/errors";
 import type { BackupSchedule, Snapshot } from "../lib/types";
 import { cn } from "../lib/utils";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	snapshots: Snapshot[];
@@ -42,6 +43,7 @@ type Props = {
 };
 
 export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const { formatDateTime } = useTimeFormat();
 	const { deletingSnapshotIds } = useDeletingSnapshots(repositoryId);
@@ -207,15 +209,17 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 									checked={areAllSelectableSnapshotsSelected}
 									disabled={!hasSelectableSnapshots}
 									onCheckedChange={toggleSelectAll}
-									aria-label="Select all"
+									aria-label={t("components.snapshotsTable.selectAll")}
 								/>
 							</TableHead>
-							<TableHead className="uppercase">Snapshot ID</TableHead>
-							<TableHead className="uppercase">Schedule</TableHead>
-							<TableHead className="uppercase">Host</TableHead>
-							<TableHead className="uppercase">Date & Time</TableHead>
-							<TableHead className="uppercase">Size</TableHead>
-							<TableHead className="uppercase hidden md:table-cell text-right">Duration</TableHead>
+							<TableHead className="uppercase">{t("components.snapshotsTable.snapshotId")}</TableHead>
+							<TableHead className="uppercase">{t("backups.card.schedule")}</TableHead>
+							<TableHead className="uppercase">{t("volumes.info.host")}</TableHead>
+							<TableHead className="uppercase">{t("components.snapshotsTable.dateTime")}</TableHead>
+							<TableHead className="uppercase">{t("backups.mirrorSyncDialog.size")}</TableHead>
+							<TableHead className="uppercase hidden md:table-cell text-right">
+								{t("taskLog.duration")}
+							</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -287,7 +291,7 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 									<TableCell>
 										<div className="flex items-center gap-2">
 											<Monitor className="h-4 w-4 text-muted-foreground" />
-											<span className="text-sm">{snapshot.hostname || "Unknown"}</span>
+											<span className="text-sm">{snapshot.hostname || t("status.unknown")}</span>
 										</div>
 									</TableCell>
 									<TableCell>
@@ -334,7 +338,11 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 							>
 								<X className="h-4 w-4" />
 							</Button>
-							<span className="text-sm font-medium">{selectedSnapshotCount} selected</span>
+							<span className="text-sm font-medium">
+								{t("components.snapshotsTable.selected", {
+									selectedSnapshotCount: selectedSnapshotCount,
+								})}
+							</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<Button
@@ -344,7 +352,7 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 								onClick={() => setShowReTagDialog(true)}
 							>
 								<Tag className="h-4 w-4 mr-2" />
-								Re-tag
+								{t("components.snapshotsTable.reTag")}
 							</Button>
 							<Button
 								variant="destructive"
@@ -353,7 +361,7 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 								onClick={() => setShowBulkDeleteConfirm(true)}
 							>
 								<Trash2 className="h-4 w-4 mr-2" />
-								Delete
+								{t("settings.passkeysSection.delete")}
 							</Button>
 						</div>
 					</div>
@@ -364,20 +372,25 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 				<AlertDialog open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Delete {selectedSnapshotCount} snapshots?</AlertDialogTitle>
+							<AlertDialogTitle>
+								{t("components.snapshotsTable.deleteSnapshots", {
+									selectedSnapshotCount: selectedSnapshotCount,
+								})}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
-								This action cannot be undone. This will permanently delete the selected snapshots and
-								all their data from the repository.
+								{t("components.snapshotsTable.thisActionCannotBe")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 							<AlertDialogAction
 								onClick={handleBulkDelete}
 								disabled={deleteSnapshots.isPending || selectedSnapshotCount === 0}
 								className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							>
-								Delete {selectedSnapshotCount} snapshots
+								{t("components.snapshotsTable.deleteSnapshots2", {
+									selectedSnapshotCount: selectedSnapshotCount,
+								})}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
@@ -387,16 +400,18 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 			<Dialog open={showReTagDialog} onOpenChange={setShowReTagDialog}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Re-tag snapshots</DialogTitle>
+						<DialogTitle>{t("components.snapshotsTable.reTagSnapshots")}</DialogTitle>
 						<DialogDescription>
-							Select a backup schedule to re-tag the {selectedSnapshotCount} selected snapshots. All&nbsp;
-							{selectedSnapshotCount} selected snapshots will be associated with the chosen schedule.
+							{t("components.snapshotsTable.selectABackupSchedule", {
+								selectedSnapshotCount: selectedSnapshotCount,
+								selectedSnapshotCount2: selectedSnapshotCount,
+							})}
 						</DialogDescription>
 					</DialogHeader>
 					<div className="py-4">
 						<Select value={targetScheduleId} onValueChange={setTargetScheduleId}>
 							<SelectTrigger>
-								<SelectValue placeholder="Select a schedule" />
+								<SelectValue placeholder={t("components.snapshotsTable.selectASchedule")} />
 							</SelectTrigger>
 							<SelectContent>
 								{backups.map((backup) => (
@@ -409,10 +424,10 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 					</div>
 					<DialogFooter>
 						<Button variant="outline" onClick={() => setShowReTagDialog(false)}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button onClick={handleBulkReTag} disabled={!targetScheduleId || selectedSnapshotCount === 0}>
-							Apply tags
+							{t("components.snapshotsTable.applyTags")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>

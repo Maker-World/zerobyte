@@ -1,5 +1,6 @@
 import { cn } from "~/client/lib/utils";
 import { Switch } from "./ui/switch";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	isOn: boolean;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export const OnOff = ({ isOn, toggle, enabledLabel, disabledLabel, disabled }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<div
 			className={cn(
@@ -24,7 +26,11 @@ export const OnOff = ({ isOn, toggle, enabledLabel, disabledLabel, disabled }: P
 				disabled={disabled}
 				checked={isOn}
 				onCheckedChange={toggle}
-				aria-label={isOn ? `Toggle ${enabledLabel}` : `Toggle ${disabledLabel}`}
+				aria-label={
+					isOn
+						? t("components.onoff.toggle", { enabledLabel: enabledLabel })
+						: t("components.onoff.toggle2", { disabledLabel: disabledLabel })
+				}
 			/>
 		</div>
 	);

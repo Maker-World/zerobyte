@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { translateForDocument } from "~/client/lib/i18n";
 import {
 	taskEventsOptions,
 	useActiveTasks,
@@ -18,12 +19,12 @@ const doctorTasksFilter = (repositoryId: string) => {
 
 const applyDoctorTaskFinished = (task: DoctorTask) => {
 	if (task.status === "cancelled") {
-		toast.info("Doctor cancelled");
+		toast.info(translateForDocument("doctorTasks.cancelled"));
 		return;
 	}
 
 	if (task.status === "failed") {
-		toast.error("Doctor failed", {
+		toast.error(translateForDocument("doctorTasks.failed"), {
 			description: task.error ?? undefined,
 		});
 		return;
@@ -31,11 +32,11 @@ const applyDoctorTaskFinished = (task: DoctorTask) => {
 
 	const result = task.result;
 	if (result?.repositoryStatus === "healthy") {
-		toast.success("Doctor completed");
+		toast.success(translateForDocument("doctorTasks.completed"));
 		return;
 	}
 
-	toast.error("Doctor found issues", {
+	toast.error(translateForDocument("doctorTasks.foundIssues"), {
 		description: result?.lastError ?? task.error ?? undefined,
 	});
 };

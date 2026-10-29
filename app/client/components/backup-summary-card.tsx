@@ -3,6 +3,7 @@ import { ByteSize } from "~/client/components/bytes-size";
 import { useRootLoaderData } from "~/client/hooks/use-root-loader-data";
 import type { ResticSnapshotSummaryDto } from "@zerobyte/core/restic";
 import { formatDuration } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	summary?: ResticSnapshotSummaryDto | null;
@@ -16,6 +17,7 @@ const getDurationLabel = (start: string, end: string) => {
 };
 
 export const BackupSummaryCard = ({ summary }: Props) => {
+	const { t } = useTranslation();
 	const { locale } = useRootLoaderData();
 
 	if (!summary) return null;
@@ -25,36 +27,36 @@ export const BackupSummaryCard = ({ summary }: Props) => {
 
 	const topStats = [
 		{
-			label: "Data added",
+			label: t("components.backupSummaryCard.dataAdded"),
 			value: <ByteSize bytes={summary.data_added} base={1024} />,
 		},
 		{
-			label: "Data stored",
+			label: t("components.backupSummaryCard.dataStored"),
 			value: <ByteSize bytes={summary.data_added_packed ?? 0} base={1024} />,
 		},
 		{
-			label: "Files processed",
+			label: t("components.backupSummaryCard.filesProcessed"),
 			value: formatCount(summary.total_files_processed),
 		},
 		{
-			label: "Bytes processed",
+			label: t("components.backupSummaryCard.bytesProcessed"),
 			value: <ByteSize bytes={summary.total_bytes_processed} base={1024} />,
 		},
 		{
-			label: "Duration",
+			label: t("taskLog.duration"),
 			value: durationLabel,
 		},
 	];
 
 	const detailStats = [
-		{ label: "New files", value: formatCount(summary.files_new) },
-		{ label: "Changed files", value: formatCount(summary.files_changed) },
-		{ label: "Unmodified files", value: formatCount(summary.files_unmodified) },
-		{ label: "New dirs", value: formatCount(summary.dirs_new) },
-		{ label: "Changed dirs", value: formatCount(summary.dirs_changed) },
-		{ label: "Unmodified dirs", value: formatCount(summary.dirs_unmodified) },
-		{ label: "Data blobs", value: formatCount(summary.data_blobs) },
-		{ label: "Tree blobs", value: formatCount(summary.tree_blobs) },
+		{ label: t("components.backupSummaryCard.newFiles"), value: formatCount(summary.files_new) },
+		{ label: t("components.backupSummaryCard.changedFiles"), value: formatCount(summary.files_changed) },
+		{ label: t("components.backupSummaryCard.unmodifiedFiles"), value: formatCount(summary.files_unmodified) },
+		{ label: t("components.backupSummaryCard.newDirs"), value: formatCount(summary.dirs_new) },
+		{ label: t("components.backupSummaryCard.changedDirs"), value: formatCount(summary.dirs_changed) },
+		{ label: t("components.backupSummaryCard.unmodifiedDirs"), value: formatCount(summary.dirs_unmodified) },
+		{ label: t("components.backupSummaryCard.dataBlobs"), value: formatCount(summary.data_blobs) },
+		{ label: t("components.backupSummaryCard.treeBlobs"), value: formatCount(summary.tree_blobs) },
 	];
 
 	return (
