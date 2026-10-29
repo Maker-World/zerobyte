@@ -75,7 +75,7 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 		submitLabel: "Export",
 		submitIcon: <Download className="mr-2 size-4" />,
 		isPending: exportConfiguration.isPending,
-		failureMessage: "Failed to export configuration",
+		failureMessage: t("settings.configExportDialog.failedToExportConfiguration"),
 		onSubmit: handleExport,
 	};
 
@@ -105,7 +105,9 @@ export function ConfigExportDialog({ hasPassword, passwordAuthSupported }: Props
 						id="config-export-passphrase"
 						value={exportPassphrase}
 						onChange={(event) => setExportPassphrase(event.target.value)}
-						placeholder={`At least ${CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH} characters`}
+						placeholder={t("settings.configExportDialog.atLeastCharacters", {
+							CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH: CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH,
+						})}
 						autoComplete="new-password"
 						minLength={CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH}
 						maxLength={CONFIG_TRANSFER_PASSPHRASE_MAX_LENGTH}

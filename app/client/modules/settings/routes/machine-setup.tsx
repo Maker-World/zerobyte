@@ -116,10 +116,10 @@ export function MachineSetupPage({ agentId }: { agentId?: string }) {
 	const canDeploy = credential && !expired && !unavailable;
 	const machineName = getMachineDisplayName(connected?.name ?? enrollment?.name ?? target?.name ?? "");
 
-	let title = "Connect Machine";
-	if (currentStep === 1) title = "Reconnect your machine";
-	if (currentStep === 1 && (target || enrollment)) title = `Connect ${machineName}`;
-	if (connected) title = "Connection successful";
+	let title = t("settings.machineSetup.connectMachine");
+	if (currentStep === 1) title = t("settings.machineSetup.reconnectYourMachine");
+	if (currentStep === 1 && (target || enrollment)) title = t("settings.machineSetup.connectNamed", { machineName });
+	if (connected) title = t("settings.machineSetup.connectionSuccessful");
 
 	return (
 		<div className="container mx-auto space-y-6">

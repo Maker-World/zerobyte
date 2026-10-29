@@ -86,7 +86,7 @@ export function RestoreForm({
 	} = useMutation({
 		...restoreSnapshotMutation(),
 		onError: (error) => {
-			handleRepositoryError("Restore failed", error, repository.shortId);
+			handleRepositoryError(t("components.restoreForm.restoreFailed"), error, repository.shortId);
 		},
 	});
 
@@ -101,7 +101,7 @@ export function RestoreForm({
 	const cancelRestore = useMutation({
 		...cancelTaskMutation(),
 		onError: (error) => {
-			handleRepositoryError("Failed to cancel restore", error, repository.shortId);
+			handleRepositoryError(t("components.restoreForm.failedToCancelRestore"), error, repository.shortId);
 		},
 	});
 
@@ -177,19 +177,23 @@ export function RestoreForm({
 
 	function getDownloadButtonText(): string {
 		if (selectedPathCount > 0) {
-			return `Download ${selectedPathCount} ${selectedPathCount === 1 ? "item" : "items"}`;
+			return selectedPathCount === 1
+				? t("components.restoreForm.downloadItem", { count: selectedPathCount })
+				: t("components.restoreForm.downloadItems", { count: selectedPathCount });
 		}
-		return "Download All";
+		return t("components.restoreForm.downloadAll");
 	}
 
 	function getRestoreButtonText(): string {
 		if (isRestoreRunning) {
-			return "Restoring...";
+			return t("components.restoreForm.restoring");
 		}
 		if (selectedPathCount > 0) {
-			return `Restore ${selectedPathCount} ${selectedPathCount === 1 ? "item" : "items"}`;
+			return selectedPathCount === 1
+				? t("components.restoreForm.restoreItem", { count: selectedPathCount })
+				: t("components.restoreForm.restoreItems", { count: selectedPathCount });
 		}
-		return "Restore All";
+		return t("components.restoreForm.restoreAll");
 	}
 
 	return (
@@ -424,7 +428,7 @@ export function RestoreForm({
 							className="flex flex-1 min-h-0 flex-col"
 							treeContainerClassName="overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4"
 							treeClassName="px-2 py-2"
-							loadingMessage="Loading files..."
+							loadingMessage={t("components.snapshotTreeBrowser.loadingFiles")}
 							emptyMessage={t("components.restoreForm.noFilesInThis")}
 							withCheckboxes
 							selectedPaths={selectedPaths}

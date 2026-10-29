@@ -103,17 +103,17 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 					appendOutput(data.line);
 				} else if (data.type === "done") {
 					appendOutput(`---`);
-					appendOutput(`Command finished with exit code: ${data.exitCode}`);
+					appendOutput(t("components.devPanel.commandFinishedWithExit", { exitCode: data.exitCode }));
 				} else if (data.type === "error") {
-					appendOutput(`Error: ${data.message}`);
+					appendOutput(t("components.devPanel.error", { message: data.message }));
 				}
 			}
 		} catch (err) {
 			if (err instanceof Error && err.name === "AbortError") {
 				appendOutput("---");
-				appendOutput("Command cancelled");
+				appendOutput(t("components.devPanel.commandCancelled"));
 			} else {
-				appendOutput(`Error: ${parseError(err)?.message}`);
+				appendOutput(t("components.devPanel.error", { message: parseError(err)?.message }));
 			}
 		} finally {
 			setIsRunning(false);

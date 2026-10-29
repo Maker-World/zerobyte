@@ -36,7 +36,7 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 	const statusResult = lookup.result;
 	const lookupPending = lookup.isPending;
 	const lookupUnsuccessful = lookup.isError;
-	const lookupStatusMessage = "Checking snapshot status...";
+	const lookupStatusMessage = t("backups.mirrorSyncDialog.checkingSnapshotStatus");
 
 	const triggerSync = useMutation({
 		...syncMirrorMutation(),
@@ -110,12 +110,12 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 		selectedSnapshotIds.size === statusResult.missingSnapshots.length;
 	const selectedSnapshotCount = selectedSnapshotIds.size;
 	const mirrorName = mirror.name;
-	const lookupErrorMessage = lookup.error ?? "Snapshot lookup did not complete.";
+	const lookupErrorMessage = lookup.error ?? t("backups.mirrorSyncDialog.snapshotLookupDidNot");
 	const lookupFailureMessage =
 		lookup.status === "cancelled"
-			? "Snapshot lookup was cancelled."
+			? t("backups.mirrorSyncDialog.snapshotLookupWasCancelled")
 			: lookup.status === "stale"
-				? "Snapshot lookup became stale."
+				? t("backups.mirrorSyncDialog.snapshotLookupBecameStale")
 				: lookupErrorMessage;
 
 	return (

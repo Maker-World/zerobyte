@@ -21,7 +21,7 @@ export const DirectoryBrowser = ({ onSelectPath, selectedPath, trustedRoot }: Pr
 			onFolderSelect={onSelectPath}
 			showSelectedPathFooter
 			selectedPath={selectedPath}
-			loadingMessage="Loading directories..."
+			loadingMessage={t("components.directoryBrowser.loadingDirectories")}
 			emptyMessage={t("components.directoryBrowser.noSubdirectoriesFound")}
 		/>
 	);

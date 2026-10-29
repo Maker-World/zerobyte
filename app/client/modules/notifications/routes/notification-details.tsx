@@ -336,7 +336,7 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 						<ConfigRow
 							key={i}
 							icon={<Link className="h-4 w-4" />}
-							label={`Header ${i + 1}`}
+							label={t("notifications.notificationDetails.header", { value: i + 1 })}
 							value={h}
 							mono
 						/>

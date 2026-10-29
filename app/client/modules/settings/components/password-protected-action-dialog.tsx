@@ -17,9 +17,6 @@ import { Label } from "~/client/components/ui/label";
 import { parseError } from "~/client/lib/errors";
 import { useTranslation } from "~/client/lib/i18n";
 
-const LOCAL_PASSWORD_REQUIRED_MESSAGE =
-	"A local password is required for this action. Ask an operator to run `docker exec -it zerobyte bun run cli reset-password` for your user, then sign in with that password and try again.";
-
 type PasswordProtectedAction = {
 	title: string;
 	description: string;
@@ -109,7 +106,9 @@ export function PasswordProtectedActionDialog({
 							<Alert variant="warning">
 								<AlertTriangle className="size-5" />
 								<AlertTitle>{t("recoveryKey.localPasswordRequired")}</AlertTitle>
-								<AlertDescription>{LOCAL_PASSWORD_REQUIRED_MESSAGE}</AlertDescription>
+								<AlertDescription>
+									{t("settings.passwordProtectedActionDialog.localPasswordRequired")}
+								</AlertDescription>
 							</Alert>
 						)}
 						{requiresPassword && (

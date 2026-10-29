@@ -172,7 +172,7 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 									const repositoryCompatible = repositoryCompatibility?.compatible ?? false;
 									const compatibilityReason =
 										repositoryCompatibility?.reason ??
-										"This repository is not compatible for mirroring.";
+										t("backups.scheduleMirrorsConfig.thisRepositoryIsNot");
 
 									return (
 										<Tooltip key={repository.shortId}>

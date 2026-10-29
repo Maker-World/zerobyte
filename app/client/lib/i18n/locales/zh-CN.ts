@@ -122,6 +122,7 @@ export const zhCN: Messages = {
 			expiration90Days: "90 天",
 			expiration1Year: "1 年",
 			noExpiration: "永不过期",
+			revokeApiKey3: "吊销 API 密钥 {value}",
 		},
 		backupCodesDialog: {
 			failedToGenerateBackup: "生成备用码失败",
@@ -145,6 +146,8 @@ export const zhCN: Messages = {
 			generateStrongPassphrase: "生成高强度口令",
 			youWillNeedThis: "导入该文件时需要此口令，Zerobyte 无法帮您找回。",
 			confirmExportPassphrase: "确认导出口令",
+			failedToExportConfiguration: "导出配置失败",
+			atLeastCharacters: "至少 {CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH} 个字符",
 		},
 		createUserDialog: {
 			userCreatedSuccessfully: "用户创建成功",
@@ -205,6 +208,11 @@ export const zhCN: Messages = {
 			getConnectionCommand: "获取连接命令",
 			revokeConnection: "吊销连接",
 			deleteMachine: "删除机器",
+			allowedLocations: "允许的位置",
+			allowedLocationsLastReported: "允许的位置（最后上报）",
+			lastConnectionUsedHttp: "上次连接使用了不带 TLS 的 HTTP，凭据和控制器流量以未加密方式发送。",
+			connectedWithoutTlsCredentials: "已在未使用 TLS 的情况下连接，凭据和控制器流量以未加密方式发送。",
+			actionsFor: "{machineDisplayName} 的操作",
 		},
 		machineSetup: {
 			stepOf: "第 {value} 步，共 {length} 步 · {value2}",
@@ -228,6 +236,10 @@ export const zhCN: Messages = {
 			couldnTFinishConnecting: "无法完成连接。请检查机器上的设置后重试。",
 			makeSureTheSoftware: "请确保机器上的软件正在运行。",
 			backToMachines: "返回机器列表",
+			connectMachine: "连接机器",
+			reconnectYourMachine: "重新连接您的机器",
+			connectNamed: "连接 {machineName}",
+			connectionSuccessful: "连接成功",
 		},
 		machineSetupForms: {
 			couldNotCopyThe: "无法复制。文本已选中，请使用 Ctrl+C 或 Command+C 复制。",
@@ -253,6 +265,10 @@ export const zhCN: Messages = {
 			chooseANameYou: "选择一个易于识别的名称。",
 			enterANonEmpty: "请输入非空的机器名称，且不得包含不可见的控制字符或格式字符。",
 			couldNotGetThe: "无法获取连接命令。请检查名称后重试。",
+			connectionCommand: "连接命令",
+			copyLabel: "复制{label}",
+			copiedLabel: "已复制{label}",
+			labelCopied: "{label}已复制。",
 		},
 		machinesSection: {
 			revoke: "吊销 {machineName}",
@@ -311,9 +327,13 @@ export const zhCN: Messages = {
 			thisWillRemove: "这将从您的账户中移除“{name}”。之后您将无法再用它登录。",
 			thisPasskey: "此通行密钥",
 			delete: "删除",
+			renamePasskey2: "重命名通行密钥 {value}",
+			deletePasskey2: "删除通行密钥 {value}",
 		},
 		passwordProtectedActionDialog: {
 			yourPassword: "您的密码",
+			localPasswordRequired:
+				"此操作需要本地密码。请让运维人员为您的用户运行 `docker exec -it zerobyte bun run cli reset-password`，然后使用该密码登录后重试。",
 		},
 		pendingInvitationsSection: {
 			failedToStartSso: "启动 SSO 验证失败",
@@ -327,6 +347,7 @@ export const zhCN: Messages = {
 			resticPasswordFileDownloaded: "Restic 密码文件下载成功",
 			downloadTheRecoveryKey: "下载恢复密钥文件并妥善保存。",
 			downloadRecoveryKey: "下载恢复密钥",
+			failedToDownloadRestic: "下载 Restic 密码失败",
 		},
 		recoveryKeySection: {
 			backupRecoveryKey: "备份恢复密钥",
@@ -723,6 +744,12 @@ export const zhCN: Messages = {
 			deleteSource2: "删除数据源",
 			autoRemountEnabled: "自动重新挂载已启用。",
 			autoRemountPaused: "自动重新挂载已暂停。",
+			unmountingSource: "正在卸载数据源...",
+			sourceUnmountedSuccessfully: "数据源卸载成功",
+			failedToUnmountSource: "卸载数据源失败",
+			mountingSource: "正在挂载数据源...",
+			sourceMountedSuccessfully: "数据源挂载成功",
+			failedToMountSource: "挂载数据源失败",
 		},
 		webdavForm: {
 			webdavServerHostnameOr: "WebDAV 服务器主机名或 IP 地址。",
@@ -897,6 +924,8 @@ export const zhCN: Messages = {
 			thisWillNotRemove: "吗？这不会删除后端存储中的实际数据，只会删除存储库配置。",
 			allBackupSchedulesAssociated: "与此存储库关联的所有备份计划也将被删除。",
 			deleteRepository2: "删除存储库",
+			unlockingRepo: "正在解锁存储库",
+			repositoryUnlockedSuccessfully: "存储库解锁成功",
 		},
 		restRepositoryForm: {
 			restServerUrl: "REST 服务器 URL",
@@ -1062,6 +1091,7 @@ export const zhCN: Messages = {
 			lastDeliveryError: "最近投递错误",
 			deleteNotificationDestination: "删除通知目标",
 			areYouSureYou: "确定要删除通知目标“{name}”吗？此操作无法撤销，并会将该目标从所有备份计划中移除。",
+			header: "请求头 {value}",
 		},
 		ntfyForm: {
 			serverUrlOptional: "服务器 URL（可选）",
@@ -1156,6 +1186,8 @@ export const zhCN: Messages = {
 			deleteSnapshot: "删除快照？",
 			thisActionCannotBe: "此操作无法撤销。这将从存储库中永久删除该快照及其所有数据。",
 			deleteSnapshot2: "删除快照",
+			failedToStartBackup: "启动备份失败",
+			startingSnapshotDeletion: "正在开始删除快照...",
 		},
 		backupProgressCard: {
 			processed: "已处理 {files_done}",
@@ -1165,6 +1197,7 @@ export const zhCN: Messages = {
 			processingSpeed: "处理速度",
 			calculating: "计算中...",
 			currentFile: "当前文件",
+			scanning: "{percentDone}% · 扫描中",
 		},
 		basicInfoSection: {
 			backupName: "备份名称",
@@ -1247,6 +1280,13 @@ export const zhCN: Messages = {
 			snapshotsThatHaveAlready: " 吗？已复制的快照仍然可用。",
 			keepSyncing: "继续同步",
 			cancelSync: "取消同步",
+			syncingTasks: "同步中 · {activeTaskCount} 个任务",
+			syncing: "同步中...",
+			syncMoreSnapshots: "同步更多快照",
+			neverSynced: "从未同步",
+			syncInProgress: "镜像同步进行中",
+			lastSyncSuccessful: "上次同步成功",
+			lastSyncIncomplete: "上次同步未完成",
 		},
 		mirrorSyncDialog: {
 			mirrorSyncStarted: "镜像同步已开始",
@@ -1259,6 +1299,10 @@ export const zhCN: Messages = {
 			size: "大小",
 			cancelLookup: "取消查询",
 			syncSnapshots2: "同步 {selectedSnapshotCount} 个快照",
+			checkingSnapshotStatus: "正在检查快照状态...",
+			snapshotLookupDidNot: "快照查询未完成。",
+			snapshotLookupWasCancelled: "快照查询已取消。",
+			snapshotLookupBecameStale: "快照查询已过期。",
 		},
 		pathsSection: {
 			thisVolumeAppearsTo: "此数据源似乎为空。",
@@ -1293,6 +1337,7 @@ export const zhCN: Messages = {
 			selectARepositoryTo: "选择要镜像到的存储库...",
 			considerCreatingANew: "建议改为使用目标存储库创建一个新的备份计划。",
 			allAvailableRepositoriesHave: "所有可用存储库的后端均存在冲突。",
+			thisRepositoryIsNot: "此存储库不兼容镜像。",
 		},
 		scheduleNotificationsConfig: {
 			notificationSettingsSavedSuccessfully: "通知设置保存成功",
@@ -1329,6 +1374,10 @@ export const zhCN: Messages = {
 			stopRunningBackup: "停止正在运行的备份？",
 			areYouSureYou2: "确定要停止当前备份任务",
 			stopBackup: "停止备份",
+			cancellingBackup2: "正在取消备份...",
+			failedToApplyRetention: "应用保留策略失败",
+			startingCleanup: "正在开始清理...",
+			retentionCleanupStarted: "保留策略清理已开始",
 		},
 		snapshotFileBrowser: {
 			deleting: "删除中...",
@@ -1339,6 +1388,8 @@ export const zhCN: Messages = {
 			noSnapshotsAvailable: "暂无快照",
 			deleting: "删除中",
 			snapshots: "{length} 个快照",
+			toggleSortOrder: "切换快照排序",
+			selectSnapshot: "选择快照 {short_id}",
 		},
 		summarySection: {
 			scheduleSummary: "计划摘要",
@@ -1348,6 +1399,26 @@ export const zhCN: Messages = {
 			oneFileSystem: "同一文件系统",
 			inheritRepositoryDefault: "继承（存储库默认值）",
 			retention: "保留策略",
+		},
+		mirrorSyncProgressRow: {
+			cancelling: "正在取消镜像同步",
+			waitingForAccess: "正在等待存储库访问",
+			applyingRetention: "正在应用保留策略",
+			copyingSnapshots: "正在复制快照",
+			preparing: "正在准备复制快照",
+			latestSnapshotQueued: "最新快照已排队",
+			snapshotQueued: "{count} 个快照已排队",
+			snapshotsQueued: "{count} 个快照已排队",
+		},
+		retentionSummary: {
+			last: "最近 {count} 个",
+			hourly: "每小时 {count} 个",
+			daily: "每天 {count} 个",
+			weekly: "每周 {count} 个",
+			monthly: "每月 {count} 个",
+			yearly: "每年 {count} 个",
+			noRepositorySelected: "未选择存储库",
+			noRetentionPolicy: "无保留策略",
 		},
 	},
 	pagination: {
@@ -1406,6 +1477,9 @@ export const zhCN: Messages = {
 		taskLogResults: {
 			showingOf: "显示第 {start}–{end} 条，共 {total} 条",
 		},
+		taskLogPagination: {
+			goToPage: "转到第 {entry} 页",
+		},
 	},
 	sso: {
 		createSsoProvider: {
@@ -1459,6 +1533,7 @@ export const zhCN: Messages = {
 			pleaseTryAgain: "请重试。",
 			checkSavedConfiguration: "检查已保存的配置",
 			restartZerobyteAfterChanging: "。修改环境变量后请重启 Zerobyte。预期的回调地址为",
+			edit: "编辑 {providerId}",
 		},
 		ssoLoginButtons: {
 			unableToSignIn: "无法使用 {variables} 登录",
@@ -1497,6 +1572,8 @@ export const zhCN: Messages = {
 			cancelInvitation: "取消邀请",
 			deleteInvitation: "删除邀请",
 			noInvitationsYet: "暂无邀请。",
+			autoLinkingDisabled: "已禁用自动账户关联",
+			autoLinkingEnabled: "已启用自动账户关联",
 		},
 	},
 	components: {
@@ -1527,9 +1604,13 @@ export const zhCN: Messages = {
 			running: "运行中...",
 			clear: "清空",
 			outputWillAppearHere: "输出将显示在这里...",
+			commandFinishedWithExit: "命令执行完毕，退出码：{exitCode}",
+			error: "错误：{message}",
+			commandCancelled: "命令已取消",
 		},
 		directoryBrowser: {
 			noSubdirectoriesFound: "未找到子目录",
+			loadingDirectories: "正在加载目录...",
 		},
 		fileTree: {
 			expandFolder: "展开文件夹",
@@ -1547,6 +1628,7 @@ export const zhCN: Messages = {
 			choose: "选择",
 			selectFolder: "选择文件夹",
 			chooseADirectoryFrom: "从文件系统中选择一个目录。",
+			failedToChooseFolder: "选择文件夹失败",
 		},
 		onoff: {
 			toggle: "切换 {enabledLabel}",
@@ -1590,6 +1672,14 @@ export const zhCN: Messages = {
 			snapshotCouldNotBe: "无法恢复快照 {snapshotId}。",
 			itemSelected: "已选择 {count} 项",
 			itemsSelected: "已选择 {count} 项",
+			failedToCancelRestore: "取消恢复失败",
+			downloadAll: "全部下载",
+			restoring: "恢复中...",
+			restoreAll: "全部恢复",
+			downloadItem: "下载 {count} 项",
+			downloadItems: "下载 {count} 项",
+			restoreItem: "恢复 {count} 项",
+			restoreItems: "恢复 {count} 项",
 		},
 		restoreProgress: {
 			restoreInProgress: "正在恢复",
@@ -1614,6 +1704,10 @@ export const zhCN: Messages = {
 				"选择一个备份计划以重新标记所选的 {selectedSnapshotCount} 个快照。所选的全部 {selectedSnapshotCount2} 个快照都将关联到该计划。",
 			selectASchedule: "选择计划",
 			applyTags: "应用标签",
+			startingDeletionForSnapshots: "正在开始删除 {length} 个快照...",
+			snapshotDeletionStarted: "快照删除已开始",
+			startingReTagFor: "正在开始重新标记 {length} 个快照...",
+			snapshotReTagStarted: "快照重新标记已开始",
 		},
 		volumeFileBrowser: {
 			thisSourceAppearsTo: "此数据源似乎为空。",
@@ -1621,6 +1715,23 @@ export const zhCN: Messages = {
 		webhookRequestPreview: {
 			requestPreview: "请求预览",
 			thisIsAPreview: "这是将要发送的 HTTP 请求的预览。",
+		},
+		fileBrowser: {
+			noFilesFound: "未找到文件。",
+			retry: "重试 {path}",
+		},
+		managedBadge: {
+			defaultMessage: "此资源在启动时预配。修改可用于测试，但下次预配同步可能会覆盖或重新创建它。",
+		},
+		snapshotTreeBrowser: {
+			loadingFiles: "正在加载文件...",
+		},
+		retentionCategoryBadges: {
+			viewRetentionCategories: "查看 {length} 个保留类别",
+			last: "最近",
+			monthly: "每月",
+			yearly: "每年",
+			tagCount: "{count} 个标签",
 		},
 	},
 	routes: {

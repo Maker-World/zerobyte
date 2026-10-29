@@ -44,7 +44,9 @@ export const BackupProgressCard = ({ progress }: Props) => {
 	const eta = hasCoherentEta ? formatDuration(secondsRemaining) : null;
 	const isFinitePercent = Number.isFinite(percent_done);
 	const isScanningForMoreData = progress !== null && isFinitePercent && percent_done >= 1;
-	const progressLabel = isScanningForMoreData ? `${percentDone}% · scanning` : `${percentDone}%`;
+	const progressLabel = isScanningForMoreData
+		? t("backups.backupProgressCard.scanning", { percentDone: percentDone })
+		: `${percentDone}%`;
 
 	return (
 		<Card className="p-4">

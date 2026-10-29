@@ -100,6 +100,15 @@ bun fmt <path>
 bun run lint
 ```
 
+### Internationalization
+
+The web UI supports English and Simplified Chinese. Translations live in `app/client/lib/i18n/locales/` and the selected language is stored in the `language` cookie (defaulting from `Accept-Language`).
+
+- Never hardcode user-facing text in components. Use `const { t } = useTranslation()` from `~/client/lib/i18n`, or `<Trans k="..." />` where hooks cannot be called (e.g. table column definitions)
+- Add every new key to both `en.ts` and `zh-CN.ts`. `zh-CN.ts` is typed against the English messages, so missing keys fail type checking
+- Use `{name}` placeholders for dynamic values instead of concatenating translated fragments, and keep the same placeholders in both languages
+- Outside React (e.g. toast helpers), use `translateForDocument`
+
 ### Invalidation
 
 The frontend has an automatic invalidation setup which runs after every mutation.

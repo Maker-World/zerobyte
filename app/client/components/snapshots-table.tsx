@@ -169,9 +169,9 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 				body: { snapshotIds },
 			}),
 			{
-				loading: `Starting deletion for ${snapshotIds.length} snapshots...`,
-				success: "Snapshot deletion started",
-				error: (error) => parseError(error)?.message || "Failed to delete snapshots",
+				loading: t("components.snapshotsTable.startingDeletionForSnapshots", { length: snapshotIds.length }),
+				success: t("components.snapshotsTable.snapshotDeletionStarted"),
+				error: (error) => parseError(error)?.message || t("snapshotTasks.deleteSnapshotsFailed"),
 			},
 		);
 	};
@@ -191,9 +191,9 @@ export const SnapshotsTable = ({ snapshots, repositoryId, backups }: Props) => {
 				},
 			}),
 			{
-				loading: `Starting re-tag for ${snapshotIds.length} snapshots...`,
-				success: "Snapshot re-tag started",
-				error: (error) => parseError(error)?.message || "Failed to re-tag snapshots",
+				loading: t("components.snapshotsTable.startingReTagFor", { length: snapshotIds.length }),
+				success: t("components.snapshotsTable.snapshotReTagStarted"),
+				error: (error) => parseError(error)?.message || t("snapshotTasks.retagSnapshotsFailed"),
 			},
 		);
 	};

@@ -35,13 +35,7 @@ type Props = {
 	webBrowser?: WebFolderBrowser;
 };
 
-export const FolderSelector = ({
-	value,
-	onChange,
-	displayValue,
-	placeholder = "No folder selected",
-	webBrowser,
-}: Props) => {
+export const FolderSelector = ({ value, onChange, displayValue, placeholder, webBrowser }: Props) => {
 	const { t } = useTranslation();
 	const [showBrowser, setShowBrowser] = useState(false);
 	const [showWarning, setShowWarning] = useState(false);
@@ -61,7 +55,8 @@ export const FolderSelector = ({
 				onChange(path);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : "Failed to choose folder";
+			const message =
+				error instanceof Error ? error.message : t("components.folderSelector.failedToChooseFolder");
 			toast.error(message);
 		}
 	};
@@ -86,7 +81,7 @@ export const FolderSelector = ({
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
 				<div className="flex-1 text-sm font-mono bg-muted px-3 py-2 rounded-md border break-all">
-					{displayValue ?? (value || placeholder)}
+					{displayValue ?? (value || placeholder || t("volumes.trustedRootBrowser.noFolderSelected"))}
 				</div>
 				<Button
 					type="button"

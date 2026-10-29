@@ -121,6 +121,7 @@ export const en = {
 			expiration90Days: "90 days",
 			expiration1Year: "1 year",
 			noExpiration: "No expiration",
+			revokeApiKey3: "Revoke API key {value}",
 		},
 		backupCodesDialog: {
 			failedToGenerateBackup: "Failed to generate backup codes",
@@ -147,6 +148,8 @@ export const en = {
 			generateStrongPassphrase: "Generate strong passphrase",
 			youWillNeedThis: "You will need this passphrase to import the file. Zerobyte cannot recover it for you.",
 			confirmExportPassphrase: "Confirm export passphrase",
+			failedToExportConfiguration: "Failed to export configuration",
+			atLeastCharacters: "At least {CONFIG_TRANSFER_PASSPHRASE_MIN_LENGTH} characters",
 		},
 		createUserDialog: {
 			userCreatedSuccessfully: "User created successfully",
@@ -208,6 +211,13 @@ export const en = {
 			getConnectionCommand: "Get connection command",
 			revokeConnection: "Revoke connection",
 			deleteMachine: "Delete machine",
+			allowedLocations: "Allowed locations",
+			allowedLocationsLastReported: "Allowed locations (last reported)",
+			lastConnectionUsedHttp:
+				"Last connection used HTTP without TLS. Credentials and controller traffic were sent unencrypted.",
+			connectedWithoutTlsCredentials:
+				"Connected without TLS. Credentials and controller traffic are sent unencrypted.",
+			actionsFor: "Actions for {machineDisplayName}",
 		},
 		machineSetup: {
 			stepOf: "Step {value} of {length} · {value2}",
@@ -234,6 +244,10 @@ export const en = {
 			couldnTFinishConnecting: "Couldn’t finish connecting. Check the setup on your machine and try again.",
 			makeSureTheSoftware: "Make sure the software is running on your machine.",
 			backToMachines: "Back to machines",
+			connectMachine: "Connect Machine",
+			reconnectYourMachine: "Reconnect your machine",
+			connectNamed: "Connect {machineName}",
+			connectionSuccessful: "Connection successful",
 		},
 		machineSetupForms: {
 			couldNotCopyThe: "Could not copy. The text is selected; copy it with Ctrl+C or Command+C.",
@@ -259,6 +273,10 @@ export const en = {
 			chooseANameYou: "Choose a name you’ll recognize.",
 			enterANonEmpty: "Enter a non-empty machine name without invisible control or formatting characters.",
 			couldNotGetThe: "Could not get the connection command. Check the name and try again.",
+			connectionCommand: "Connection command",
+			copyLabel: "Copy {label}",
+			copiedLabel: "Copied {label}",
+			labelCopied: "{label} copied.",
 		},
 		machinesSection: {
 			revoke: "Revoke {machineName}",
@@ -319,9 +337,13 @@ export const en = {
 				'This will remove "{name}" from your account. You won\'t be able to use it to sign in anymore.',
 			thisPasskey: "this passkey",
 			delete: "Delete",
+			renamePasskey2: "Rename passkey {value}",
+			deletePasskey2: "Delete passkey {value}",
 		},
 		passwordProtectedActionDialog: {
 			yourPassword: "Your Password",
+			localPasswordRequired:
+				"A local password is required for this action. Ask an operator to run `docker exec -it zerobyte bun run cli reset-password` for your user, then sign in with that password and try again.",
 		},
 		pendingInvitationsSection: {
 			failedToStartSso: "Failed to start SSO verification",
@@ -335,6 +357,7 @@ export const en = {
 			resticPasswordFileDownloaded: "Restic password file downloaded successfully",
 			downloadTheRecoveryKey: "Download the recovery key file and store it somewhere safe.",
 			downloadRecoveryKey: "Download recovery key",
+			failedToDownloadRestic: "Failed to download Restic password",
 		},
 		recoveryKeySection: {
 			backupRecoveryKey: "Backup Recovery Key",
@@ -743,6 +766,12 @@ export const en = {
 			deleteSource2: "Delete source",
 			autoRemountEnabled: "Auto remount is now enabled.",
 			autoRemountPaused: "Auto remount is now paused.",
+			unmountingSource: "Unmounting source...",
+			sourceUnmountedSuccessfully: "Source unmounted successfully",
+			failedToUnmountSource: "Failed to unmount source",
+			mountingSource: "Mounting source...",
+			sourceMountedSuccessfully: "Source mounted successfully",
+			failedToMountSource: "Failed to mount source",
 		},
 		webdavForm: {
 			webdavServerHostnameOr: "WebDAV server hostname or IP address.",
@@ -927,6 +956,8 @@ export const en = {
 				"? This will not remove the actual data from the backend storage, only the repository configuration will be deleted.",
 			allBackupSchedulesAssociated: "All backup schedules associated with this repository will also be removed.",
 			deleteRepository2: "Delete repository",
+			unlockingRepo: "Unlocking repo",
+			repositoryUnlockedSuccessfully: "Repository unlocked successfully",
 		},
 		restRepositoryForm: {
 			restServerUrl: "REST Server URL",
@@ -1095,6 +1126,7 @@ export const en = {
 			deleteNotificationDestination: "Delete Notification Destination",
 			areYouSureYou:
 				'Are you sure you want to delete the notification destination "{name}"? This action cannot be undone and will remove this destination from all backup schedules.',
+			header: "Header {value}",
 		},
 		ntfyForm: {
 			serverUrlOptional: "Server URL (Optional)",
@@ -1195,6 +1227,8 @@ export const en = {
 			thisActionCannotBe:
 				"This action cannot be undone. This will permanently delete the snapshot and all its data from the repository.",
 			deleteSnapshot2: "Delete snapshot",
+			failedToStartBackup: "Failed to start backup",
+			startingSnapshotDeletion: "Starting snapshot deletion...",
 		},
 		backupProgressCard: {
 			processed: "{files_done} processed",
@@ -1204,6 +1238,7 @@ export const en = {
 			processingSpeed: "Processing speed",
 			calculating: "Calculating...",
 			currentFile: "Current file",
+			scanning: "{percentDone}% · scanning",
 		},
 		basicInfoSection: {
 			backupName: "Backup name",
@@ -1289,6 +1324,13 @@ export const en = {
 			snapshotsThatHaveAlready: "? Snapshots that have already been copied will remain available.",
 			keepSyncing: "Keep syncing",
 			cancelSync: "Cancel sync",
+			syncingTasks: "Syncing · {activeTaskCount} tasks",
+			syncing: "Syncing...",
+			syncMoreSnapshots: "Sync more snapshots",
+			neverSynced: "Never synced",
+			syncInProgress: "Mirror sync in progress",
+			lastSyncSuccessful: "Last sync successful",
+			lastSyncIncomplete: "Last sync did not complete",
 		},
 		mirrorSyncDialog: {
 			mirrorSyncStarted: "Mirror sync started",
@@ -1301,6 +1343,10 @@ export const en = {
 			size: "Size",
 			cancelLookup: "Cancel lookup",
 			syncSnapshots2: "Sync {selectedSnapshotCount} snapshots",
+			checkingSnapshotStatus: "Checking snapshot status...",
+			snapshotLookupDidNot: "Snapshot lookup did not complete.",
+			snapshotLookupWasCancelled: "Snapshot lookup was cancelled.",
+			snapshotLookupBecameStale: "Snapshot lookup became stale.",
 		},
 		pathsSection: {
 			thisVolumeAppearsTo: "This volume appears to be empty.",
@@ -1337,6 +1383,7 @@ export const en = {
 			selectARepositoryTo: "Select a repository to mirror to...",
 			considerCreatingANew: "Consider creating a new backup scheduler with the desired destination instead.",
 			allAvailableRepositoriesHave: "All available repositories have conflicting backends.",
+			thisRepositoryIsNot: "This repository is not compatible for mirroring.",
 		},
 		scheduleNotificationsConfig: {
 			notificationSettingsSavedSuccessfully: "Notification settings saved successfully",
@@ -1375,6 +1422,10 @@ export const en = {
 			stopRunningBackup: "Stop running backup?",
 			areYouSureYou2: "Are you sure you want to stop the current backup for",
 			stopBackup: "Stop backup",
+			cancellingBackup2: "Cancelling backup...",
+			failedToApplyRetention: "Failed to apply retention policy",
+			startingCleanup: "Starting cleanup...",
+			retentionCleanupStarted: "Retention cleanup started",
 		},
 		snapshotFileBrowser: {
 			deleting: "Deleting...",
@@ -1385,6 +1436,8 @@ export const en = {
 			noSnapshotsAvailable: "No snapshots available",
 			deleting: "Deleting",
 			snapshots: "{length} snapshots",
+			toggleSortOrder: "Toggle snapshot sort order",
+			selectSnapshot: "Select snapshot {short_id}",
 		},
 		summarySection: {
 			scheduleSummary: "Schedule summary",
@@ -1394,6 +1447,26 @@ export const en = {
 			oneFileSystem: "One file system",
 			inheritRepositoryDefault: "Inherit (repository default)",
 			retention: "Retention",
+		},
+		mirrorSyncProgressRow: {
+			cancelling: "Cancelling mirror sync",
+			waitingForAccess: "Waiting for repository access",
+			applyingRetention: "Applying retention policy",
+			copyingSnapshots: "Copying snapshots",
+			preparing: "Preparing snapshot copy",
+			latestSnapshotQueued: "Latest snapshot queued",
+			snapshotQueued: "{count} snapshot queued",
+			snapshotsQueued: "{count} snapshots queued",
+		},
+		retentionSummary: {
+			last: "{count} last",
+			hourly: "{count} hourly",
+			daily: "{count} daily",
+			weekly: "{count} weekly",
+			monthly: "{count} monthly",
+			yearly: "{count} yearly",
+			noRepositorySelected: "No repository selected",
+			noRetentionPolicy: "No retention policy",
 		},
 	},
 	pagination: {
@@ -1452,6 +1525,9 @@ export const en = {
 		taskLogResults: {
 			showingOf: "Showing {start}–{end} of {total}",
 		},
+		taskLogPagination: {
+			goToPage: "Go to page {entry}",
+		},
 	},
 	sso: {
 		createSsoProvider: {
@@ -1509,6 +1585,7 @@ export const en = {
 			pleaseTryAgain: "Please try again.",
 			checkSavedConfiguration: "Check saved configuration",
 			restartZerobyteAfterChanging: ". Restart Zerobyte after changing its environment. The expected callback is",
+			edit: "Edit {providerId}",
 		},
 		ssoLoginButtons: {
 			unableToSignIn: "Unable to sign in with {variables}",
@@ -1547,6 +1624,8 @@ export const en = {
 			cancelInvitation: "Cancel invitation",
 			deleteInvitation: "Delete invitation",
 			noInvitationsYet: "No invitations yet.",
+			autoLinkingDisabled: "Automatic account linking disabled",
+			autoLinkingEnabled: "Automatic account linking enabled",
 		},
 	},
 	components: {
@@ -1577,9 +1656,13 @@ export const en = {
 			running: "Running...",
 			clear: "Clear",
 			outputWillAppearHere: "Output will appear here...",
+			commandFinishedWithExit: "Command finished with exit code: {exitCode}",
+			error: "Error: {message}",
+			commandCancelled: "Command cancelled",
 		},
 		directoryBrowser: {
 			noSubdirectoriesFound: "No subdirectories found",
+			loadingDirectories: "Loading directories...",
 		},
 		fileTree: {
 			expandFolder: "Expand folder",
@@ -1597,6 +1680,7 @@ export const en = {
 			choose: "Choose",
 			selectFolder: "Select Folder",
 			chooseADirectoryFrom: "Choose a directory from the filesystem.",
+			failedToChooseFolder: "Failed to choose folder",
 		},
 		onoff: {
 			toggle: "Toggle {enabledLabel}",
@@ -1642,6 +1726,14 @@ export const en = {
 			snapshotCouldNotBe: "Snapshot {snapshotId} could not be restored.",
 			itemSelected: "{count} item selected",
 			itemsSelected: "{count} items selected",
+			failedToCancelRestore: "Failed to cancel restore",
+			downloadAll: "Download All",
+			restoring: "Restoring...",
+			restoreAll: "Restore All",
+			downloadItem: "Download {count} item",
+			downloadItems: "Download {count} items",
+			restoreItem: "Restore {count} item",
+			restoreItems: "Restore {count} items",
 		},
 		restoreProgress: {
 			restoreInProgress: "Restore in progress",
@@ -1667,6 +1759,10 @@ export const en = {
 				"Select a backup schedule to re-tag the {selectedSnapshotCount} selected snapshots. All  {selectedSnapshotCount2} selected snapshots will be associated with the chosen schedule.",
 			selectASchedule: "Select a schedule",
 			applyTags: "Apply tags",
+			startingDeletionForSnapshots: "Starting deletion for {length} snapshots...",
+			snapshotDeletionStarted: "Snapshot deletion started",
+			startingReTagFor: "Starting re-tag for {length} snapshots...",
+			snapshotReTagStarted: "Snapshot re-tag started",
 		},
 		volumeFileBrowser: {
 			thisSourceAppearsTo: "This source appears to be empty.",
@@ -1674,6 +1770,24 @@ export const en = {
 		webhookRequestPreview: {
 			requestPreview: "Request Preview",
 			thisIsAPreview: "This is a preview of the HTTP request that will be sent.",
+		},
+		fileBrowser: {
+			noFilesFound: "No files found.",
+			retry: "Retry {path}",
+		},
+		managedBadge: {
+			defaultMessage:
+				"This resource is provisioned at startup. Changes are useful for testing, but the next provisioning sync can overwrite or recreate it.",
+		},
+		snapshotTreeBrowser: {
+			loadingFiles: "Loading files...",
+		},
+		retentionCategoryBadges: {
+			viewRetentionCategories: "View {length} retention categories",
+			last: "Last",
+			monthly: "Monthly",
+			yearly: "Yearly",
+			tagCount: "{count} tags",
 		},
 	},
 	routes: {

@@ -29,7 +29,7 @@ import { cn } from "~/client/lib/utils";
 import { useActiveMirrorSyncTasks } from "../mirror-tasks";
 import { MirrorSyncDialog } from "./mirror-sync-dialog";
 import { MirrorSyncProgressRow } from "./mirror-sync-progress-row";
-import { useTranslation } from "~/client/lib/i18n";
+import { type TFunction, useTranslation } from "~/client/lib/i18n";
 
 type MirrorAssignment = {
 	repositoryId: string;
@@ -61,11 +61,11 @@ const getStatusVariant = (task: MirrorSyncDisplayTask | null) => {
 	return "error";
 };
 
-const getStatusLabel = (task: MirrorSyncDisplayTask | null) => {
-	if (!task) return "Never synced";
-	if (isTaskActive(task)) return "Mirror sync in progress";
-	if (task.status === "succeeded") return "Last sync successful";
-	return task.error ?? "Last sync did not complete";
+const getStatusLabel = (task: MirrorSyncDisplayTask | null, t: TFunction) => {
+	if (!task) return t("backups.mirrorRepositoriesTable.neverSynced");
+	if (isTaskActive(task)) return t("backups.mirrorRepositoriesTable.syncInProgress");
+	if (task.status === "succeeded") return t("backups.mirrorRepositoriesTable.lastSyncSuccessful");
+	return task.error ?? t("backups.mirrorRepositoriesTable.lastSyncIncomplete");
 };
 
 export const MirrorRepositoriesTable = ({
@@ -115,14 +115,16 @@ export const MirrorRepositoriesTable = ({
 	};
 
 	const getStatusText = (task: MirrorSyncDisplayTask | null, activeTaskCount: number) => {
-		if (!task) return "Never";
+		if (!task) return t("time.never");
 		if (isTaskActive(task)) {
-			return activeTaskCount > 1 ? `Syncing · ${activeTaskCount} tasks` : "Syncing...";
+			return activeTaskCount > 1
+				? t("backups.mirrorRepositoriesTable.syncingTasks", { activeTaskCount: activeTaskCount })
+				: t("backups.mirrorRepositoriesTable.syncing");
 		}
 		if (task.finishedAt) {
 			return formatTimeAgo(task.finishedAt);
 		}
-		return "Never";
+		return t("time.never");
 	};
 
 	const assignedRepositories = Array.from(assignments.keys())
@@ -173,9 +175,11 @@ export const MirrorRepositoriesTable = ({
 							const cancellationRequested = mirrorSyncs.some((task) => task.status === "cancelling");
 							const cancelling = cancellationRequested || cancelSync.isPending;
 							const statusVariant = getStatusVariant(syncTask);
-							const statusLabel = getStatusLabel(syncTask);
+							const statusLabel = getStatusLabel(syncTask, t);
 							const statusText = getStatusText(syncTask, mirrorSyncs.length);
-							const buttonTooltip = syncing ? "Cancel sync" : "Sync more snapshots";
+							const buttonTooltip = syncing
+								? t("backups.mirrorRepositoriesTable.cancelSync")
+								: t("backups.mirrorRepositoriesTable.syncMoreSnapshots");
 
 							const handleSyncAction = () => {
 								if (activeSync) {

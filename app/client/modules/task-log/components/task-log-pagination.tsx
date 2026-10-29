@@ -10,6 +10,7 @@ import {
 } from "~/client/components/ui/pagination";
 import { cn } from "~/client/lib/utils";
 import type { TaskLogKind, TaskLogOutcome } from "./task-log-shared";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PaginationEntry = number | "ellipsis-start" | "ellipsis-end";
 
@@ -44,6 +45,7 @@ export function TaskLogPagination({
 	outcome?: TaskLogOutcome;
 	onPageChange: (page: number) => void;
 }) {
+	const { t } = useTranslation();
 	const goToPage = (event: MouseEvent<HTMLAnchorElement>, nextPage: number) => {
 		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 		event.preventDefault();
@@ -71,7 +73,7 @@ export function TaskLogPagination({
 							<PaginationLink
 								href={buildTaskLogHref(entry, kind, outcome)}
 								isActive={entry === page}
-								aria-label={`Go to page ${entry}`}
+								aria-label={t("taskLog.taskLogPagination.goToPage", { entry: entry })}
 								onClick={(event) => goToPage(event, entry)}
 							>
 								{entry}

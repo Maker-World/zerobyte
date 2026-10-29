@@ -32,7 +32,7 @@ export function RecoveryKeyDownloadDialog({ hasPassword, passwordAuthSupported }
 		submitLabel: "Download",
 		submitIcon: <Download className="mr-2 size-4" />,
 		isPending: download.isPending,
-		failureMessage: "Failed to download Restic password",
+		failureMessage: t("settings.recoveryKeyDownloadDialog.failedToDownloadRestic"),
 		onSubmit: handleDownload,
 	};
 

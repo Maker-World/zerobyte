@@ -194,7 +194,9 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 											variant="ghost"
 											size="icon"
 											title={t("settings.apiKeysSection.revokeApiKey")}
-											aria-label={`Revoke API key ${apiKey.name ?? "Unnamed key"}`}
+											aria-label={t("settings.apiKeysSection.revokeApiKey3", {
+												value: apiKey.name ?? "Unnamed key",
+											})}
 											onClick={() => setDeleteTarget(apiKey)}
 										>
 											<Trash2 className="h-4 w-4 text-destructive" />

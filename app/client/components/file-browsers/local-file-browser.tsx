@@ -84,7 +84,7 @@ export const LocalFileBrowser = ({
 			isLoading={fileBrowser.isLoading}
 			isEmpty={fileBrowser.isEmpty}
 			errorMessage={parseError(error)?.message}
-			loadingMessage={uiProps.loadingMessage ?? "Loading directories..."}
+			loadingMessage={uiProps.loadingMessage ?? t("components.directoryBrowser.loadingDirectories")}
 			emptyMessage={uiProps.emptyMessage ?? t("components.directoryBrowser.noSubdirectoriesFound")}
 		/>
 	);

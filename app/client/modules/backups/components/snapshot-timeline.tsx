@@ -55,7 +55,7 @@ export const SnapshotTimeline = (props: Props) => {
 	const sortedSnapshots = useMemo(() => getSortedSnapshots(snapshots, sortOrder), [snapshots, sortOrder]);
 	const snapshotRange = useMemo(() => getSnapshotRange(snapshots), [snapshots]);
 
-	const sortOrderButtonLabel = "Toggle snapshot sort order";
+	const sortOrderButtonLabel = t("backups.snapshotTimeline.toggleSortOrder");
 
 	const handleToggleSortOrder = () => {
 		setSortOrder((currentSortOrder) => (currentSortOrder === "asc" ? "desc" : "asc"));
@@ -117,7 +117,9 @@ export const SnapshotTimeline = (props: Props) => {
 								const date = new Date(snapshot.time);
 								const isSelected = snapshotId === snapshot.short_id;
 								const isDeleting = deletingSnapshotIds?.has(snapshot.short_id) ?? false;
-								const selectSnapshotLabel = `Select snapshot ${snapshot.short_id}`;
+								const selectSnapshotLabel = t("backups.snapshotTimeline.selectSnapshot", {
+									short_id: snapshot.short_id,
+								});
 
 								return (
 									<div

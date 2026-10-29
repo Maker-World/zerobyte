@@ -71,7 +71,7 @@ export const VolumeFileBrowser = ({ volumeId, enabled = true, ...uiProps }: Volu
 			isEmpty={fileBrowser.isEmpty}
 			errorMessage={parseError(error)?.message}
 			onRetry={() => void refetch()}
-			loadingMessage={uiProps.loadingMessage ?? "Loading files..."}
+			loadingMessage={uiProps.loadingMessage ?? t("components.snapshotTreeBrowser.loadingFiles")}
 			emptyMessage={uiProps.emptyMessage ?? t("components.volumeFileBrowser.thisSourceAppearsTo")}
 		/>
 	);

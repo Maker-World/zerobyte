@@ -101,7 +101,7 @@ export function ScheduleDetailsPage(props: Props) {
 			toast.success(t("backups.backupDetails.backupStartedSuccessfully"));
 		},
 		onError: (error) => {
-			handleRepositoryError("Failed to start backup", error, schedule.repository.shortId);
+			handleRepositoryError(t("backups.backupDetails.failedToStartBackup"), error, schedule.repository.shortId);
 		},
 	});
 
@@ -158,9 +158,9 @@ export function ScheduleDetailsPage(props: Props) {
 					path: { shortId: schedule.repository.shortId, snapshotId: snapshotToDelete },
 				}),
 				{
-					loading: "Starting snapshot deletion...",
-					success: "Snapshot deletion started",
-					error: (error) => parseError(error)?.message || "Failed to delete snapshot",
+					loading: t("backups.backupDetails.startingSnapshotDeletion"),
+					success: t("components.snapshotsTable.snapshotDeletionStarted"),
+					error: (error) => parseError(error)?.message || t("snapshotTasks.deleteSnapshotFailed"),
 				},
 			);
 		}

@@ -23,7 +23,7 @@ const installationGuide = "https://zerobyte.app/docs/guides/remote-agents";
 
 function CopyField({
 	value,
-	label = "Connection command",
+	label: labelProp,
 	rows = 6,
 	wrap = "soft",
 }: {
@@ -33,6 +33,7 @@ function CopyField({
 	wrap?: "soft" | "off";
 }) {
 	const { t } = useTranslation();
+	const label = labelProp ?? t("settings.machineSetupForms.connectionCommand");
 	const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
 
 	const fieldId = useId();
@@ -76,7 +77,11 @@ function CopyField({
 					variant="outline"
 					size="icon"
 					className="shrink-0"
-					aria-label={`${copyStatus === "copied" ? "Copied" : "Copy"} ${label.toLowerCase()}`}
+					aria-label={
+						copyStatus === "copied"
+							? t("settings.machineSetupForms.copiedLabel", { label: label.toLowerCase() })
+							: t("settings.machineSetupForms.copyLabel", { label: label.toLowerCase() })
+					}
 					onClick={copy}
 				>
 					{copyStatus === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -87,7 +92,7 @@ function CopyField({
 				aria-atomic="true"
 				className={copyStatus === "failed" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
 			>
-				{copyStatus === "copied" && `${label} copied.`}
+				{copyStatus === "copied" && t("settings.machineSetupForms.labelCopied", { label })}
 				{copyStatus === "failed" && t("settings.machineSetupForms.couldNotCopyThe")}
 			</p>
 		</div>

@@ -191,8 +191,12 @@ export function PasskeysSection() {
 								<Button
 									variant="outline"
 									size="sm"
-									aria-label={`Rename passkey ${p.name?.trim() || "Unnamed passkey"}`}
-									title={`Rename passkey ${p.name?.trim() || "Unnamed passkey"}`}
+									aria-label={t("settings.passkeysSection.renamePasskey2", {
+										value: p.name?.trim() || "Unnamed passkey",
+									})}
+									title={t("settings.passkeysSection.renamePasskey2", {
+										value: p.name?.trim() || "Unnamed passkey",
+									})}
 									onClick={() => {
 										setRenameTarget(p);
 										setRenameValue(p.name ?? "");
@@ -203,8 +207,12 @@ export function PasskeysSection() {
 								<Button
 									variant="destructive"
 									size="sm"
-									aria-label={`Delete passkey ${p.name?.trim() || "Unnamed passkey"}`}
-									title={`Delete passkey ${p.name?.trim() || "Unnamed passkey"}`}
+									aria-label={t("settings.passkeysSection.deletePasskey2", {
+										value: p.name?.trim() || "Unnamed passkey",
+									})}
+									title={t("settings.passkeysSection.deletePasskey2", {
+										value: p.name?.trim() || "Unnamed passkey",
+									})}
 									onClick={() => {
 										setDeleteTarget(p);
 										setDeletePasskeyOpen(true);

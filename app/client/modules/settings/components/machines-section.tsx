@@ -54,7 +54,7 @@ export function MachinesSection() {
 		revoke: {
 			title: t("settings.machinesSection.revoke", { machineName: machineName }),
 			description: t("settings.machinesSection.thisMachineWillDisconnect"),
-			confirmLabel: "Revoke",
+			confirmLabel: t("settings.apiKeysSection.revoke"),
 			variant: "destructive",
 			pending: revokeCredential.isPending,
 			error: revokeCredential.isError
@@ -66,7 +66,7 @@ export function MachinesSection() {
 		delete: {
 			title: t("settings.machinesSection.delete", { machineName: machineName }),
 			description: t("settings.machinesSection.thisMachineWillDisconnect2"),
-			confirmLabel: "Delete machine",
+			confirmLabel: t("settings.machineRow.deleteMachine"),
 			variant: "destructive",
 			pending: deleteMachine.isPending,
 			error: deleteMachine.isError

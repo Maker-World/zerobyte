@@ -66,36 +66,45 @@ export const ScheduleSummary = (props: Props) => {
 
 	const isBackupCancelling = activeBackupTask?.status === "cancelling";
 	const isStoppingBackup = cancelBackup.isPending || isBackupCancelling;
-	const stopBackupLabel = isBackupCancelling ? "Cancelling backup..." : "Stop backup";
+	const stopBackupLabel = isBackupCancelling
+		? t("backups.scheduleSummary.cancellingBackup2")
+		: t("backups.scheduleSummary.stopBackup");
 
 	const runForget = useMutation({
 		...runForgetMutation(),
 		onError: (error) => {
-			handleRepositoryError("Failed to apply retention policy", error, schedule.repository.shortId);
+			handleRepositoryError(
+				t("backups.scheduleSummary.failedToApplyRetention"),
+				error,
+				schedule.repository.shortId,
+			);
 		},
 	});
 
 	const summary = useMemo(() => {
-		const scheduleLabel = schedule ? schedule.cronExpression || "Manual only" : "-";
+		const scheduleLabel = schedule ? schedule.cronExpression || t("backups.card.manualOnly") : "-";
 
 		const retentionParts: string[] = [];
 		if (schedule?.retentionPolicy) {
 			const rp = schedule.retentionPolicy;
-			if (rp.keepLast) retentionParts.push(`${rp.keepLast} last`);
-			if (rp.keepHourly) retentionParts.push(`${rp.keepHourly} hourly`);
-			if (rp.keepDaily) retentionParts.push(`${rp.keepDaily} daily`);
-			if (rp.keepWeekly) retentionParts.push(`${rp.keepWeekly} weekly`);
-			if (rp.keepMonthly) retentionParts.push(`${rp.keepMonthly} monthly`);
-			if (rp.keepYearly) retentionParts.push(`${rp.keepYearly} yearly`);
+			if (rp.keepLast) retentionParts.push(t("backups.retentionSummary.last", { count: rp.keepLast }));
+			if (rp.keepHourly) retentionParts.push(t("backups.retentionSummary.hourly", { count: rp.keepHourly }));
+			if (rp.keepDaily) retentionParts.push(t("backups.retentionSummary.daily", { count: rp.keepDaily }));
+			if (rp.keepWeekly) retentionParts.push(t("backups.retentionSummary.weekly", { count: rp.keepWeekly }));
+			if (rp.keepMonthly) retentionParts.push(t("backups.retentionSummary.monthly", { count: rp.keepMonthly }));
+			if (rp.keepYearly) retentionParts.push(t("backups.retentionSummary.yearly", { count: rp.keepYearly }));
 		}
 
 		return {
 			vol: schedule.volume.name,
 			scheduleLabel,
-			repositoryLabel: schedule.repositoryId || "No repository selected",
-			retentionLabel: retentionParts.length > 0 ? retentionParts.join(" • ") : "No retention policy",
+			repositoryLabel: schedule.repositoryId || t("backups.retentionSummary.noRepositorySelected"),
+			retentionLabel:
+				retentionParts.length > 0
+					? retentionParts.join(" • ")
+					: t("backups.retentionSummary.noRetentionPolicy"),
 		};
-	}, [schedule]);
+	}, [schedule, t]);
 
 	const handleConfirmDelete = () => {
 		setShowDeleteConfirm(false);
@@ -105,8 +114,8 @@ export const ScheduleSummary = (props: Props) => {
 	const handleConfirmForget = () => {
 		setShowForgetConfirm(false);
 		toast.promise(runForget.mutateAsync({ path: { shortId: schedule.shortId } }), {
-			loading: "Starting cleanup...",
-			success: "Retention cleanup started",
+			loading: t("backups.scheduleSummary.startingCleanup"),
+			success: t("backups.scheduleSummary.retentionCleanupStarted"),
 		});
 	};
 

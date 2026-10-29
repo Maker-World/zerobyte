@@ -24,7 +24,6 @@ const treeProps = {
 	className: "flex flex-1 min-h-0 flex-col",
 	treeContainerClassName: "overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4",
 	treeClassName: "px-2 py-2",
-	emptyMessage: "No files in this snapshot",
 	stateClassName: "flex-1 min-h-0",
 } as const;
 
@@ -102,6 +101,7 @@ export const SnapshotFileBrowser = (props: Props) => {
 						queryBasePath={queryBasePath}
 						displayBasePath={displayBasePath}
 						{...treeProps}
+						emptyMessage={t("components.restoreForm.noFilesInThis")}
 					/>
 				</CardContent>
 			</Card>

@@ -190,8 +190,10 @@ export default function RepositoryDetailsPage({
 											toast.promise(
 												unlockRepo.mutateAsync({ path: { shortId: repository.shortId } }),
 												{
-													loading: "Unlocking repo",
-													success: "Repository unlocked successfully",
+													loading: t("repositories.repositoryDetails.unlockingRepo"),
+													success: t(
+														"repositories.repositoryDetails.repositoryUnlockedSuccessfully",
+													),
 													error: (e) =>
 														toast.error(
 															t(

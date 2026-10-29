@@ -44,7 +44,12 @@ export function EditSsoProviderDialog({ providerId }: { providerId: string }) {
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="ghost" size="icon" title={`Edit ${providerId}`} aria-label={`Edit ${providerId}`}>
+				<Button
+					variant="ghost"
+					size="icon"
+					title={t("sso.editSsoProviderDialog.edit", { providerId: providerId })}
+					aria-label={t("sso.editSsoProviderDialog.edit", { providerId: providerId })}
+				>
 					<Pencil className="h-4 w-4" />
 				</Button>
 			</DialogTrigger>

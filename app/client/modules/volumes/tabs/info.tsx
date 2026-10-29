@@ -230,7 +230,7 @@ export const VolumeInfoTabContent = ({ volume, statfs }: Props) => {
 	const { total = 0, used = 0, free = 0 } = statfs;
 
 	const hasStorage = total > 0;
-	const backendLabel = volume.type === null ? "Filesystem" : backendLabels[volume.type];
+	const backendLabel = volume.type === null ? t("volumes.filesystem") : backendLabels[volume.type];
 
 	return (
 		<Card className="px-6 py-6 @container/inner">

@@ -155,9 +155,11 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 								variant="secondary"
 								onClick={() =>
 									toast.promise(unmountVol.mutateAsync({ path: { shortId: volume.shortId } }), {
-										loading: "Unmounting source...",
-										success: "Source unmounted successfully",
-										error: (error) => parseError(error)?.message || "Failed to unmount source",
+										loading: t("volumes.volumeDetails.unmountingSource"),
+										success: t("volumes.volumeDetails.sourceUnmountedSuccessfully"),
+										error: (error) =>
+											parseError(error)?.message ||
+											t("volumes.volumeDetails.failedToUnmountSource"),
 									})
 								}
 								loading={unmountVol.isPending}
@@ -169,9 +171,11 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 								className={cn({ hidden: !canMount || isMounted })}
 								onClick={() =>
 									toast.promise(mountVol.mutateAsync({ path: { shortId: volume.shortId } }), {
-										loading: "Mounting source...",
-										success: "Source mounted successfully",
-										error: (error) => parseError(error)?.message || "Failed to mount source",
+										loading: t("volumes.volumeDetails.mountingSource"),
+										success: t("volumes.volumeDetails.sourceMountedSuccessfully"),
+										error: (error) =>
+											parseError(error)?.message ||
+											t("volumes.volumeDetails.failedToMountSource"),
 									})
 								}
 								loading={mountVol.isPending}

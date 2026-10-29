@@ -46,15 +46,17 @@ export function MachineRow({
 	const isLocal = agent.kind === "local";
 	const isRevoked = status === "revoked";
 	const isInsecure = !isLocal && presentation.connectionSecurity === "insecure";
-	const lastSeen = agent.lastSeenAt === null ? "Never" : formatDateTime(agent.lastSeenAt);
-	const rootsPrefix = status === "online" ? "Allowed locations" : "Allowed locations (last reported)";
+	const lastSeen = agent.lastSeenAt === null ? t("time.never") : formatDateTime(agent.lastSeenAt);
+	const rootsPrefix =
+		status === "online"
+			? t("settings.machineRow.allowedLocations")
+			: t("settings.machineRow.allowedLocationsLastReported");
 	const machineDetails = [presentation.hostname, presentation.platform].filter(Boolean).join(" · ");
 	const machineDisplayName = getMachineDisplayName(agent.name);
 
-	let insecureDescription =
-		"Last connection used HTTP without TLS. Credentials and controller traffic were sent unencrypted.";
+	let insecureDescription = t("settings.machineRow.lastConnectionUsedHttp");
 	if (status === "online") {
-		insecureDescription = "Connected without TLS. Credentials and controller traffic are sent unencrypted.";
+		insecureDescription = t("settings.machineRow.connectedWithoutTlsCredentials");
 	}
 
 	const select = (action: MachineAction) => {
@@ -165,7 +167,9 @@ export function MachineRow({
 								type="button"
 								variant="outline"
 								className="self-start shrink-0"
-								aria-label={`Actions for ${machineDisplayName}`}
+								aria-label={t("settings.machineRow.actionsFor", {
+									machineDisplayName: machineDisplayName,
+								})}
 							>
 								{t("common.actions")}
 								<ChevronDown className="h-4 w-4 ml-1" aria-hidden="true" />

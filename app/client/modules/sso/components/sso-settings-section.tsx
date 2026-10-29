@@ -61,8 +61,8 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 	const updateProviderAutoLinkingMutation = useMutation({
 		...updateSsoProviderAutoLinkingMutation(),
 		onSuccess: (_, v) => {
-			let message = "Automatic account linking disabled";
-			if (v.body?.enabled) message = "Automatic account linking enabled";
+			let message = t("sso.ssoSettingsSection.autoLinkingDisabled");
+			if (v.body?.enabled) message = t("sso.ssoSettingsSection.autoLinkingEnabled");
 
 			toast.success(message);
 		},
