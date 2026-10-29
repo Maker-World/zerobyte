@@ -1,11 +1,15 @@
-FROM oven/bun:1.4.4-alpine@sha256:4cf82f5686b196504fe119db3fcd9185b191f82ece82c40680e597228ec6070a AS base
-
 # renovate: datasource=github-releases depName=restic/restic versioning=semver extractVersion=^v?(?<version>.+)$
 ARG RESTIC_VERSION="0.19.1"
 # renovate: datasource=github-releases depName=rclone/rclone versioning=semver extractVersion=^v?(?<version>.+)$
 ARG RCLONE_VERSION="1.75.2"
 # renovate: datasource=github-releases depName=nicholas-fedor/shoutrrr versioning=semver extractVersion=^v?(?<version>.+)$
 ARG SHOUTRRR_VERSION="0.22.1"
+
+FROM oven/bun:1.4.4-alpine@sha256:4cf82f5686b196504fe119db3fcd9185b191f82ece82c40680e597228ec6070a AS base
+
+ARG RESTIC_VERSION
+ARG RCLONE_VERSION
+ARG SHOUTRRR_VERSION
 
 ENV VITE_RESTIC_VERSION=${RESTIC_VERSION} \
     VITE_RCLONE_VERSION=${RCLONE_VERSION} \
@@ -108,9 +112,28 @@ CMD ["bun", "run", "dev"]
 # ------------------------------
 # PRODUCTION
 # ------------------------------
-FROM dependency-cache AS builder
+# The build output is platform-independent JavaScript, so the app is always built on the native build platform.
+# This keeps Bun out of QEMU emulation, where it is very slow or stalls, when producing images for other architectures.
+FROM --platform=$BUILDPLATFORM oven/bun:1.4.4-alpine@sha256:4cf82f5686b196504fe119db3fcd9185b191f82ece82c40680e597228ec6070a AS builder
 
-RUN VITE_GIT_HOOKS=0 bun install --offline --frozen-lockfile --filter '!docs'
+ARG RESTIC_VERSION
+ARG RCLONE_VERSION
+ARG SHOUTRRR_VERSION
+
+ENV VITE_RESTIC_VERSION=${RESTIC_VERSION} \
+    VITE_RCLONE_VERSION=${RCLONE_VERSION} \
+    VITE_SHOUTRRR_VERSION=${SHOUTRRR_VERSION}
+
+WORKDIR /app
+
+COPY package.json bun.lock bunfig.toml ./
+COPY packages/core/package.json ./packages/core/package.json
+COPY packages/contracts/package.json ./packages/contracts/package.json
+COPY apps/agent/package.json ./apps/agent/package.json
+COPY apps/docs/package.json ./apps/docs/package.json
+COPY apps/desktop/package.json ./apps/desktop/package.json
+
+RUN VITE_GIT_HOOKS=0 bun install --frozen-lockfile --filter '!docs'
 
 ARG APP_VERSION=dev
 ENV VITE_APP_VERSION=${APP_VERSION}
