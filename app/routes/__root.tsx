@@ -11,6 +11,7 @@ import { DEFAULT_THEME, THEME_COOKIE_NAME, ThemeProvider, type Theme } from "~/c
 import { isAuthRoute } from "~/lib/auth-routes";
 import { getRootLoaderData } from "~/server/lib/functions/root-loader-data";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
+import { I18nProvider, LANGUAGE_COOKIE_NAME, type Language, resolveLanguage } from "~/client/lib/i18n";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
 	server: {
@@ -32,6 +33,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootLayout() {
 	const [theme, setTheme] = useCookieState<Theme>(THEME_COOKIE_NAME, DEFAULT_THEME);
+	const { locale } = Route.useLoaderData();
+	const [storedLanguage, setLanguage] = useCookieState<Language>(LANGUAGE_COOKIE_NAME, resolveLanguage(locale));
+	const language = resolveLanguage(storedLanguage);
 	const pathname = useLocation({ select: (location) => location.pathname });
 	const isDesktopTrayRoute = pathname === "/desktop/tray";
 	useServerEvents({ enabled: !isAuthRoute(pathname) });
@@ -47,7 +51,7 @@ function RootLayout() {
 	}, []);
 
 	return (
-		<html lang="en" className={theme === "dark" ? "dark" : undefined} style={{ colorScheme: theme }}>
+		<html lang={language} className={theme === "dark" ? "dark" : undefined} style={{ colorScheme: theme }}>
 			<head>
 				<meta charSet="utf-8" />
 				<meta
@@ -63,11 +67,13 @@ function RootLayout() {
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider theme={theme} setTheme={setTheme}>
-					<Outlet />
-					{!isDesktopTrayRoute && <Toaster />}
-					{!isDesktopTrayRoute && <ReactQueryDevtools buttonPosition="bottom-right" />}
-				</ThemeProvider>
+				<I18nProvider language={language} setLanguage={setLanguage}>
+					<ThemeProvider theme={theme} setTheme={setTheme}>
+						<Outlet />
+						{!isDesktopTrayRoute && <Toaster />}
+						{!isDesktopTrayRoute && <ReactQueryDevtools buttonPosition="bottom-right" />}
+					</ThemeProvider>
+				</I18nProvider>
 				<Scripts />
 			</body>
 		</html>

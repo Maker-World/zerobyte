@@ -14,6 +14,7 @@ import {
 	type TaskLogKind,
 	type TaskLogOutcome,
 } from "./task-log-shared";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	history: ListTaskHistoryResponse | undefined;
@@ -40,9 +41,10 @@ export function TaskLogResults({
 	onPageChange,
 	onSelectTask,
 }: Props) {
+	const { t } = useTranslation();
 	if (isPending) {
 		return (
-			<div className="space-y-3 p-4" aria-label="Loading task history">
+			<div className="space-y-3 p-4" aria-label={t("taskLog.loading")}>
 				{Array.from({ length: 6 }, (_, index) => (
 					<Skeleton key={index} className="h-11 w-full" />
 				))}
@@ -55,11 +57,11 @@ export function TaskLogResults({
 			<div className="flex flex-col items-center gap-3 px-4 py-16 text-center">
 				<CircleAlert className="size-10 text-destructive" />
 				<div>
-					<p className="font-medium">Could not load task history</p>
-					<p className="mt-1 text-sm text-muted-foreground">Check your connection and try again.</p>
+					<p className="font-medium">{t("taskLog.loadFailed")}</p>
+					<p className="mt-1 text-sm text-muted-foreground">{t("taskLog.checkConnection")}</p>
 				</div>
 				<Button variant="outline" onClick={onRetry}>
-					Try again
+					{t("common.tryAgain")}
 				</Button>
 			</div>
 		);
@@ -76,13 +78,9 @@ export function TaskLogResults({
 					)}
 				</div>
 				<div>
-					<p className="font-medium">
-						{kind || outcome ? "No tasks match these filters" : "No task history yet"}
-					</p>
+					<p className="font-medium">{kind || outcome ? t("taskLog.noMatch") : t("taskLog.emptyTitle")}</p>
 					<p className="mt-1 text-sm text-muted-foreground">
-						{kind || outcome
-							? "Choose different filters to broaden the activity."
-							: "Persisted tasks will appear here when work starts."}
+						{kind || outcome ? t("taskLog.noMatchDescription") : t("taskLog.emptyDescription")}
 					</p>
 				</div>
 			</div>
@@ -94,20 +92,20 @@ export function TaskLogResults({
 			<Table className="min-w-270 border-collapse">
 				<TableHeader className="bg-card-header/60">
 					<TableRow>
-						<TableHead className="pl-4 uppercase">Task type</TableHead>
-						<TableHead className="uppercase">Outcome</TableHead>
-						<TableHead className="uppercase">Target</TableHead>
-						<TableHead className="uppercase">Created</TableHead>
-						<TableHead className="uppercase">Duration</TableHead>
-						<TableHead className="uppercase">Details</TableHead>
+						<TableHead className="pl-4 uppercase">{t("taskLog.taskType")}</TableHead>
+						<TableHead className="uppercase">{t("taskLog.outcome")}</TableHead>
+						<TableHead className="uppercase">{t("taskLog.target")}</TableHead>
+						<TableHead className="uppercase">{t("taskLog.created")}</TableHead>
+						<TableHead className="uppercase">{t("taskLog.duration")}</TableHead>
+						<TableHead className="uppercase">{t("taskLog.details")}</TableHead>
 						<TableHead>
-							<span className="sr-only">Actions</span>
+							<span className="sr-only">{t("common.actions")}</span>
 						</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{history.items.map((item) => {
-						const taskType = taskLogKindLabels[item.kind];
+						const taskType = t(taskLogKindLabels[item.kind]);
 						const durationSeconds = getTaskDurationSeconds(item, now);
 						const duration = formatDuration(durationSeconds);
 
@@ -139,13 +137,16 @@ export function TaskLogResults({
 											<Button
 												variant="ghost"
 												size="icon"
-												aria-label={`View details for ${taskType} targeting ${item.target.label}`}
+												aria-label={t("taskLog.viewDetailsFor", {
+													type: taskType,
+													target: item.target.label,
+												})}
 												onClick={() => onSelectTask(item.id)}
 											>
 												<Info />
 											</Button>
 										</TooltipTrigger>
-										<TooltipContent>View details</TooltipContent>
+										<TooltipContent>{t("taskLog.viewDetails")}</TooltipContent>
 									</Tooltip>
 								</TableCell>
 							</TableRow>
@@ -155,8 +156,11 @@ export function TaskLogResults({
 			</Table>
 			<div className="flex min-h-16 flex-col gap-3 border-t bg-card-header/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
 				<p className="text-sm text-muted-foreground tabular-nums">
-					Showing {(page - 1) * history.pageSize + 1}&ndash;
-					{Math.min(page * history.pageSize, history.totalItems)} of {history.totalItems}
+					{t("taskLog.taskLogResults.showingOf", {
+						start: (page - 1) * history.pageSize + 1,
+						end: Math.min(page * history.pageSize, history.totalItems),
+						total: history.totalItems,
+					})}
 				</p>
 				{history.totalPages > 1 && (
 					<TaskLogPagination

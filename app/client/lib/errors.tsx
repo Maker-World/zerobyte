@@ -2,6 +2,7 @@ import { toast } from "sonner";
 import { unlockRepository } from "~/client/api-client/sdk.gen";
 import { Button } from "~/client/components/ui/button";
 import { Unlock } from "lucide-react";
+import { Trans, translateForDocument } from "~/client/lib/i18n";
 
 const isLockError = (error: unknown): boolean => {
 	const errorMessage = parseError(error)?.message || "";
@@ -27,8 +28,7 @@ export const parseError = (error?: unknown) => {
 
 const showLockErrorToast = (repositoryId: string, title: string) => {
 	toast.error(title, {
-		description:
-			"The repository is currently locked by another operation. This can happen when a previous operation didn't complete properly.",
+		description: translateForDocument("errors.repositoryLocked"),
 		duration: 5000,
 		action: (
 			<Button
@@ -45,15 +45,15 @@ const showLockErrorToast = (repositoryId: string, title: string) => {
 							return result.data;
 						},
 						{
-							loading: "Unlocking repository...",
-							success: "Repository unlocked successfully! You can now retry your operation.",
-							error: (err) => parseError(err)?.message || "Failed to unlock repository",
+							loading: translateForDocument("errors.unlockingRepository"),
+							success: translateForDocument("errors.repositoryUnlocked"),
+							error: (err) => parseError(err)?.message || translateForDocument("errors.unlockFailed"),
 						},
 					);
 				}}
 			>
 				<Unlock className="h-3 w-3 mr-1" />
-				Unlock
+				<Trans k="errors.unlock" />
 			</Button>
 		),
 	});
@@ -65,7 +65,7 @@ export const handleRepositoryError = (title: string, error: unknown, repositoryI
 		return null;
 	}
 
-	toast.error(parseError(error)?.message || "An unexpected error occurred");
+	toast.error(parseError(error)?.message || translateForDocument("errors.unexpected"));
 
 	return null;
 };

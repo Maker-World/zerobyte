@@ -6,6 +6,7 @@ import { cn } from "~/client/lib/utils";
 import type { Volume } from "~/client/lib/types";
 import type { InternalFormValues } from "./types";
 import { getSourceLabel } from "~/client/modules/volumes/source-presentation";
+import { useTranslation } from "~/client/lib/i18n";
 
 type SummarySectionProps = {
 	volume: Volume;
@@ -14,6 +15,7 @@ type SummarySectionProps = {
 };
 
 export const SummarySection = ({ volume, frequency, formValues }: SummarySectionProps) => {
+	const { t } = useTranslation();
 	const { data: repositoriesData } = useQuery({
 		...listRepositoriesOptions(),
 	});
@@ -34,19 +36,19 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 		<Card>
 			<CardHeader className="flex flex-row items-center justify-between gap-4">
 				<div>
-					<CardTitle>Schedule summary</CardTitle>
-					<CardDescription>Review the backup configuration.</CardDescription>
+					<CardTitle>{t("backups.summarySection.scheduleSummary")}</CardTitle>
+					<CardDescription>{t("backups.summarySection.reviewTheBackupConfiguration")}</CardDescription>
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4 text-sm">
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Source</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("breadcrumb.source")}</p>
 					<p className="font-medium [overflow-wrap:anywhere]">{getSourceLabel(volume)}</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Schedule</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.card.schedule")}</p>
 					<p className="font-medium">
-						<span className={cn({ hidden: frequency !== "manual" })}>Manual only</span>
+						<span className={cn({ hidden: frequency !== "manual" })}>{t("backups.card.manualOnly")}</span>
 						<span className={cn({ hidden: !frequency || frequency === "manual" })}>
 							{frequency ? frequency.charAt(0).toUpperCase() + frequency.slice(1) : null}
 						</span>
@@ -54,13 +56,15 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Repository</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("breadcrumb.repository")}</p>
 					<p className="font-medium">
 						{repositoriesData?.find((r) => r.shortId === formValues.repositoryId)?.name || "—"}
 					</p>
 				</div>
 				<div className={cn({ hidden: !formValues.includePaths?.length && !formValues.includePatterns })}>
-					<p className="text-xs uppercase text-muted-foreground">Include paths/patterns</p>
+					<p className="text-xs uppercase text-muted-foreground">
+						{t("backups.summarySection.includePathsPatterns")}
+					</p>
 					<div className="flex flex-col gap-1">
 						{formValues.includePaths?.slice(0, 20).map((path) => (
 							<span key={path} className="text-xs font-mono bg-accent px-1.5 py-0.5 rounded">
@@ -69,7 +73,7 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 						))}
 						{formValues.includePaths && formValues.includePaths.length > 20 && (
 							<span className="text-xs text-muted-foreground">
-								+ {formValues.includePaths.length - 20} more
+								{t("repositories.snapshotDetails.more", { value: formValues.includePaths.length - 20 })}
 							</span>
 						)}
 						{formValues.includePatterns
@@ -85,7 +89,9 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 				</div>
 				{formValues.excludePatternsText && (
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Exclude patterns</p>
+						<p className="text-xs uppercase text-muted-foreground">
+							{t("backups.createScheduleForm.excludePatterns")}
+						</p>
 						<div className="flex flex-col gap-1">
 							{formValues.excludePatternsText
 								.split("\n")
@@ -100,7 +106,9 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 				)}
 				{formValues.excludeIfPresentText && (
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Exclude if present</p>
+						<p className="text-xs uppercase text-muted-foreground">
+							{t("backups.summarySection.excludeIfPresent")}
+						</p>
 						<div className="flex flex-col gap-1">
 							{formValues.excludeIfPresentText
 								.split("\n")
@@ -114,15 +122,21 @@ export const SummarySection = ({ volume, frequency, formValues }: SummarySection
 					</div>
 				)}
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">One file system</p>
-					<p className="font-medium">{formValues.oneFileSystem ? "Enabled" : "Disabled"}</p>
+					<p className="text-xs uppercase text-muted-foreground">
+						{t("backups.summarySection.oneFileSystem")}
+					</p>
+					<p className="font-medium">
+						{formValues.oneFileSystem ? t("settings.twoFactorSection.enabled") : t("status.disabled")}
+					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Compression</p>
-					<p className="font-medium">{formValues.compressionMode ?? "Inherit (repository default)"}</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("common.compression")}</p>
+					<p className="font-medium">
+						{formValues.compressionMode ?? t("backups.summarySection.inheritRepositoryDefault")}
+					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Retention</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.summarySection.retention")}</p>
 					<p className="font-medium">{retentionSummary || "-"}</p>
 				</div>
 			</CardContent>

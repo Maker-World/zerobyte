@@ -9,15 +9,17 @@ import { parseError } from "~/client/lib/errors";
 import { Alert, AlertDescription } from "~/client/components/ui/alert";
 import { CreateNotificationForm, type NotificationFormValues } from "../components/create-notification-form";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function CreateNotificationPage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 
 	const createNotification = useMutation({
 		...createNotificationDestinationMutation(),
 		onSuccess: () => {
-			toast.success("Notification destination created successfully");
+			toast.success(t("notifications.createNotification.notificationDestinationCreatedSuccessfully"));
 			void navigate({ to: `/notifications` });
 		},
 	});
@@ -34,14 +36,14 @@ export function CreateNotificationPage() {
 						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
 							<Bell className="w-5 h-5 text-primary" />
 						</div>
-						<CardTitle>Create Notification Destination</CardTitle>
+						<CardTitle>{t("notifications.createNotification.createNotificationDestination")}</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{createNotification.isError && (
 						<Alert variant="destructive">
 							<AlertDescription>
-								<strong>Failed to create notification destination:</strong>
+								<strong>{t("notifications.createNotification.failedToCreateNotification")}</strong>
 								<br />
 								{parseError(createNotification.error)?.message}
 							</AlertDescription>
@@ -50,11 +52,11 @@ export function CreateNotificationPage() {
 					<CreateNotificationForm mode="create" formId={formId} onSubmit={handleSubmit} />
 					<div className="flex justify-end gap-2 pt-4 border-t">
 						<Button type="button" variant="secondary" onClick={() => navigate({ to: "/notifications" })}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button type="submit" form={formId} loading={createNotification.isPending}>
 							<Plus className="h-4 w-4 mr-2" />
-							Create Destination
+							{t("notifications.create")}
 						</Button>
 					</div>
 				</CardContent>

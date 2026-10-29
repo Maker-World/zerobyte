@@ -6,6 +6,7 @@ import { parseError } from "~/client/lib/errors";
 import { logger } from "~/client/lib/logger";
 import { useIsDesktop } from "~/client/hooks/use-is-desktop";
 import { FolderAccessError } from "./folder-access-error";
+import { useTranslation } from "~/client/lib/i18n";
 
 const volumePathTransform = {
 	strip: (relativePath: string) => `/${relativePath}`,
@@ -18,6 +19,7 @@ type VolumeFileBrowserProps = FileBrowserUiProps & {
 };
 
 export const VolumeFileBrowser = ({ volumeId, enabled = true, ...uiProps }: VolumeFileBrowserProps) => {
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const isDesktop = useIsDesktop();
 
@@ -69,8 +71,8 @@ export const VolumeFileBrowser = ({ volumeId, enabled = true, ...uiProps }: Volu
 			isEmpty={fileBrowser.isEmpty}
 			errorMessage={parseError(error)?.message}
 			onRetry={() => void refetch()}
-			loadingMessage={uiProps.loadingMessage ?? "Loading files..."}
-			emptyMessage={uiProps.emptyMessage ?? "This source appears to be empty."}
+			loadingMessage={uiProps.loadingMessage ?? t("components.snapshotTreeBrowser.loadingFiles")}
+			emptyMessage={uiProps.emptyMessage ?? t("components.volumeFileBrowser.thisSourceAppearsTo")}
 		/>
 	);
 };

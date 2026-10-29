@@ -8,6 +8,7 @@ import { cn } from "~/client/lib/utils";
 import { Link } from "@tanstack/react-router";
 import { SnapshotTreeBrowser } from "~/client/components/file-browsers/snapshot-tree-browser";
 import { findCommonAncestor } from "@zerobyte/core/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 interface Props {
 	snapshot: Snapshot;
@@ -23,11 +24,11 @@ const treeProps = {
 	className: "flex flex-1 min-h-0 flex-col",
 	treeContainerClassName: "overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4",
 	treeClassName: "px-2 py-2",
-	emptyMessage: "No files in this snapshot",
 	stateClassName: "flex-1 min-h-0",
 } as const;
 
 export const SnapshotFileBrowser = (props: Props) => {
+	const { t } = useTranslation();
 	const { snapshot, repositoryId, backupId, displayBasePath, onDeleteSnapshot, isDeletingSnapshot } = props;
 	const { formatDateTime } = useTimeFormat();
 	const isRestoreDisabled = isDeletingSnapshot ?? false;
@@ -49,7 +50,7 @@ export const SnapshotFileBrowser = (props: Props) => {
 				<CardHeader>
 					<div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
 						<div>
-							<CardTitle>File Browser</CardTitle>
+							<CardTitle>{t("repositories.snapshotDetails.fileBrowser")}</CardTitle>
 							<CardDescription
 								className={cn({ hidden: !snapshot.time })}
 							>{`Viewing ${snapshot.hostname ? `${snapshot.hostname} from ` : "snapshot from "}${formatDateTime(snapshot.time)}`}</CardDescription>
@@ -74,7 +75,7 @@ export const SnapshotFileBrowser = (props: Props) => {
 								tabIndex={isRestoreDisabled ? -1 : undefined}
 							>
 								<RotateCcw className="h-4 w-4" />
-								Restore
+								{t("common.restore")}
 							</Link>
 							{onDeleteSnapshot && (
 								<Button
@@ -85,7 +86,9 @@ export const SnapshotFileBrowser = (props: Props) => {
 									loading={isDeletingSnapshot}
 								>
 									<Trash2 className="h-4 w-4 mr-2" />
-									{isDeletingSnapshot ? "Deleting..." : "Delete Snapshot"}
+									{isDeletingSnapshot
+										? t("backups.snapshotFileBrowser.deleting")
+										: t("backups.snapshotFileBrowser.deleteSnapshot")}
 								</Button>
 							)}
 						</div>
@@ -98,6 +101,7 @@ export const SnapshotFileBrowser = (props: Props) => {
 						queryBasePath={queryBasePath}
 						displayBasePath={displayBasePath}
 						{...treeProps}
+						emptyMessage={t("components.restoreForm.noFilesInThis")}
 					/>
 				</CardContent>
 			</Card>

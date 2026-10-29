@@ -33,6 +33,7 @@ import { cn } from "~/client/lib/utils";
 import { useBackupTask } from "../backup-tasks";
 import { getBackupRepositoryCompatibility } from "@zerobyte/contracts/backup-context";
 import { getSourceLabel } from "~/client/modules/volumes/source-presentation";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	schedule: BackupSchedule;
@@ -42,6 +43,7 @@ type Props = {
 };
 
 export const ScheduleSummary = (props: Props) => {
+	const { t } = useTranslation();
 	const { schedule, handleToggleEnabled, handleRunBackupNow, handleDeleteSchedule } = props;
 	const { formatShortDateTime } = useTimeFormat();
 	const navigate = useNavigate();
@@ -58,42 +60,51 @@ export const ScheduleSummary = (props: Props) => {
 	const cancelBackup = useMutation({
 		...cancelTaskMutation(),
 		onError: (error) => {
-			toast.error("Failed to stop backup", { description: parseError(error)?.message });
+			toast.error(t("backups.scheduleSummary.failedToStopBackup"), { description: parseError(error)?.message });
 		},
 	});
 
 	const isBackupCancelling = activeBackupTask?.status === "cancelling";
 	const isStoppingBackup = cancelBackup.isPending || isBackupCancelling;
-	const stopBackupLabel = isBackupCancelling ? "Cancelling backup..." : "Stop backup";
+	const stopBackupLabel = isBackupCancelling
+		? t("backups.scheduleSummary.cancellingBackup2")
+		: t("backups.scheduleSummary.stopBackup");
 
 	const runForget = useMutation({
 		...runForgetMutation(),
 		onError: (error) => {
-			handleRepositoryError("Failed to apply retention policy", error, schedule.repository.shortId);
+			handleRepositoryError(
+				t("backups.scheduleSummary.failedToApplyRetention"),
+				error,
+				schedule.repository.shortId,
+			);
 		},
 	});
 
 	const summary = useMemo(() => {
-		const scheduleLabel = schedule ? schedule.cronExpression || "Manual only" : "-";
+		const scheduleLabel = schedule ? schedule.cronExpression || t("backups.card.manualOnly") : "-";
 
 		const retentionParts: string[] = [];
 		if (schedule?.retentionPolicy) {
 			const rp = schedule.retentionPolicy;
-			if (rp.keepLast) retentionParts.push(`${rp.keepLast} last`);
-			if (rp.keepHourly) retentionParts.push(`${rp.keepHourly} hourly`);
-			if (rp.keepDaily) retentionParts.push(`${rp.keepDaily} daily`);
-			if (rp.keepWeekly) retentionParts.push(`${rp.keepWeekly} weekly`);
-			if (rp.keepMonthly) retentionParts.push(`${rp.keepMonthly} monthly`);
-			if (rp.keepYearly) retentionParts.push(`${rp.keepYearly} yearly`);
+			if (rp.keepLast) retentionParts.push(t("backups.retentionSummary.last", { count: rp.keepLast }));
+			if (rp.keepHourly) retentionParts.push(t("backups.retentionSummary.hourly", { count: rp.keepHourly }));
+			if (rp.keepDaily) retentionParts.push(t("backups.retentionSummary.daily", { count: rp.keepDaily }));
+			if (rp.keepWeekly) retentionParts.push(t("backups.retentionSummary.weekly", { count: rp.keepWeekly }));
+			if (rp.keepMonthly) retentionParts.push(t("backups.retentionSummary.monthly", { count: rp.keepMonthly }));
+			if (rp.keepYearly) retentionParts.push(t("backups.retentionSummary.yearly", { count: rp.keepYearly }));
 		}
 
 		return {
 			vol: schedule.volume.name,
 			scheduleLabel,
-			repositoryLabel: schedule.repositoryId || "No repository selected",
-			retentionLabel: retentionParts.length > 0 ? retentionParts.join(" • ") : "No retention policy",
+			repositoryLabel: schedule.repositoryId || t("backups.retentionSummary.noRepositorySelected"),
+			retentionLabel:
+				retentionParts.length > 0
+					? retentionParts.join(" • ")
+					: t("backups.retentionSummary.noRetentionPolicy"),
 		};
-	}, [schedule]);
+	}, [schedule, t]);
 
 	const handleConfirmDelete = () => {
 		setShowDeleteConfirm(false);
@@ -103,8 +114,8 @@ export const ScheduleSummary = (props: Props) => {
 	const handleConfirmForget = () => {
 		setShowForgetConfirm(false);
 		toast.promise(runForget.mutateAsync({ path: { shortId: schedule.shortId } }), {
-			loading: "Starting cleanup...",
-			success: "Retention cleanup started",
+			loading: t("backups.scheduleSummary.startingCleanup"),
+			success: t("backups.scheduleSummary.retentionCleanupStarted"),
 		});
 	};
 
@@ -180,12 +191,12 @@ export const ScheduleSummary = (props: Props) => {
 							title={runBlockReason ?? undefined}
 						>
 							<Play className="h-4 w-4 mr-2" />
-							<span>Backup now</span>
+							<span>{t("backups.scheduleSummary.backupNow")}</span>
 						</Button>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="outline" size="sm">
-									Actions
+									{t("common.actions")}
 									<ChevronDown className="h-4 w-4 ml-1" />
 								</Button>
 							</DropdownMenuTrigger>
@@ -196,7 +207,7 @@ export const ScheduleSummary = (props: Props) => {
 										disabled={runForget.isPending}
 									>
 										<Eraser />
-										Run cleanup
+										{t("backups.scheduleSummary.runCleanup")}
 									</DropdownMenuItem>
 								)}
 								<DropdownMenuItem
@@ -208,12 +219,12 @@ export const ScheduleSummary = (props: Props) => {
 									}
 								>
 									<Pencil />
-									Edit schedule
+									{t("backups.scheduleSummary.editSchedule")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
 									<Trash2 />
-									Delete
+									{t("settings.passkeysSection.delete")}
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
@@ -222,31 +233,40 @@ export const ScheduleSummary = (props: Props) => {
 				</CardHeader>
 				<CardContent className="grid min-w-0 gap-4 grid-cols-1 @medium:grid-cols-2 @wide:grid-cols-4">
 					<div className="min-w-0">
-						<p className="text-xs uppercase text-muted-foreground">Schedule</p>
+						<p className="text-xs uppercase text-muted-foreground">{t("backups.card.schedule")}</p>
 						<p className="font-medium wrap-anywhere" title={summary.scheduleLabel}>
 							{summary.scheduleLabel}
 						</p>
 					</div>
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Repository</p>
+						<p className="text-xs uppercase text-muted-foreground">{t("breadcrumb.repository")}</p>
 						<p className="font-medium">{schedule.repository.name}</p>
 					</div>
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Last backup</p>
+						<p className="text-xs uppercase text-muted-foreground">{t("backups.card.lastBackup")}</p>
 						<TimeAgo date={schedule.lastBackupAt} className="font-medium" />
 					</div>
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Next backup</p>
+						<p className="text-xs uppercase text-muted-foreground">{t("backups.card.nextBackup")}</p>
 						<p className="font-medium">{formatShortDateTime(schedule.nextBackupAt)}</p>
 					</div>
 
 					<div>
-						<p className="text-xs uppercase text-muted-foreground">Status</p>
+						<p className="text-xs uppercase text-muted-foreground">{t("common.status")}</p>
 						<p className="font-medium">
-							{!isBackupRunning && schedule.lastBackupStatus === "success" && "✓ Success"}
-							{!isBackupRunning && schedule.lastBackupStatus === "error" && "✗ Error"}
-							{isBackupRunning && (isBackupCancelling ? "⟳  Cancelling backup..." : "⟳  in progress...")}
-							{!isBackupRunning && schedule.lastBackupStatus === "warning" && "! Warning"}
+							{!isBackupRunning &&
+								schedule.lastBackupStatus === "success" &&
+								t("backups.scheduleSummary.success")}
+							{!isBackupRunning &&
+								schedule.lastBackupStatus === "error" &&
+								t("backups.scheduleSummary.error")}
+							{isBackupRunning &&
+								(isBackupCancelling
+									? t("backups.scheduleSummary.cancellingBackup")
+									: t("backups.scheduleSummary.inProgress"))}
+							{!isBackupRunning &&
+								schedule.lastBackupStatus === "warning" &&
+								t("backups.scheduleSummary.warning")}
 							{!isBackupRunning && !schedule.lastBackupStatus && "—"}
 						</p>
 					</div>
@@ -267,10 +287,10 @@ export const ScheduleSummary = (props: Props) => {
 										})}
 									>
 										<span className={cn({ hidden: schedule.lastBackupStatus !== "warning" })}>
-											Warning details
+											{t("backups.scheduleSummary.warningDetails")}
 										</span>
 										<span className={cn({ hidden: schedule.lastBackupStatus === "warning" })}>
-											Error details
+											{t("backups.scheduleSummary.errorDetails")}
 										</span>
 									</CollapsibleTrigger>
 									<CollapsibleContent
@@ -288,7 +308,7 @@ export const ScheduleSummary = (props: Props) => {
 												})}
 											>
 												{schedule.lastBackupError ??
-													"No additional details available. check your container logs for more information."}
+													t("backups.scheduleSummary.noAdditionalDetailsAvailable")}
 											</p>
 										</div>
 									</CollapsibleContent>
@@ -303,20 +323,19 @@ export const ScheduleSummary = (props: Props) => {
 			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete backup schedule?</AlertDialogTitle>
+						<AlertDialogTitle>{t("backups.scheduleSummary.deleteBackupSchedule")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete this backup schedule for{" "}
-							<strong>{schedule.volume.name}</strong>? This action cannot be undone. Existing snapshots
-							will not be deleted.
+							{t("backups.scheduleSummary.areYouSureYou")} <strong>{schedule.volume.name}</strong>
+							{t("backups.scheduleSummary.thisActionCannotBe")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmDelete}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete schedule
+							{t("backups.scheduleSummary.deleteSchedule")}
 						</AlertDialogAction>
 					</div>
 				</AlertDialogContent>
@@ -325,20 +344,19 @@ export const ScheduleSummary = (props: Props) => {
 			<AlertDialog open={showForgetConfirm} onOpenChange={setShowForgetConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Run retention policy cleanup?</AlertDialogTitle>
+						<AlertDialogTitle>{t("backups.scheduleSummary.runRetentionPolicyCleanup")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will apply the retention policy and permanently delete old snapshots according to the
-							configured rules ({summary.retentionLabel}). This action cannot be undone.
+							{t("backups.scheduleSummary.thisWillApplyThe", { retentionLabel: summary.retentionLabel })}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
 						<AlertDialogCancel>
 							<X className="h-4 w-4 mr-2" />
-							Cancel
+							{t("common.cancel")}
 						</AlertDialogCancel>
 						<AlertDialogAction onClick={handleConfirmForget}>
 							<Check className="h-4 w-4 mr-2" />
-							Run cleanup
+							{t("backups.scheduleSummary.runCleanup")}
 						</AlertDialogAction>
 					</div>
 				</AlertDialogContent>
@@ -347,19 +365,19 @@ export const ScheduleSummary = (props: Props) => {
 			<AlertDialog open={showStopConfirm} onOpenChange={setShowStopConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Stop running backup?</AlertDialogTitle>
+						<AlertDialogTitle>{t("backups.scheduleSummary.stopRunningBackup")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to stop the current backup for <strong>{schedule.name}</strong>?
+							{t("backups.scheduleSummary.areYouSureYou2")} <strong>{schedule.name}</strong>?
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmStop}
 							disabled={isStoppingBackup}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Stop backup
+							{t("backups.scheduleSummary.stopBackup")}
 						</AlertDialogAction>
 					</div>
 				</AlertDialogContent>

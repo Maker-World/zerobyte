@@ -11,6 +11,7 @@ import {
 	type TaskOfKind,
 } from "~/client/hooks/use-active-tasks";
 import type { BackupSchedule } from "~/client/lib/types";
+import { translateForDocument } from "~/client/lib/i18n";
 
 type TagSnapshotsTask = TaskOfKind<"tagSnapshots">;
 
@@ -97,11 +98,13 @@ const getTagSnapshotsSuccessMessage = (task: TagSnapshotsTask, backups: BackupSc
 	const targetSchedule = targetScheduleId ? backups.find((backup) => backup.shortId === targetScheduleId) : null;
 
 	if (targetSchedule) {
-		return `Snapshots re-tagged to ${targetSchedule.name}`;
+		return translateForDocument("snapshotTasks.retaggedTo", { name: targetSchedule.name });
 	}
 
 	const isSingleSnapshot = task.input.snapshotIds.length === 1;
-	return isSingleSnapshot ? "Snapshot re-tagged" : "Snapshots re-tagged";
+	return isSingleSnapshot
+		? translateForDocument("snapshotTasks.snapshotRetagged")
+		: translateForDocument("snapshotTasks.snapshotsRetagged");
 };
 
 const applyTagSnapshotsTaskFinished = (queryClient: QueryClient, task: TagSnapshotsTask, backups: BackupSchedule[]) => {
@@ -114,7 +117,9 @@ const applyTagSnapshotsTaskFinished = (queryClient: QueryClient, task: TagSnapsh
 		return;
 	}
 
-	const message = isSingleSnapshot ? "Failed to re-tag snapshot" : "Failed to re-tag snapshots";
+	const message = isSingleSnapshot
+		? translateForDocument("snapshotTasks.retagSnapshotFailed")
+		: translateForDocument("snapshotTasks.retagSnapshotsFailed");
 	const description = task.error ?? undefined;
 	toast.error(message, { description });
 };

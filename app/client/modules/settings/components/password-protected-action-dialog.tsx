@@ -15,9 +15,7 @@ import {
 import { Input } from "~/client/components/ui/input";
 import { Label } from "~/client/components/ui/label";
 import { parseError } from "~/client/lib/errors";
-
-const LOCAL_PASSWORD_REQUIRED_MESSAGE =
-	"A local password is required for this action. Ask an operator to run `docker exec -it zerobyte bun run cli reset-password` for your user, then sign in with that password and try again.";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PasswordProtectedAction = {
 	title: string;
@@ -47,6 +45,7 @@ export function PasswordProtectedActionDialog({
 	onClose,
 	children,
 }: PasswordProtectedActionDialogProps) {
+	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const [accountPassword, setAccountPassword] = useState("");
 	const passwordInputId = useId();
@@ -71,7 +70,7 @@ export function PasswordProtectedActionDialog({
 	const handleSubmit = async (event: React.SubmitEvent) => {
 		event.preventDefault();
 		if (requiresPassword && !accountPassword) {
-			toast.error("Password is required");
+			toast.error(t("auth.passwordRequired"));
 			return;
 		}
 
@@ -106,19 +105,23 @@ export function PasswordProtectedActionDialog({
 						{passwordAuthSupported && !hasPassword && (
 							<Alert variant="warning">
 								<AlertTriangle className="size-5" />
-								<AlertTitle>Local password required</AlertTitle>
-								<AlertDescription>{LOCAL_PASSWORD_REQUIRED_MESSAGE}</AlertDescription>
+								<AlertTitle>{t("recoveryKey.localPasswordRequired")}</AlertTitle>
+								<AlertDescription>
+									{t("settings.passwordProtectedActionDialog.localPasswordRequired")}
+								</AlertDescription>
 							</Alert>
 						)}
 						{requiresPassword && (
 							<div className="space-y-2">
-								<Label htmlFor={passwordInputId}>Your Password</Label>
+								<Label htmlFor={passwordInputId}>
+									{t("settings.passwordProtectedActionDialog.yourPassword")}
+								</Label>
 								<Input
 									id={passwordInputId}
 									type="password"
 									value={accountPassword}
 									onChange={(event) => setAccountPassword(event.target.value)}
-									placeholder="Enter your password"
+									placeholder={t("recoveryKey.passwordPlaceholder")}
 									autoComplete="current-password"
 									required
 								/>
@@ -129,7 +132,7 @@ export function PasswordProtectedActionDialog({
 					<DialogFooter>
 						<Button type="button" variant="outline" onClick={close}>
 							<X className="mr-2 size-4" />
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						{canPerformAction && (
 							<Button type="submit" loading={action.isPending}>

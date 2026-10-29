@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
+import { zhCN } from "date-fns/locale/zh-CN";
 import { useRootLoaderData } from "~/client/hooks/use-root-loader-data";
+import { useTranslation } from "~/client/lib/i18n";
 import { rawFormatters, type DateInput } from "~/lib/datetime";
 
 export {
@@ -13,7 +15,10 @@ export {
 export type { DateFormatPreference, DateInput, TimeFormatPreference } from "~/lib/datetime";
 
 export function useTimeFormat() {
-	const { locale, timeZone, dateFormat, timeFormat, now } = useRootLoaderData();
+	const { locale: requestLocale, timeZone, dateFormat, timeFormat, now } = useRootLoaderData();
+	const { language, t } = useTranslation();
+	const isChinese = language === "zh-CN";
+	const locale = isChinese ? language : requestLocale;
 	const [currentNow, setCurrentNow] = useState(now);
 
 	useEffect(() => {
@@ -22,34 +27,27 @@ export function useTimeFormat() {
 		setCurrentNow(nextNow === now ? now : nextNow);
 	}, [now]);
 
-	return useMemo(
-		() => ({
-			formatDateTime: (date: DateInput) =>
-				rawFormatters.formatDateTime(date, { locale, timeZone, dateFormat, timeFormat }),
-			formatDateTimeWithSeconds: (date: DateInput) =>
-				rawFormatters.formatDateTimeWithSeconds(date, { locale, timeZone, dateFormat, timeFormat }),
-			formatDateWithMonth: (date: DateInput) =>
-				rawFormatters.formatDateWithMonth(date, {
-					locale,
-					timeZone,
-					dateFormat,
-					timeFormat,
+	return useMemo(() => {
+		const options = { locale, timeZone, dateFormat, timeFormat };
+		const withNever =
+			(formatter: (date: DateInput) => string) =>
+			(date: DateInput): string =>
+				date ? formatter(date) : t("time.never");
+
+		return {
+			formatDateTime: withNever((date) => rawFormatters.formatDateTime(date, options)),
+			formatDateTimeWithSeconds: withNever((date) => rawFormatters.formatDateTimeWithSeconds(date, options)),
+			formatDateWithMonth: withNever((date) => rawFormatters.formatDateWithMonth(date, options)),
+			formatDate: withNever((date) => rawFormatters.formatDate(date, options)),
+			formatShortDate: withNever((date) => rawFormatters.formatShortDate(date, options)),
+			formatShortDateTime: withNever((date) => rawFormatters.formatShortDateTime(date, options)),
+			formatTime: withNever((date) => rawFormatters.formatTime(date, options)),
+			formatTimeAgo: withNever((date) =>
+				rawFormatters.formatTimeAgo(date, currentNow, {
+					locale: isChinese ? zhCN : undefined,
+					justNowLabel: t("time.justNow"),
 				}),
-			formatDate: (date: DateInput) =>
-				rawFormatters.formatDate(date, { locale, timeZone, dateFormat, timeFormat }),
-			formatShortDate: (date: DateInput) =>
-				rawFormatters.formatShortDate(date, { locale, timeZone, dateFormat, timeFormat }),
-			formatShortDateTime: (date: DateInput) =>
-				rawFormatters.formatShortDateTime(date, {
-					locale,
-					timeZone,
-					dateFormat,
-					timeFormat,
-				}),
-			formatTime: (date: DateInput) =>
-				rawFormatters.formatTime(date, { locale, timeZone, dateFormat, timeFormat }),
-			formatTimeAgo: (date: DateInput) => rawFormatters.formatTimeAgo(date, currentNow),
-		}),
-		[locale, timeZone, currentNow, dateFormat, timeFormat],
-	);
+			),
+		};
+	}, [locale, timeZone, currentNow, dateFormat, timeFormat, isChinese, t]);
 }

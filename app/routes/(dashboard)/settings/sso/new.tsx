@@ -10,7 +10,10 @@ export const Route = createFileRoute("/(dashboard)/settings/sso/new")({
 		}
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Settings", href: "/settings" }, { label: "Register SSO Provider" }],
+		breadcrumb: (_match, t) => [
+			{ label: t("nav.settings"), href: "/settings" },
+			{ label: t("breadcrumb.registerSsoProvider") },
+		],
 	},
 	head: () => ({
 		meta: [

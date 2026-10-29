@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "~/client/lib/utils";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { type TranslationKey, useTranslation } from "~/client/lib/i18n";
 
 interface RetentionCategoryBadgesProps {
 	categories: string[];
@@ -16,16 +17,18 @@ const categoryColors: Record<string, string> = {
 	yearly: "bg-red-500/20 text-red-700 dark:text-red-300 border-red-500/30",
 };
 
-const categoryLabels: Record<string, string> = {
-	last: "Last",
-	hourly: "Hourly",
-	daily: "Daily",
-	weekly: "Weekly",
-	monthly: "Monthly",
-	yearly: "Yearly",
+const categoryLabels: Record<string, TranslationKey> = {
+	last: "components.retentionCategoryBadges.last",
+	hourly: "backups.frequencySection.hourly",
+	daily: "backups.frequencySection.daily",
+	weekly: "backups.frequencySection.weekly",
+	monthly: "components.retentionCategoryBadges.monthly",
+	yearly: "components.retentionCategoryBadges.yearly",
 };
 
-function Badge({ category }: { category: string }) {
+function Badge({ category, label }: { category: string; label?: string }) {
+	const { t } = useTranslation();
+	const categoryLabel = categoryLabels[category];
 	return (
 		<span
 			className={cn(
@@ -33,12 +36,13 @@ function Badge({ category }: { category: string }) {
 				categoryColors[category] || "bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-500/30",
 			)}
 		>
-			{categoryLabels[category] || category}
+			{label ?? (categoryLabel ? t(categoryLabel) : category)}
 		</span>
 	);
 }
 
 export function RetentionCategoryBadges({ categories, className }: RetentionCategoryBadgesProps) {
+	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 
 	if (categories.length === 0) {
@@ -71,10 +75,15 @@ export function RetentionCategoryBadges({ categories, className }: RetentionCate
 				<button
 					type="button"
 					className={cn("cursor-pointer bg-transparent p-0 border-0", className)}
-					aria-label={`View ${categories.length} retention categories`}
+					aria-label={t("components.retentionCategoryBadges.viewRetentionCategories", {
+						length: categories.length,
+					})}
 					onClick={() => setOpen(true)}
 				>
-					<Badge category={`${categories.length} tags`} />
+					<Badge
+						category="tags"
+						label={t("components.retentionCategoryBadges.tagCount", { count: categories.length })}
+					/>
 				</button>
 			</HoverCardTrigger>
 			<HoverCardContent className="w-auto p-2">

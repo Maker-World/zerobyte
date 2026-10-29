@@ -14,6 +14,7 @@ import { useTimeFormat } from "~/client/lib/datetime";
 import { getMachineDisplayName } from "~/lib/machine-name";
 import { getMachineStatus, machineStatusLabels } from "~/client/lib/machine-status";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Agent = ListAgentsResponse[number];
 
@@ -34,6 +35,7 @@ export function MachineRow({
 	agent: Agent;
 	onAction?: (action: MachineAction, agent: Agent, trigger: HTMLElement) => void;
 }) {
+	const { t } = useTranslation();
 	const actionsTriggerRef = useRef<HTMLButtonElement>(null);
 
 	const { formatDateTime } = useTimeFormat();
@@ -44,15 +46,17 @@ export function MachineRow({
 	const isLocal = agent.kind === "local";
 	const isRevoked = status === "revoked";
 	const isInsecure = !isLocal && presentation.connectionSecurity === "insecure";
-	const lastSeen = agent.lastSeenAt === null ? "Never" : formatDateTime(agent.lastSeenAt);
-	const rootsPrefix = status === "online" ? "Allowed locations" : "Allowed locations (last reported)";
+	const lastSeen = agent.lastSeenAt === null ? t("time.never") : formatDateTime(agent.lastSeenAt);
+	const rootsPrefix =
+		status === "online"
+			? t("settings.machineRow.allowedLocations")
+			: t("settings.machineRow.allowedLocationsLastReported");
 	const machineDetails = [presentation.hostname, presentation.platform].filter(Boolean).join(" · ");
 	const machineDisplayName = getMachineDisplayName(agent.name);
 
-	let insecureDescription =
-		"Last connection used HTTP without TLS. Credentials and controller traffic were sent unencrypted.";
+	let insecureDescription = t("settings.machineRow.lastConnectionUsedHttp");
 	if (status === "online") {
-		insecureDescription = "Connected without TLS. Credentials and controller traffic are sent unencrypted.";
+		insecureDescription = t("settings.machineRow.connectedWithoutTlsCredentials");
 	}
 
 	const select = (action: MachineAction) => {
@@ -69,7 +73,9 @@ export function MachineRow({
 						<h3 className="min-w-0 max-w-full [overflow-wrap:anywhere] font-medium text-balance">
 							{machineDisplayName}
 						</h3>
-						<Badge variant="outline">{isLocal ? "Local" : "Remote"}</Badge>
+						<Badge variant="outline">
+							{isLocal ? t("repositories.local") : t("settings.machineRow.remote")}
+						</Badge>
 						<Badge variant="outline" className={statusStyles[status]}>
 							<span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
 							{statusLabel}
@@ -77,18 +83,23 @@ export function MachineRow({
 						{isInsecure && (
 							<Badge variant="outline" className={statusStyles.degraded}>
 								<ShieldOff className="size-3" aria-hidden="true" />
-								Insecure HTTP
+								{t("settings.machineRow.insecureHttp")}
 							</Badge>
 						)}
 					</div>
 					{isInsecure && (
 						<p className="flex items-start gap-2 text-sm text-amber-700 dark:text-amber-400">
 							<AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-							<span>{insecureDescription} Use HTTPS to secure this connection.</span>
+							<span>
+								{t("settings.machineRow.useHttpsToSecure", {
+									insecureDescription: insecureDescription,
+								})}
+							</span>
 						</p>
 					)}
 					<p className="text-sm text-muted-foreground">
-						Last seen: <span className="tabular-nums text-foreground">{lastSeen}</span>
+						{t("settings.machineRow.lastSeen")}{" "}
+						<span className="tabular-nums text-foreground">{lastSeen}</span>
 					</p>
 					<div
 						className={cn("flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground", {
@@ -96,15 +107,17 @@ export function MachineRow({
 						})}
 					>
 						<span className={cn({ hidden: !presentation.agentVersion })}>
-							Agent {presentation.agentVersion}
+							{t("settings.machineRow.agent", { agentVersion: presentation.agentVersion })}
 						</span>
 						<span className={cn({ hidden: !presentation.resticVersion })}>
-							Restic {presentation.resticVersion}
+							{t("settings.machineRow.restic", { resticVersion: presentation.resticVersion })}
 						</span>
 					</div>
 
 					{isLocal ? (
-						<p className="text-pretty text-sm text-muted-foreground">This Zerobyte server.</p>
+						<p className="text-pretty text-sm text-muted-foreground">
+							{t("settings.machineRow.thisZerobyteServer")}
+						</p>
 					) : (
 						<div className="space-y-2 text-sm">
 							{machineDetails && <p className="break-words text-muted-foreground">{machineDetails}</p>}
@@ -123,7 +136,8 @@ export function MachineRow({
 												>
 													<span className="break-words font-medium">{root.label}</span>
 													<span className="ml-2 text-muted-foreground">
-														Backup {root.canBackup ? "allowed" : "blocked"}
+														{t("taskLog.kinds.backup")}{" "}
+														{root.canBackup ? "allowed" : "blocked"}
 													</span>
 												</li>
 											);
@@ -135,8 +149,9 @@ export function MachineRow({
 								<p className="flex items-start gap-2 text-amber-700 dark:text-amber-400">
 									<AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
 									<span>
-										Choose Allowed locations on this machine with{" "}
-										<code>sudo zerobyte-agent folders add</code>, then create a Source.
+										{t("settings.machineRow.chooseAllowedLocationsOn")}{" "}
+										<code>sudo zerobyte-agent folders add</code>
+										{t("settings.machineRow.thenCreateASource")}
 									</span>
 								</p>
 							)}
@@ -152,27 +167,29 @@ export function MachineRow({
 								type="button"
 								variant="outline"
 								className="self-start shrink-0"
-								aria-label={`Actions for ${machineDisplayName}`}
+								aria-label={t("settings.machineRow.actionsFor", {
+									machineDisplayName: machineDisplayName,
+								})}
 							>
-								Actions
+								{t("common.actions")}
 								<ChevronDown className="h-4 w-4 ml-1" aria-hidden="true" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
 							<DropdownMenuItem onSelect={() => select("rotate")}>
 								<RotateCw aria-hidden="true" />
-								Get connection command
+								{t("settings.machineRow.getConnectionCommand")}
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							{!isRevoked && (
 								<DropdownMenuItem variant="destructive" onSelect={() => select("revoke")}>
 									<ShieldOff aria-hidden="true" />
-									Revoke connection
+									{t("settings.machineRow.revokeConnection")}
 								</DropdownMenuItem>
 							)}
 							<DropdownMenuItem variant="destructive" onSelect={() => select("delete")}>
 								<Trash2 aria-hidden="true" />
-								Delete machine
+								{t("settings.machineRow.deleteMachine")}
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

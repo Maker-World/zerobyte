@@ -34,6 +34,7 @@ import { cn } from "~/client/lib/utils";
 import { getVolumeMountPath } from "~/client/lib/volume-path";
 import type { BackupSchedule, ScheduleMirror, ScheduleNotification, Snapshot } from "~/client/lib/types";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	loaderData: {
@@ -47,6 +48,7 @@ type Props = {
 };
 
 export function ScheduleDetailsPage(props: Props) {
+	const { t } = useTranslation();
 	const { loaderData, scheduleId, initialSnapshotId } = props;
 
 	const navigate = useNavigate();
@@ -84,10 +86,10 @@ export function ScheduleDetailsPage(props: Props) {
 	const updateSchedule = useMutation({
 		...updateBackupScheduleMutation(),
 		onSuccess: () => {
-			toast.success("Backup schedule saved successfully");
+			toast.success(t("backups.backupDetails.backupScheduleSavedSuccessfully"));
 		},
 		onError: (error) => {
-			toast.error("Failed to save backup schedule", {
+			toast.error(t("backups.backupDetails.failedToSaveBackup"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -96,21 +98,21 @@ export function ScheduleDetailsPage(props: Props) {
 	const runBackupNow = useMutation({
 		...runBackupNowMutation(),
 		onSuccess: () => {
-			toast.success("Backup started successfully");
+			toast.success(t("backups.backupDetails.backupStartedSuccessfully"));
 		},
 		onError: (error) => {
-			handleRepositoryError("Failed to start backup", error, schedule.repository.shortId);
+			handleRepositoryError(t("backups.backupDetails.failedToStartBackup"), error, schedule.repository.shortId);
 		},
 	});
 
 	const deleteSchedule = useMutation({
 		...deleteBackupScheduleMutation(),
 		onSuccess: () => {
-			toast.success("Backup schedule deleted successfully");
+			toast.success(t("backups.backupDetails.backupScheduleDeletedSuccessfully"));
 			void navigate({ to: "/backups" });
 		},
 		onError: (error) => {
-			toast.error("Failed to delete backup schedule", { description: parseError(error)?.message });
+			toast.error(t("backups.backupDetails.failedToDeleteBackup"), { description: parseError(error)?.message });
 		},
 	});
 
@@ -156,9 +158,9 @@ export function ScheduleDetailsPage(props: Props) {
 					path: { shortId: schedule.repository.shortId, snapshotId: snapshotToDelete },
 				}),
 				{
-					loading: "Starting snapshot deletion...",
-					success: "Snapshot deletion started",
-					error: (error) => parseError(error)?.message || "Failed to delete snapshot",
+					loading: t("backups.backupDetails.startingSnapshotDeletion"),
+					success: t("components.snapshotsTable.snapshotDeletionStarted"),
+					error: (error) => parseError(error)?.message || t("snapshotTasks.deleteSnapshotFailed"),
 				},
 			);
 		}
@@ -223,20 +225,17 @@ export function ScheduleDetailsPage(props: Props) {
 			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete snapshot?</AlertDialogTitle>
-						<AlertDialogDescription>
-							This action cannot be undone. This will permanently delete the snapshot and all its data
-							from the repository.
-						</AlertDialogDescription>
+						<AlertDialogTitle>{t("backups.backupDetails.deleteSnapshot")}</AlertDialogTitle>
+						<AlertDialogDescription>{t("backups.backupDetails.thisActionCannotBe")}</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmDelete}
 							disabled={deleteSnapshot.isPending}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Delete snapshot
+							{t("backups.backupDetails.deleteSnapshot2")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

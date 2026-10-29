@@ -7,6 +7,7 @@ import { DoctorReport } from "../components/doctor-report";
 import { CompressionStatsChart } from "../components/compression-stats-chart";
 import { cn } from "~/client/lib/utils";
 import { useTimeFormat } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	repository: Repository;
@@ -39,6 +40,7 @@ function ConfigRow({ icon, label, value, mono, valueClassName }: ConfigRowProps)
 }
 
 export const RepositoryInfoTabContent = ({ repository, initialStats, isDoctorRunning = false }: Props) => {
+	const { t } = useTranslation();
 	const effectiveLocalPath = getEffectiveLocalPath(repository);
 	const { formatDateTime, formatTimeAgo } = useTimeFormat();
 
@@ -53,30 +55,40 @@ export const RepositoryInfoTabContent = ({ repository, initialStats, isDoctorRun
 				<CompressionStatsChart repositoryShortId={repository.shortId} initialStats={initialStats} />
 
 				<Card className="px-6 py-6">
-					<CardTitle className="mb-4">Overview</CardTitle>
+					<CardTitle className="mb-4">{t("repositories.info.overview")}</CardTitle>
 					<CardContent className="grid grid-cols-2 gap-y-4 gap-x-6 px-0">
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Name</div>
+							<div className="text-sm font-medium text-muted-foreground">{t("common.name")}</div>
 							<p className="text-sm">{repository.name}</p>
 						</div>
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Backend</div>
+							<div className="text-sm font-medium text-muted-foreground">{t("common.backend")}</div>
 							<p className="text-sm">{repository.type}</p>
 						</div>
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Management</div>
-							<p className="text-sm">{repository.provisioningId ? "Provisioned" : "Manual"}</p>
+							<div className="text-sm font-medium text-muted-foreground">
+								{t("repositories.info.management")}
+							</div>
+							<p className="text-sm">
+								{repository.provisioningId
+									? t("repositories.info.provisioned")
+									: t("repositories.info.manual")}
+							</p>
 						</div>
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Compression Mode</div>
+							<div className="text-sm font-medium text-muted-foreground">
+								{t("repositories.createRepositoryForm.compressionMode")}
+							</div>
 							<p className="text-sm">{repository.compressionMode || "off"}</p>
 						</div>
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Created</div>
+							<div className="text-sm font-medium text-muted-foreground">{t("taskLog.created")}</div>
 							<p className="text-sm">{formatDateTime(repository.createdAt)}</p>
 						</div>
 						<div className="flex flex-col gap-1">
-							<div className="text-sm font-medium text-muted-foreground">Last Checked</div>
+							<div className="text-sm font-medium text-muted-foreground">
+								{t("repositories.info.lastChecked")}
+							</div>
 							<p className="text-sm flex items-center gap-1.5">
 								<Clock className="h-3 w-3 text-muted-foreground" />
 								{formatTimeAgo(repository.lastChecked)}
@@ -84,7 +96,9 @@ export const RepositoryInfoTabContent = ({ repository, initialStats, isDoctorRun
 						</div>
 						{hasLocalPath && (
 							<div className="flex flex-col gap-1 col-span-2">
-								<div className="text-sm font-medium text-muted-foreground">Local Path</div>
+								<div className="text-sm font-medium text-muted-foreground">
+									{t("repositories.info.localPath")}
+								</div>
 								<p className="text-sm font-mono bg-muted/50 p-2 rounded-md break-all">
 									{effectiveLocalPath}
 								</p>
@@ -97,27 +111,31 @@ export const RepositoryInfoTabContent = ({ repository, initialStats, isDoctorRun
 			<Card className="px-6 py-6">
 				<CardTitle className="flex items-center gap-2 mb-5">
 					<Settings className="h-4 w-4 text-muted-foreground" />
-					Configuration
+					{t("volumes.volumeDetails.configuration")}
 				</CardTitle>
 				<div className="space-y-0 divide-y divide-border/50">
-					<ConfigRow icon={<HardDrive className="h-4 w-4" />} label="Backend" value={repository.type} />
+					<ConfigRow
+						icon={<HardDrive className="h-4 w-4" />}
+						label={t("common.backend")}
+						value={repository.type}
+					/>
 					{hasLocalPath && (
 						<ConfigRow
 							icon={<FolderOpen className="h-4 w-4" />}
-							label="Local Path"
+							label={t("repositories.info.localPath")}
 							value={effectiveLocalPath!}
 							mono
 						/>
 					)}
 					<ConfigRow
 						icon={<Archive className="h-4 w-4" />}
-						label="Compression Mode"
+						label={t("repositories.createRepositoryForm.compressionMode")}
 						value={repository.compressionMode || "off"}
 					/>
 					{hasCaCert && (
 						<ConfigRow
 							icon={<Lock className="h-4 w-4" />}
-							label="CA Certificate"
+							label={t("repositories.info.caCertificate")}
 							value="Configured"
 							valueClassName="text-success"
 						/>
@@ -125,7 +143,7 @@ export const RepositoryInfoTabContent = ({ repository, initialStats, isDoctorRun
 					{hasInsecureTlsConfig && (
 						<ConfigRow
 							icon={<Shield className="h-4 w-4" />}
-							label="TLS Validation"
+							label={t("repositories.info.tlsValidation")}
 							value={config.insecureTls ? "Disabled" : "Enabled"}
 							valueClassName={config.insecureTls ? "text-red-500" : "text-success"}
 						/>

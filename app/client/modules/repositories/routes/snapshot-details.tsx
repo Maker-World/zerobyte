@@ -14,26 +14,28 @@ import { useState } from "react";
 import { Database } from "lucide-react";
 import { Link, useParams } from "@tanstack/react-router";
 import { getVolumeMountPath } from "~/client/lib/volume-path";
+import { useTranslation } from "~/client/lib/i18n";
 
 const SnapshotError = () => {
+	const { t } = useTranslation();
 	const { repositoryId } = useParams({ from: "/(dashboard)/repositories/$repositoryId/$snapshotId/" });
 
 	return (
 		<Card>
 			<CardContent className="flex flex-col items-center justify-center text-center py-12">
 				<Database className="mb-4 h-12 w-12 text-destructive" />
-				<p className="text-destructive font-semibold">Snapshot not found</p>
-				<p className="text-sm text-muted-foreground mt-2">This snapshot does not exist in this repository</p>
-				<p className="text-sm text-muted-foreground mt-1">
-					It may have been deleted manually outside of Zerobyte.
+				<p className="text-destructive font-semibold">{t("repositories.snapshotDetails.snapshotNotFound")}</p>
+				<p className="text-sm text-muted-foreground mt-2">
+					{t("repositories.snapshotDetails.thisSnapshotDoesNot")}
 				</p>
+				<p className="text-sm text-muted-foreground mt-1">{t("repositories.snapshotDetails.itMayHaveBeen")}</p>
 				<div className="mt-4">
 					<Link
 						to={`/repositories/$repositoryId`}
 						search={() => ({ tab: "snapshots" })}
 						params={{ repositoryId }}
 					>
-						<Button variant="outline">Back to repository</Button>
+						<Button variant="outline">{t("repositories.snapshotDetails.backToRepository")}</Button>
 					</Link>
 				</div>
 			</CardContent>
@@ -41,20 +43,23 @@ const SnapshotError = () => {
 	);
 };
 
-const SnapshotFileBrowserSkeleton = () => (
-	<div className="space-y-4">
-		<Card className="h-150 flex flex-col">
-			<CardHeader>
-				<CardTitle>File Browser</CardTitle>
-			</CardHeader>
-			<CardContent className="flex-1 overflow-hidden flex flex-col p-0">
-				<div className="overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4 flex flex-col items-center justify-center p-6 text-center">
-					<p className="text-muted-foreground">Loading snapshot...</p>
-				</div>
-			</CardContent>
-		</Card>
-	</div>
-);
+const SnapshotFileBrowserSkeleton = () => {
+	const { t } = useTranslation();
+	return (
+		<div className="space-y-4">
+			<Card className="h-150 flex flex-col">
+				<CardHeader>
+					<CardTitle>{t("repositories.snapshotDetails.fileBrowser")}</CardTitle>
+				</CardHeader>
+				<CardContent className="flex-1 overflow-hidden flex flex-col p-0">
+					<div className="overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4 flex flex-col items-center justify-center p-6 text-center">
+						<p className="text-muted-foreground">{t("repositories.snapshotDetails.loadingSnapshot")}</p>
+					</div>
+				</CardContent>
+			</Card>
+		</div>
+	);
+};
 
 type Props = {
 	repositoryId: string;
@@ -63,6 +68,7 @@ type Props = {
 };
 
 export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot }: Props) {
+	const { t } = useTranslation();
 	const [showAllPaths, setShowAllPaths] = useState(false);
 	const { formatDateTime } = useTimeFormat();
 
@@ -86,7 +92,9 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 				<div className="flex items-center justify-between mb-4">
 					<div>
 						<h1 className="text-2xl font-bold">{repository.name}</h1>
-						<p className="text-sm text-muted-foreground">Snapshot: {snapshotId}</p>
+						<p className="text-sm text-muted-foreground">
+							{t("repositories.snapshotDetails.snapshot", { snapshotId: snapshotId })}
+						</p>
 					</div>
 				</div>
 				<SnapshotError />
@@ -99,7 +107,9 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 			<div className="flex items-center justify-between">
 				<div>
 					<h1 className="text-2xl font-bold">{repository.name}</h1>
-					<p className="text-sm text-muted-foreground">Snapshot: {snapshotId}</p>
+					<p className="text-sm text-muted-foreground">
+						{t("repositories.snapshotDetails.snapshot", { snapshotId: snapshotId })}
+					</p>
 				</div>
 			</div>
 
@@ -116,26 +126,32 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 			{data && (
 				<Card>
 					<CardHeader>
-						<CardTitle>Snapshot Information</CardTitle>
+						<CardTitle>{t("repositories.snapshotDetails.snapshotInformation")}</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-2 text-sm">
 						<div className="grid grid-cols-2 gap-4">
 							<div>
-								<span className="text-muted-foreground">Snapshot ID:</span>
+								<span className="text-muted-foreground">
+									{t("repositories.snapshotDetails.snapshotId")}
+								</span>
 								<p className="font-mono break-all">{data.short_id}</p>
 							</div>
 							<div>
-								<span className="text-muted-foreground">Hostname:</span>
+								<span className="text-muted-foreground">
+									{t("repositories.snapshotDetails.hostname")}
+								</span>
 								<p>{data.hostname}</p>
 							</div>
 							<div>
-								<span className="text-muted-foreground">Time:</span>
+								<span className="text-muted-foreground">{t("repositories.snapshotDetails.time")}</span>
 								<p>{formatDateTime(data.time)}</p>
 							</div>
 							{backupSchedule && (
 								<>
 									<div>
-										<span className="text-muted-foreground">Backup Schedule:</span>
+										<span className="text-muted-foreground">
+											{t("repositories.snapshotDetails.backupSchedule")}
+										</span>
 										<p>
 											<Link
 												to="/backups/$backupId"
@@ -147,7 +163,9 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 										</p>
 									</div>
 									<div>
-										<span className="text-muted-foreground">Volume:</span>
+										<span className="text-muted-foreground">
+											{t("repositories.snapshotDetails.volume")}
+										</span>
 										<p>
 											<Link
 												to={`/volumes/$volumeId`}
@@ -162,7 +180,7 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 							)}
 
 							<div className="col-span-2">
-								<span className="text-muted-foreground">Paths:</span>
+								<span className="text-muted-foreground">{t("repositories.snapshotDetails.paths")}</span>
 								<div className="space-y-1 mt-1">
 									{data.paths.slice(0, showAllPaths ? undefined : 20).map((path) => (
 										<p
@@ -178,7 +196,11 @@ export function SnapshotDetailsPage({ repositoryId, snapshotId, initialSnapshot 
 											onClick={() => setShowAllPaths(!showAllPaths)}
 											className="text-xs text-primary hover:underline mt-1"
 										>
-											{showAllPaths ? "Show less" : `+ ${data.paths.length - 20} more`}
+											{showAllPaths
+												? t("repositories.snapshotDetails.showLess")
+												: t("repositories.snapshotDetails.more", {
+														value: data.paths.length - 20,
+													})}
 										</button>
 									)}
 								</div>

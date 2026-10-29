@@ -27,6 +27,7 @@ import { cn } from "~/client/lib/utils";
 import { formatDuration } from "~/client/lib/datetime";
 import { BackupStatusDot } from "~/client/modules/backups/components/backup-status-dot";
 import { backupTasksOptions, useActiveBackupTasks, type BackupTask } from "~/client/modules/backups/backup-tasks";
+import { useTranslation } from "~/client/lib/i18n";
 
 type TraySchedule = ListBackupSchedulesResponse[number];
 
@@ -87,6 +88,7 @@ function DesktopTrayPage() {
 }
 
 function TrayScheduleRow({ schedule, activeBackupTask }: { schedule: TraySchedule; activeBackupTask?: BackupTask }) {
+	const { t } = useTranslation();
 	const { formatShortDateTime } = useTimeFormat();
 	const runBackup = useMutation(runBackupNowMutation());
 	const cancelBackup = useMutation(cancelTaskMutation());
@@ -167,10 +169,10 @@ function TrayScheduleRow({ schedule, activeBackupTask }: { schedule: TraySchedul
 
 			<div className="mt-2 flex min-w-0 items-center gap-2 text-[11px] text-muted-foreground">
 				<span className="min-w-0 truncate">
-					Last: <TimeAgo date={schedule.lastBackupAt} />
+					{t("routes.tray.last")} <TimeAgo date={schedule.lastBackupAt} />
 				</span>
 				<span className="shrink-0 text-border">|</span>
-				<span className="min-w-0 truncate">Next: {nextBackup}</span>
+				<span className="min-w-0 truncate">{t("routes.tray.next", { nextBackup: nextBackup })}</span>
 				<ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
 			</div>
 			<TrayProgressLine progress={activeBackupTask?.progress?.progress ?? null} isRunning={isRunning} />
@@ -232,39 +234,38 @@ function TrayLoadingState() {
 }
 
 function TrayErrorState() {
+	const { t } = useTranslation();
 	return (
 		<div className="mt-10 flex flex-col items-center gap-3 px-8 text-center">
 			<AlertTriangle className="h-6 w-6 text-destructive" />
 			<div>
-				<p className="text-sm font-semibold">Backup status unavailable</p>
-				<p className="mt-1 text-xs leading-5 text-muted-foreground">
-					Open Zerobyte to inspect the server state.
-				</p>
+				<p className="text-sm font-semibold">{t("routes.tray.backupStatusUnavailable")}</p>
+				<p className="mt-1 text-xs leading-5 text-muted-foreground">{t("routes.tray.openZerobyteToInspect")}</p>
 			</div>
 		</div>
 	);
 }
 
 function TrayEmptyState() {
+	const { t } = useTranslation();
 	return (
 		<div className="mt-12 flex flex-col items-center gap-4 px-8 text-center">
 			<div className="grid h-10 w-10 place-items-center border border-border bg-card">
 				<CalendarClock className="h-5 w-5 text-strong-accent" />
 			</div>
 			<div>
-				<p className="text-sm font-semibold">No backup jobs yet</p>
-				<p className="mt-1 text-xs leading-5 text-muted-foreground">
-					Create a job to start backing up your volumes.
-				</p>
+				<p className="text-sm font-semibold">{t("routes.tray.noBackupJobsYet")}</p>
+				<p className="mt-1 text-xs leading-5 text-muted-foreground">{t("routes.tray.createAJobTo")}</p>
 			</div>
 			<Button size="sm" onClick={() => openMainWindow("/backups/create")}>
-				Create
+				{t("common.create")}
 			</Button>
 		</div>
 	);
 }
 
 function TrayFooter() {
+	const { t } = useTranslation();
 	return (
 		<footer className="flex items-center justify-between gap-3 border-t border-border bg-card-header p-3">
 			<div className="flex min-w-0 items-center gap-2">
@@ -276,7 +277,7 @@ function TrayFooter() {
 			<Button
 				variant="secondary"
 				size="icon"
-				aria-label="Quit Zerobyte"
+				aria-label={t("routes.tray.quitZerobyte")}
 				className="h-8 w-8"
 				onClick={() => window.zerobyteDesktop?.quit()}
 			>

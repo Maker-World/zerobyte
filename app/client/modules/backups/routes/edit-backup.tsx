@@ -8,8 +8,10 @@ import { parseError } from "~/client/lib/errors";
 import { useNavigate } from "@tanstack/react-router";
 import { getCronExpression } from "~/utils/utils";
 import { CreateScheduleForm, type BackupScheduleFormValues } from "../components/create-schedule-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function EditBackupPage({ backupId }: { backupId: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 
@@ -20,11 +22,11 @@ export function EditBackupPage({ backupId }: { backupId: string }) {
 	const updateSchedule = useMutation({
 		...updateBackupScheduleMutation(),
 		onSuccess: () => {
-			toast.success("Backup schedule saved successfully");
+			toast.success(t("backups.backupDetails.backupScheduleSavedSuccessfully"));
 			void navigate({ to: `/backups/${schedule.shortId}` });
 		},
 		onError: (error) => {
-			toast.error("Failed to save backup schedule", {
+			toast.error(t("backups.backupDetails.failedToSaveBackup"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -78,11 +80,11 @@ export function EditBackupPage({ backupId }: { backupId: string }) {
 					loading={updateSchedule.isPending}
 				>
 					<Save className="h-4 w-4 mr-2" />
-					Update schedule
+					{t("backups.editBackup.updateSchedule")}
 				</Button>
 				<Button variant="outline" onClick={() => navigate({ to: `/backups/${schedule.shortId}` })}>
 					<X className="h-4 w-4 mr-2" />
-					Cancel
+					{t("common.cancel")}
 				</Button>
 			</div>
 		</div>

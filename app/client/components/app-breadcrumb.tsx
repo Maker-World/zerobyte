@@ -8,16 +8,18 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "~/client/components/ui/breadcrumb";
+import { type TFunction, useTranslation } from "~/client/lib/i18n";
 
 export interface BreadcrumbItemData {
 	label: string;
 	href?: string;
 }
 
-type BreadcrumbFunction = (match: ReturnType<typeof useMatches>[number]) => BreadcrumbItemData[] | null;
+type BreadcrumbFunction = (match: ReturnType<typeof useMatches>[number], t: TFunction) => BreadcrumbItemData[] | null;
 
 export function AppBreadcrumb() {
 	const matches = useMatches();
+	const { t } = useTranslation();
 
 	const lastMatchWithBreadcrumb = [...matches].reverse().find((match) => {
 		const breadcrumbFn = match.staticData?.breadcrumb as BreadcrumbFunction | undefined;
@@ -29,7 +31,7 @@ export function AppBreadcrumb() {
 	}
 
 	const breadcrumbFn = lastMatchWithBreadcrumb.staticData?.breadcrumb as BreadcrumbFunction;
-	const breadcrumbs = breadcrumbFn?.(lastMatchWithBreadcrumb);
+	const breadcrumbs = breadcrumbFn?.(lastMatchWithBreadcrumb, t);
 
 	if (!breadcrumbs || breadcrumbs.length === 0) {
 		return null;

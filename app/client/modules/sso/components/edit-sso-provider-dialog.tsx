@@ -25,6 +25,7 @@ import { Label } from "~/client/components/ui/label";
 import type { SsoProviderDetails, SsoDiscoveryResult } from "~/lib/sso-configuration";
 import { parseError } from "~/client/lib/errors";
 import { getLinkedSsoProviderEditError, isSameIssuerExceptTrailingSlash } from "~/lib/sso-provider-identity";
+import { useTranslation } from "~/client/lib/i18n";
 
 function getUsableDiscoveredIssuer(provider: SsoProviderDetails, discovery?: SsoDiscoveryResult) {
 	const discoveredIssuer = discovery?.discoveryIssuer;
@@ -36,34 +37,44 @@ function getUsableDiscoveredIssuer(provider: SsoProviderDetails, discovery?: Sso
 }
 
 export function EditSsoProviderDialog({ providerId }: { providerId: string }) {
+	const { t } = useTranslation();
 	const [open, setOpen] = useState(false);
 	const provider = useQuery({ ...getSsoProviderDetailsOptions({ path: { providerId } }), enabled: open });
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="ghost" size="icon" title={`Edit ${providerId}`} aria-label={`Edit ${providerId}`}>
+				<Button
+					variant="ghost"
+					size="icon"
+					title={t("sso.editSsoProviderDialog.edit", { providerId: providerId })}
+					aria-label={t("sso.editSsoProviderDialog.edit", { providerId: providerId })}
+				>
 					<Pencil className="h-4 w-4" />
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-2xl max-h-[90dvh] flex flex-col overflow-hidden">
 				<DialogHeader>
-					<DialogTitle>Edit SSO provider</DialogTitle>
+					<DialogTitle>{t("sso.editSsoProviderDialog.editSsoProvider")}</DialogTitle>
 					<DialogDescription>
-						Update {providerId} without recreating it or removing linked accounts.
+						{t("sso.editSsoProviderDialog.updateWithoutRecreatingIt", { providerId: providerId })}
 					</DialogDescription>
 				</DialogHeader>
-				{provider.isPending && <output className="text-sm text-muted-foreground">Loading settings…</output>}
+				{provider.isPending && (
+					<output className="text-sm text-muted-foreground">
+						{t("sso.editSsoProviderDialog.loadingSettings")}
+					</output>
+				)}
 				{provider.isError && (
 					<Alert variant="destructive">
 						<AlertContent>
 							<AlertDescription>
-								{parseError(provider.error)?.message ?? "Could not load this provider."}
+								{parseError(provider.error)?.message ?? t("sso.editSsoProviderDialog.couldNotLoadThis")}
 							</AlertDescription>
 						</AlertContent>
 						<AlertAction>
 							<Button type="button" variant="outline" onClick={() => void provider.refetch()}>
-								Try again
+								{t("common.tryAgain")}
 							</Button>
 						</AlertAction>
 					</Alert>
@@ -75,6 +86,7 @@ export function EditSsoProviderDialog({ providerId }: { providerId: string }) {
 }
 
 export function SsoProviderEditor({ provider, onClose }: { provider: SsoProviderDetails; onClose: () => void }) {
+	const { t } = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -102,7 +114,7 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 	const update = useMutation({
 		...updateSsoProviderMutation(),
 		onSuccess: () => {
-			toast.success("SSO provider updated");
+			toast.success(t("sso.editSsoProviderDialog.ssoProviderUpdated"));
 			onClose();
 		},
 	});
@@ -117,9 +129,9 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 	const copyCallbackUrl = async () => {
 		try {
 			await navigator.clipboard.writeText(provider.callbackUrl);
-			toast.success("Callback URL copied");
+			toast.success(t("sso.editSsoProviderDialog.callbackUrlCopied"));
 		} catch {
-			toast.error("Could not copy. Select the URL and copy it manually.");
+			toast.error(t("sso.editSsoProviderDialog.couldNotCopySelect"));
 		}
 	};
 
@@ -136,17 +148,17 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 				{provider.proxyMisconfigured && (
 					<Alert variant="warning">
 						<AlertTriangle className="h-4 w-4" />
-						<AlertTitle>SSO is generating an HTTP callback</AlertTitle>
+						<AlertTitle>{t("sso.editSsoProviderDialog.ssoIsGeneratingAn")}</AlertTitle>
 						<AlertDescription>
-							Enable <code>TRUST_PROXY=true</code> and make sure your reverse proxy forwards{" "}
-							<code>X-Forwarded-Proto: https</code>. Restart Zerobyte after changing its environment. The
-							expected callback is{" "}
+							{t("sso.editSsoProviderDialog.enable")} <code>TRUST_PROXY=true</code>{" "}
+							{t("sso.editSsoProviderDialog.andMakeSureYour")} <code>X-Forwarded-Proto: https</code>
+							{t("sso.editSsoProviderDialog.restartZerobyteAfterChanging")}{" "}
 							<span className="break-all font-mono">{provider.expectedCallbackUrl}</span>.
 						</AlertDescription>
 					</Alert>
 				)}
 				<div className="space-y-2">
-					<Label htmlFor="sso-callback">Callback URL sent to your identity provider</Label>
+					<Label htmlFor="sso-callback">{t("sso.editSsoProviderDialog.callbackUrlSentTo")}</Label>
 					<div className="flex gap-2">
 						<Input
 							id="sso-callback"
@@ -159,24 +171,23 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 							type="button"
 							variant="outline"
 							size="icon"
-							aria-label="Copy callback URL"
+							aria-label={t("sso.editSsoProviderDialog.copyCallbackUrl")}
 							onClick={() => void copyCallbackUrl()}
 						>
 							<Copy className="h-4 w-4" />
 						</Button>
 					</div>
 					<p className="text-xs text-muted-foreground">
-						Register this exact URL in your identity provider. The scheme, hostname, port, provider ID, and
-						trailing slash must match.
+						{t("sso.editSsoProviderDialog.registerThisExactUrl")}
 					</p>
 				</div>
 				{discovery.data?.discoveryStatus === "issuer_mismatch" && (
 					<Alert variant="warning">
 						<AlertContent>
 							<AlertTriangle className="h-4 w-4" />
-							<AlertTitle>Issuer URLs do not match</AlertTitle>
+							<AlertTitle>{t("sso.editSsoProviderDialog.issuerUrlsDoNot")}</AlertTitle>
 							<AlertDescription>
-								Discovery publishes{" "}
+								{t("sso.editSsoProviderDialog.discoveryPublishes")}{" "}
 								<span className="break-all font-mono">{discovery.data?.discoveryIssuer}</span>.{" "}
 								{discovery.data?.discoveryMessage}
 							</AlertDescription>
@@ -189,7 +200,7 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 									size="sm"
 									onClick={() => setValue("issuer", discoveredIssuer, { shouldDirty: true })}
 								>
-									Use discovered issuer
+									{t("sso.editSsoProviderDialog.useDiscoveredIssuer")}
 								</Button>
 							</AlertAction>
 						)}
@@ -198,27 +209,30 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 				{discovery.isError && (
 					<Alert variant="warning">
 						<AlertDescription>
-							{parseError(discovery.error)?.message ?? "Could not check discovery."}
+							{parseError(discovery.error)?.message ??
+								t("sso.editSsoProviderDialog.couldNotCheckDiscovery")}
 						</AlertDescription>
 					</Alert>
 				)}
 				{discovery.data?.discoveryStatus === "unavailable" && (
 					<Alert variant="warning">
-						<AlertTitle>Discovery could not be checked</AlertTitle>
+						<AlertTitle>{t("sso.editSsoProviderDialog.discoveryCouldNotBe")}</AlertTitle>
 						<AlertDescription>
-							{discovery.data?.discoveryMessage} You can still update the domain or rotate the secret.
+							{t("sso.editSsoProviderDialog.youCanStillUpdate", {
+								discoveryMessage: discovery.data?.discoveryMessage,
+							})}
 						</AlertDescription>
 					</Alert>
 				)}
 				{discovery.data?.discoveryStatus === "ok" && (
 					<p className="flex items-center gap-2 text-sm text-muted-foreground">
 						<CheckCircle2 className="h-4 w-4 text-green-500" />
-						Saved issuer matches discovery.
+						{t("sso.editSsoProviderDialog.savedIssuerMatchesDiscovery")}
 					</p>
 				)}
 				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2 sm:col-span-2">
-						<Label htmlFor="sso-edit-issuer">Issuer URL</Label>
+						<Label htmlFor="sso-edit-issuer">{t("sso.editSsoProviderDialog.issuerUrl")}</Label>
 						<Input
 							id="sso-edit-issuer"
 							type="url"
@@ -227,12 +241,11 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 							disabled={update.isPending}
 						/>
 						<p className="text-xs text-muted-foreground">
-							Copy the issuer exactly as published in the discovery document, including any trailing
-							slash.
+							{t("sso.editSsoProviderDialog.copyTheIssuerExactly")}
 						</p>
 					</div>
 					<div className="space-y-2 sm:col-span-2">
-						<Label htmlFor="sso-edit-discovery">Discovery Endpoint</Label>
+						<Label htmlFor="sso-edit-discovery">{t("sso.editSsoProviderDialog.discoveryEndpoint")}</Label>
 						<Input
 							id="sso-edit-discovery"
 							type="url"
@@ -242,11 +255,11 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="sso-edit-domain">Organization Domain</Label>
+						<Label htmlFor="sso-edit-domain">{t("sso.editSsoProviderDialog.organizationDomain")}</Label>
 						<Input id="sso-edit-domain" required {...register("domain")} disabled={update.isPending} />
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="sso-edit-client-id">Client ID</Label>
+						<Label htmlFor="sso-edit-client-id">{t("sso.editSsoProviderDialog.clientId")}</Label>
 						<Input
 							id="sso-edit-client-id"
 							required
@@ -255,7 +268,7 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 						/>
 					</div>
 					<div className="space-y-2 sm:col-span-2">
-						<Label htmlFor="sso-edit-secret">Client Secret</Label>
+						<Label htmlFor="sso-edit-secret">{t("sso.editSsoProviderDialog.clientSecret")}</Label>
 						<Input
 							id="sso-edit-secret"
 							type="password"
@@ -263,20 +276,19 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 							{...register("clientSecret")}
 							placeholder={
 								provider.hasClientSecret
-									? "Leave blank to keep the current secret"
-									: "Enter a client secret"
+									? t("sso.editSsoProviderDialog.leaveBlankToKeep")
+									: t("sso.editSsoProviderDialog.enterAClientSecret")
 							}
 							disabled={update.isPending}
 						/>
 						<p className="text-xs text-muted-foreground">
-							The saved secret is never displayed. Enter a replacement only when rotating it.
+							{t("sso.editSsoProviderDialog.theSavedSecretIs")}
 						</p>
 					</div>
 				</div>
 				{provider.hasLinkedAccounts && (
 					<p className="text-xs text-muted-foreground">
-						This provider has linked accounts. Its client ID and discovery endpoint are locked. You can
-						correct an issuer's trailing slash after discovery confirms the exact value.
+						{t("sso.editSsoProviderDialog.thisProviderHasLinked")}
 					</p>
 				)}
 				{identityChangeError && (
@@ -286,8 +298,10 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 				)}
 				{update.isError && (
 					<Alert variant="destructive">
-						<AlertTitle>Changes could not be saved</AlertTitle>
-						<AlertDescription>{parseError(update.error)?.message ?? "Please try again."}</AlertDescription>
+						<AlertTitle>{t("sso.editSsoProviderDialog.changesCouldNotBe")}</AlertTitle>
+						<AlertDescription>
+							{parseError(update.error)?.message ?? t("sso.editSsoProviderDialog.pleaseTryAgain")}
+						</AlertDescription>
 					</Alert>
 				)}
 			</div>
@@ -300,13 +314,13 @@ export function SsoProviderEditor({ provider, onClose }: { provider: SsoProvider
 					onClick={() => void discovery.refetch()}
 				>
 					<RefreshCw className="h-4 w-4 mr-2" />
-					Check saved configuration
+					{t("sso.editSsoProviderDialog.checkSavedConfiguration")}
 				</Button>
 				<Button type="button" variant="outline" disabled={update.isPending} onClick={onClose}>
-					Cancel
+					{t("common.cancel")}
 				</Button>
 				<Button type="submit" loading={update.isPending} disabled={!isDirty || identityChangeError !== null}>
-					Save changes
+					{t("volumes.createVolumeForm.saveChanges")}
 				</Button>
 			</DialogFooter>
 		</form>

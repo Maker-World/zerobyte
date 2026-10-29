@@ -17,6 +17,7 @@ import { parseError } from "~/client/lib/errors";
 import type { Repository } from "~/client/lib/types";
 import { cn } from "~/client/lib/utils";
 import { MirrorRepositoriesTable } from "./mirror-repositories-table";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	scheduleShortId: string;
@@ -42,6 +43,7 @@ const buildAssignments = (mirrors: GetScheduleMirrorsResponse) =>
 	);
 
 export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, repositories, initialData }: Props) => {
+	const { t } = useTranslation();
 	const [draftAssignments, setAssignments] = useState<Map<string, MirrorAssignment> | null>(null);
 	const hasChanges = draftAssignments !== null;
 	const [isAddingNew, setIsAddingNew] = useState(false);
@@ -60,11 +62,11 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 	const updateMirrors = useMutation({
 		...updateScheduleMirrorsMutation(),
 		onSuccess: () => {
-			toast.success("Mirror settings saved successfully");
+			toast.success(t("backups.scheduleMirrorsConfig.mirrorSettingsSavedSuccessfully"));
 			setAssignments(null);
 		},
 		onError: (error) => {
-			toast.error("Failed to save mirror settings", {
+			toast.error(t("backups.scheduleMirrorsConfig.failedToSaveMirror"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -143,17 +145,16 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<Copy className="h-5 w-5" />
-							Mirror Repositories
+							{t("backups.scheduleMirrorsConfig.mirrorRepositories")}
 						</CardTitle>
 						<CardDescription className="hidden @md:block mt-1">
-							Configure secondary repositories where snapshots will be automatically copied after each
-							backup
+							{t("backups.scheduleMirrorsConfig.configureSecondaryRepositoriesWhere")}
 						</CardDescription>
 					</div>
 					{showAddMirrorButton && (
 						<Button variant="outline" size="sm" onClick={() => setIsAddingNew(true)}>
 							<Plus className="h-4 w-4 mr-2" />
-							Add mirror
+							{t("backups.scheduleMirrorsConfig.addMirror")}
 						</Button>
 					)}
 				</div>
@@ -163,7 +164,7 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 					<div className="mb-6 flex items-center gap-2 max-w-md">
 						<Select onValueChange={addRepository}>
 							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Select a repository to mirror to..." />
+								<SelectValue placeholder={t("backups.scheduleMirrorsConfig.selectARepositoryTo")} />
 							</SelectTrigger>
 							<SelectContent>
 								{selectableRepositories.map((repository) => {
@@ -171,7 +172,7 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 									const repositoryCompatible = repositoryCompatibility?.compatible ?? false;
 									const compatibilityReason =
 										repositoryCompatibility?.reason ??
-										"This repository is not compatible for mirroring.";
+										t("backups.scheduleMirrorsConfig.thisRepositoryIsNot");
 
 									return (
 										<Tooltip key={repository.shortId}>
@@ -202,8 +203,7 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 											>
 												<p>{compatibilityReason}</p>
 												<p className="mt-1 text-xs text-muted-foreground">
-													Consider creating a new backup scheduler with the desired
-													destination instead.
+													{t("backups.scheduleMirrorsConfig.considerCreatingANew")}
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -211,18 +211,17 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 								})}
 								{!hasAvailableRepositories && selectableRepositories.length > 0 && (
 									<div className="px-2 py-3 text-sm text-muted-foreground text-center">
-										All available repositories have conflicting backends.
+										{t("backups.scheduleMirrorsConfig.allAvailableRepositoriesHave")}
 										<br />
 										<span className="text-xs">
-											Consider creating a new backup scheduler with the desired destination
-											instead.
+											{t("backups.scheduleMirrorsConfig.considerCreatingANew")}
 										</span>
 									</div>
 								)}
 							</SelectContent>
 						</Select>
 						<Button variant="ghost" size="sm" onClick={() => setIsAddingNew(false)}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 					</div>
 				)}
@@ -240,10 +239,10 @@ export const ScheduleMirrorsConfig = ({ scheduleShortId, primaryRepositoryId, re
 				{hasChanges && (
 					<div className="flex gap-2 justify-end mt-4 pt-4">
 						<Button variant="outline" size="sm" onClick={handleReset}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button variant="default" size="sm" onClick={handleSave} loading={updateMirrors.isPending}>
-							Save changes
+							{t("volumes.createVolumeForm.saveChanges")}
 						</Button>
 					</div>
 				)}

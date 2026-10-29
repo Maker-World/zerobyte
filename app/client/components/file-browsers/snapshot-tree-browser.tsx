@@ -8,6 +8,7 @@ import { isPathWithin, normalizeAbsolutePath } from "@zerobyte/core/utils";
 import type { ListSnapshotFilesResponse } from "~/client/api-client";
 import { buildFileEntryMap } from "~/client/components/file-tree-model";
 import { SnapshotEntryDetails } from "./snapshot-entry-details";
+import { useTranslation } from "~/client/lib/i18n";
 
 function toBrowserFiles(data: ListSnapshotFilesResponse) {
 	return {
@@ -56,6 +57,7 @@ type SnapshotTreeBrowserProps = Omit<
 };
 
 export const SnapshotTreeBrowser = (props: SnapshotTreeBrowserProps) => {
+	const { t } = useTranslation();
 	const {
 		repositoryId,
 		snapshotId,
@@ -159,7 +161,7 @@ export const SnapshotTreeBrowser = (props: SnapshotTreeBrowserProps) => {
 				isLoading={fileBrowser.isLoading}
 				isEmpty={fileBrowser.isEmpty}
 				errorMessage={parseError(error)?.message}
-				loadingMessage={fileBrowserUiProps.loadingMessage ?? "Loading files..."}
+				loadingMessage={fileBrowserUiProps.loadingMessage ?? t("components.snapshotTreeBrowser.loadingFiles")}
 				selectedPaths={displaySelectedPaths}
 				onSelectionChange={onSelectionChange ? handleSelectionChange : undefined}
 				selectableFolders

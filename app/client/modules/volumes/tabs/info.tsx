@@ -6,6 +6,7 @@ import { Card, CardTitle } from "~/client/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/client/components/ui/chart";
 import type { StatFs, Volume } from "~/client/lib/types";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	volume: Volume;
@@ -41,17 +42,18 @@ function ConfigRow({ icon, label, value, mono }: ConfigRowProps) {
 }
 
 function BackendConfigRows({ volume }: { volume: Volume }) {
+	const { t } = useTranslation();
 	if (volume.sourceKind === "filesystem") {
 		return (
 			<>
 				<ConfigRow
 					icon={<Laptop className="h-4 w-4" />}
-					label="Machine"
+					label={t("volumes.info.machine")}
 					value={volume.sourceLocation.machine}
 				/>
 				<ConfigRow
 					icon={<FolderOpen className="h-4 w-4" />}
-					label="Folder"
+					label={t("volumes.info.folder")}
 					value={volume.sourceLocation.path}
 					mono
 				/>
@@ -64,15 +66,25 @@ function BackendConfigRows({ volume }: { volume: Volume }) {
 	switch (config.backend) {
 		case "directory":
 			return (
-				<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Directory Path" value={config.path} mono />
+				<ConfigRow
+					icon={<FolderOpen className="h-4 w-4" />}
+					label={t("volumes.info.directoryPath")}
+					value={config.path}
+					mono
+				/>
 			);
 		case "nfs":
 			return (
 				<>
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Server" value={config.server} mono />
 					<ConfigRow
 						icon={<FolderOpen className="h-4 w-4" />}
-						label="Export Path"
+						label={t("volumes.info.server")}
+						value={config.server}
+						mono
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.exportPath")}
 						value={config.exportPath}
 						mono
 					/>
@@ -81,36 +93,81 @@ function BackendConfigRows({ volume }: { volume: Volume }) {
 		case "smb":
 			return (
 				<>
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Server" value={config.server} mono />
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Share" value={config.share} mono />
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.server")}
+						value={config.server}
+						mono
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.share")}
+						value={config.share}
+						mono
+					/>
 				</>
 			);
 		case "webdav":
 			return (
 				<>
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Server" value={config.server} mono />
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Path" value={config.path} mono />
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.server")}
+						value={config.server}
+						mono
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.path")}
+						value={config.path}
+						mono
+					/>
 				</>
 			);
 		case "rclone":
 			return (
 				<>
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Remote" value={config.remote} mono />
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Path" value={config.path} mono />
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("settings.machineRow.remote")}
+						value={config.remote}
+						mono
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.path")}
+						value={config.path}
+						mono
+					/>
 				</>
 			);
 		case "sftp":
 			return (
 				<>
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Host" value={config.host} mono />
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Username" value={config.username} />
-					<ConfigRow icon={<FolderOpen className="h-4 w-4" />} label="Path" value={config.path} mono />
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.host")}
+						value={config.host}
+						mono
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("auth.username")}
+						value={config.username}
+					/>
+					<ConfigRow
+						icon={<FolderOpen className="h-4 w-4" />}
+						label={t("volumes.info.path")}
+						value={config.path}
+						mono
+					/>
 				</>
 			);
 	}
 }
 
 function DonutChart({ statfs }: { statfs: StatFs }) {
+	const { t } = useTranslation();
 	const { used = 0, total = 0 } = statfs;
 
 	const chartData = useMemo(
@@ -155,7 +212,7 @@ function DonutChart({ statfs }: { statfs: StatFs }) {
 											y={(viewBox.cy || 0) + 20}
 											className="fill-muted-foreground text-xs"
 										>
-											Used
+											{t("volumes.info.used")}
 										</tspan>
 									</text>
 								);
@@ -169,10 +226,11 @@ function DonutChart({ statfs }: { statfs: StatFs }) {
 }
 
 export const VolumeInfoTabContent = ({ volume, statfs }: Props) => {
+	const { t } = useTranslation();
 	const { total = 0, used = 0, free = 0 } = statfs;
 
 	const hasStorage = total > 0;
-	const backendLabel = volume.type === null ? "Filesystem" : backendLabels[volume.type];
+	const backendLabel = volume.type === null ? t("volumes.filesystem") : backendLabels[volume.type];
 
 	return (
 		<Card className="px-6 py-6 @container/inner">
@@ -185,11 +243,19 @@ export const VolumeInfoTabContent = ({ volume, statfs }: Props) => {
 				<div>
 					<CardTitle className="flex items-center gap-2 mb-5">
 						<Settings className="h-4 w-4 text-muted-foreground" />
-						Configuration
+						{t("volumes.volumeDetails.configuration")}
 					</CardTitle>
 					<div className="space-y-0 divide-y divide-border/50">
-						<ConfigRow icon={<HardDrive className="h-4 w-4" />} label="Name" value={volume.name} />
-						<ConfigRow icon={<HardDrive className="h-4 w-4" />} label="Backend" value={backendLabel} />
+						<ConfigRow
+							icon={<HardDrive className="h-4 w-4" />}
+							label={t("common.name")}
+							value={volume.name}
+						/>
+						<ConfigRow
+							icon={<HardDrive className="h-4 w-4" />}
+							label={t("common.backend")}
+							value={backendLabel}
+						/>
 						<BackendConfigRows volume={volume} />
 					</div>
 				</div>
@@ -198,28 +264,28 @@ export const VolumeInfoTabContent = ({ volume, statfs }: Props) => {
 					<div className="@3xl/inner:border-l @3xl/inner:border-border/50 @3xl/inner:pl-8">
 						<CardTitle className="flex items-center gap-2 mb-2 text-center @3xl/inner:text-left">
 							<HardDrive className="h-4 w-4" />
-							Storage
+							{t("volumes.info.storage")}
 						</CardTitle>
 						<DonutChart statfs={statfs} />
 						<div className="grid gap-2 mt-2">
 							<div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
 								<div className="flex items-center gap-3">
 									<HardDrive className="h-4 w-4 text-muted-foreground" />
-									<span className="text-sm font-medium">Total</span>
+									<span className="text-sm font-medium">{t("volumes.info.total")}</span>
 								</div>
 								<ByteSize bytes={total} className="font-mono text-sm" />
 							</div>
 							<div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
 								<div className="flex items-center gap-3">
 									<div className="h-3 w-3 rounded-full bg-strong-accent" />
-									<span className="text-sm font-medium">Used</span>
+									<span className="text-sm font-medium">{t("volumes.info.used")}</span>
 								</div>
 								<ByteSize bytes={used} className="font-mono text-sm" />
 							</div>
 							<div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
 								<div className="flex items-center gap-3">
 									<div className="h-3 w-3 rounded-full bg-primary" />
-									<span className="text-sm font-medium">Free</span>
+									<span className="text-sm font-medium">{t("volumes.info.free")}</span>
 								</div>
 								<ByteSize bytes={free} className="font-mono text-sm" />
 							</div>
@@ -230,9 +296,9 @@ export const VolumeInfoTabContent = ({ volume, statfs }: Props) => {
 					<div className="@3xl/inner:border-l @3xl/inner:border-border/50 @3xl/inner:pl-8 flex flex-col items-center justify-center text-center py-8">
 						<Unplug className="mb-4 h-5 w-5 text-muted-foreground" />
 						<p className="text-sm text-muted-foreground">
-							No storage data available.
+							{t("volumes.info.noStorageDataAvailable")}
 							<br />
-							Mount the source to see usage.
+							{t("volumes.info.mountTheSourceTo")}
 						</p>
 					</div>
 				)}

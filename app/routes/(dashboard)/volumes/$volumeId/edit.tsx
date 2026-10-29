@@ -14,10 +14,13 @@ export const Route = createFileRoute("/(dashboard)/volumes/$volumeId/edit")({
 		return volume;
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Sources", href: "/volumes" },
-			{ label: match.loaderData?.volume.name || "Source", href: `/volumes/${match.params.volumeId}` },
-			{ label: "Edit" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.sources"), href: "/volumes" },
+			{
+				label: match.loaderData?.volume.name || t("breadcrumb.source"),
+				href: `/volumes/${match.params.volumeId}`,
+			},
+			{ label: t("common.edit") },
 		],
 	},
 	head: ({ loaderData }) => ({

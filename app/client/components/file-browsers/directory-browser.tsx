@@ -1,4 +1,5 @@
 import { LocalFileBrowser, type TrustedRootRef } from "./local-file-browser";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	onSelectPath: (path: string) => void;
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export const DirectoryBrowser = ({ onSelectPath, selectedPath, trustedRoot }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<LocalFileBrowser
 			trustedRoot={trustedRoot}
@@ -19,8 +21,8 @@ export const DirectoryBrowser = ({ onSelectPath, selectedPath, trustedRoot }: Pr
 			onFolderSelect={onSelectPath}
 			showSelectedPathFooter
 			selectedPath={selectedPath}
-			loadingMessage="Loading directories..."
-			emptyMessage="No subdirectories found"
+			loadingMessage={t("components.directoryBrowser.loadingDirectories")}
+			emptyMessage={t("components.directoryBrowser.noSubdirectoriesFound")}
 		/>
 	);
 };

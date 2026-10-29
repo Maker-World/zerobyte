@@ -16,6 +16,7 @@ import { Table, TableBody, TableCell, TableRow } from "~/client/components/ui/ta
 import type { BackupSchedule, Repository, Snapshot } from "~/client/lib/types";
 import { cn } from "~/client/lib/utils";
 import { toast } from "sonner";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	repository: Repository;
@@ -24,6 +25,7 @@ type Props = {
 };
 
 export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, initialBackupSchedules }: Props) => {
+	const { t } = useTranslation();
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedHost, setSelectedHost] = useState<string | null>(null);
 
@@ -40,10 +42,12 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 	const refreshMutation = useMutation({
 		...refreshSnapshotsMutation(),
 		onSuccess: (data) => {
-			toast.success(`Snapshot cache refreshed. Found ${data.count} snapshots.`);
+			toast.success(t("repositories.snapshots.snapshotCacheRefreshedFound", { count: data.count }));
 		},
 		onError: (error) => {
-			toast.error("Failed to refresh snapshots", { description: parseError(error)?.message });
+			toast.error(t("repositories.snapshots.failedToRefreshSnapshots"), {
+				description: parseError(error)?.message,
+			});
 		},
 	});
 
@@ -78,9 +82,9 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 			<Card>
 				<CardContent className="flex flex-col items-center justify-center text-center py-12">
 					<Database className="mb-4 h-12 w-12 text-destructive" />
-					<p className="text-destructive font-semibold">Repository error</p>
+					<p className="text-destructive font-semibold">{t("repositories.snapshots.repositoryError")}</p>
 					<p className="text-sm text-muted-foreground mt-2">
-						This repository is in an error state and cannot be accessed.
+						{t("repositories.snapshots.thisRepositoryIsIn")}
 					</p>
 					{repository.lastError && (
 						<div className="mt-4 w-full max-w-md bg-destructive/10 border border-destructive/20 rounded-md p-3">
@@ -97,7 +101,9 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 			<Card>
 				<CardContent className="flex flex-col items-center justify-center text-center py-12">
 					<Database className="mb-4 h-12 w-12 text-destructive" />
-					<p className="text-destructive font-semibold">Failed to Load Snapshots</p>
+					<p className="text-destructive font-semibold">
+						{t("repositories.snapshots.failedToLoadSnapshots")}
+					</p>
 					<p className="text-sm text-muted-foreground mt-2">{parseError(failureReason)?.message}</p>
 				</CardContent>
 			</Card>
@@ -108,7 +114,7 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 		return (
 			<Card>
 				<CardContent className="flex items-center justify-center py-12">
-					<p className="text-muted-foreground">Loading snapshots</p>
+					<p className="text-muted-foreground">{t("repositories.snapshots.loadingSnapshots")}</p>
 				</CardContent>
 			</Card>
 		);
@@ -127,9 +133,11 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 						</div>
 					</div>
 					<div className="max-w-md space-y-3">
-						<h3 className="text-2xl font-semibold text-foreground">No snapshots yet</h3>
+						<h3 className="text-2xl font-semibold text-foreground">
+							{t("repositories.snapshots.noSnapshotsYet")}
+						</h3>
 						<p className="text-muted-foreground text-sm">
-							Snapshots are point-in-time backups of your data. Create your first backup to see it here.
+							{t("repositories.snapshots.snapshotsArePointIn")}
 						</p>
 					</div>
 				</CardContent>
@@ -142,15 +150,15 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 			<CardHeader className="p-4 bg-card-header">
 				<div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 justify-between">
 					<div className="flex-1">
-						<CardTitle>Snapshots</CardTitle>
+						<CardTitle>{t("repositories.compressionStatsChart.snapshots2")}</CardTitle>
 						<CardDescription className="mt-1">
-							Backup snapshots stored in this repository. Total: {snapshots.length}
+							{t("repositories.snapshots.backupSnapshotsStoredIn", { length: snapshots.length })}
 						</CardDescription>
 					</div>
 					<div className="flex flex-col sm:flex-row gap-2 sm:items-center">
 						<Input
 							className="w-full lg:w-60"
-							placeholder="Search snapshots..."
+							placeholder={t("repositories.snapshots.searchSnapshots")}
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
 						/>
@@ -158,14 +166,17 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 							value={selectedHost === null ? "all" : `host:${selectedHost}`}
 							onValueChange={(value) => setSelectedHost(value === "all" ? null : value.slice(5))}
 						>
-							<SelectTrigger className="w-full sm:w-48" aria-label="Filter snapshots by host">
-								<SelectValue placeholder="All hosts" />
+							<SelectTrigger
+								className="w-full sm:w-48"
+								aria-label={t("repositories.snapshots.filterSnapshotsByHost")}
+							>
+								<SelectValue placeholder={t("repositories.snapshots.allHosts")} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="all">All hosts</SelectItem>
+								<SelectItem value="all">{t("repositories.snapshots.allHosts")}</SelectItem>
 								{hosts.map((host) => (
 									<SelectItem key={host} value={`host:${host}`}>
-										{host || "Unknown"}
+										{host || t("status.unknown")}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -174,7 +185,7 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 							onClick={handleRefresh}
 							variant="outline"
 							disabled={refreshMutation.isPending}
-							title="Refresh snapshot list"
+							title={t("repositories.snapshots.refreshSnapshotList")}
 						>
 							<RefreshCw className={refreshMutation.isPending ? "h-4 w-4 animate-spin" : "h-4 w-4"} />
 						</Button>
@@ -187,7 +198,9 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 						<TableRow>
 							<TableCell colSpan={7} className="text-center py-12">
 								<div className="flex flex-col items-center gap-3">
-									<p className="text-muted-foreground">No snapshots match your filters.</p>
+									<p className="text-muted-foreground">
+										{t("repositories.snapshots.noSnapshotsMatchYour")}
+									</p>
 									<Button
 										onClick={() => {
 											setSearchQuery("");
@@ -197,7 +210,7 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 										size="sm"
 									>
 										<X className="h-4 w-4 mr-2" />
-										Clear filters
+										{t("common.clearFilters")}
 									</Button>
 								</div>
 							</TableCell>
@@ -213,9 +226,14 @@ export const RepositorySnapshotsTabContent = ({ repository, initialSnapshots, in
 				/>
 			)}
 			<div className="px-4 py-2 text-sm text-muted-foreground bg-card-header flex justify-between border-t">
-				<span className={cn({ hidden: !hasNoFilteredSnapshots })}>No snapshots match filters.</span>
+				<span className={cn({ hidden: !hasNoFilteredSnapshots })}>
+					{t("repositories.snapshots.noSnapshotsMatchFilters")}
+				</span>
 				<span className={cn({ hidden: hasNoFilteredSnapshots })}>
-					Showing {filteredSnapshots.length} of {snapshots.length}
+					{t("repositories.snapshots.showingOf", {
+						length: filteredSnapshots.length,
+						length2: snapshots.length,
+					})}
 				</span>
 			</div>
 		</Card>

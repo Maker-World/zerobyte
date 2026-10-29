@@ -4,6 +4,7 @@ import { FileTree, type FileEntry } from "~/client/components/file-tree";
 import { ScrollArea } from "~/client/components/ui/scroll-area";
 import { Button } from "~/client/components/ui/button";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PaginationState = {
 	hasMore: boolean;
@@ -59,6 +60,7 @@ const renderDefaultError = (message: string) => (
 );
 
 export const FileBrowser = (props: FileBrowserProps) => {
+	const { t } = useTranslation();
 	const {
 		className,
 		treeContainerClassName,
@@ -67,7 +69,7 @@ export const FileBrowser = (props: FileBrowserProps) => {
 		scrollAreaClassName,
 		stateClassName,
 		loadingMessage = "Loading files...",
-		emptyMessage = "No files found.",
+		emptyMessage,
 		emptyDescription,
 		emptyIcon,
 		withCheckboxes = false,
@@ -123,7 +125,7 @@ export const FileBrowser = (props: FileBrowserProps) => {
 					className={cn("mt-4", { hidden: !onRetry })}
 					onClick={onRetry}
 				>
-					Retry
+					{t("settings.machinesSection.retry")}
 				</Button>
 			</div>
 			<output
@@ -135,7 +137,7 @@ export const FileBrowser = (props: FileBrowserProps) => {
 					className={cn("mb-2 h-12 w-12 text-muted-foreground", { hidden: emptyIcon !== undefined })}
 				/>
 				{emptyIcon}
-				<p className="text-muted-foreground">{emptyMessage}</p>
+				<p className="text-muted-foreground">{emptyMessage ?? t("components.fileBrowser.noFilesFound")}</p>
 				<p className={cn("mt-2 text-sm text-muted-foreground", { hidden: !emptyDescription })}>
 					{emptyDescription}
 				</p>
@@ -151,11 +153,11 @@ export const FileBrowser = (props: FileBrowserProps) => {
 							{renderError(message)}
 							<button
 								type="button"
-								aria-label={`Retry ${path}`}
+								aria-label={t("components.fileBrowser.retry", { path: path })}
 								className="cursor-pointer text-xs text-destructive underline underline-offset-2 normal-case"
 								onClick={() => void onFolderRetry(path)}
 							>
-								Retry
+								{t("settings.machinesSection.retry")}
 							</button>
 						</div>
 					);

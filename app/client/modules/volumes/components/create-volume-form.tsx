@@ -32,6 +32,7 @@ import { testConnectionMutation } from "../../../api-client/@tanstack/react-quer
 import { useSystemInfo } from "~/client/hooks/use-system-info";
 import { useScrollToFormError } from "~/client/hooks/use-scroll-to-form-error";
 import { DirectoryForm, NFSForm, SMBForm, WebDAVForm, RcloneForm, SFTPForm } from "./volume-forms";
+import { useTranslation } from "~/client/lib/i18n";
 
 export const formSchema = z
 	.discriminatedUnion("backend", [
@@ -101,6 +102,7 @@ const defaultValuesForType = {
 };
 
 export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, formId, loading, className }: Props) => {
+	const { t } = useTranslation();
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema, undefined, { raw: true }),
 		defaultValues: initialValues || {
@@ -144,7 +146,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 		const parsedConfig = volumeConfigSchema.safeParse(configCandidate);
 
 		if (!parsedConfig.success) {
-			setTestMessage({ success: false, message: "Please fix validation errors before testing the connection." });
+			setTestMessage({ success: false, message: t("volumes.createVolumeForm.pleaseFixValidationErrors") });
 			return;
 		}
 
@@ -173,11 +175,16 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>{t("common.name")}</FormLabel>
 								<FormControl>
-									<Input {...field} placeholder="Source name" maxLength={32} minLength={2} />
+									<Input
+										{...field}
+										placeholder={t("volumes.agentFilesystemSourceForm.sourceName")}
+										maxLength={32}
+										minLength={2}
+									/>
 								</FormControl>
-								<FormDescription>A unique name for this source.</FormDescription>
+								<FormDescription>{t("volumes.createVolumeForm.aUniqueNameFor")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -189,7 +196,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 							defaultValue="directory"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Backend</FormLabel>
+									<FormLabel>{t("common.backend")}</FormLabel>
 									<Select
 										onValueChange={(value) => {
 											field.onChange(value);
@@ -204,7 +211,9 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 									>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Select a backend" />
+												<SelectValue
+													placeholder={t("volumes.createVolumeForm.selectABackend")}
+												/>
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -214,21 +223,21 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 													value={value}
 													disabled={!isBackendAllowed(value)}
 												>
-													{label}
-													{!isBackendAllowed(value) && " · unavailable on this server"}
+													{value === "directory" ? t("volumes.directory") : label}
+													{!isBackendAllowed(value) &&
+														t("volumes.createVolumeForm.unavailableOnThisServer")}
 												</SelectItem>
 											))}
 										</SelectContent>
 									</Select>
 									<FormDescription>
 										<span className={cn({ hidden: runtime !== "server" || capabilities.sysAdmin })}>
-											Network sources require a Linux server with mounting enabled. You can also
-											mount a share yourself and select its folder.
+											{t("volumes.createVolumeForm.networkSourcesRequireA")}
 										</span>
 										<span
 											className={cn({ hidden: runtime === "server" && !capabilities.sysAdmin })}
 										>
-											Choose how Zerobyte accesses this source.
+											{t("volumes.createVolumeForm.chooseHowZerobyteAccesses")}
 										</span>
 									</FormDescription>
 									<FormMessage />
@@ -255,7 +264,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 							>
 								<span className={cn("flex items-center", { hidden: !testBackendConnection.isPending })}>
 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Testing...
+									{t("volumes.createVolumeForm.testing")}
 								</span>
 								<span
 									className={cn("flex items-center", {
@@ -263,7 +272,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 									})}
 								>
 									<CheckCircle className="mr-2 h-4 w-4 text-success" />
-									Connection Successful
+									{t("volumes.createVolumeForm.connectionSuccessful")}
 								</span>
 								<span
 									className={cn("flex items-center", {
@@ -271,7 +280,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 									})}
 								>
 									<XCircle className="mr-2 h-4 w-4 text-red-500" />
-									Test Failed
+									{t("volumes.createVolumeForm.testFailed")}
 								</span>
 								<span
 									className={cn("flex items-center", {
@@ -279,7 +288,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 									})}
 								>
 									<Plug className="mr-2 h-4 w-4" />
-									Test Connection
+									{t("volumes.createVolumeForm.testConnection")}
 								</span>
 							</Button>
 						</div>
@@ -298,7 +307,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 				{mode === "update" && !formId && (
 					<Button type="submit" className="w-full" loading={loading}>
 						<Save className="h-4 w-4 mr-2" />
-						Save changes
+						{t("volumes.createVolumeForm.saveChanges")}
 					</Button>
 				)}
 			</form>

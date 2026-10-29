@@ -11,12 +11,14 @@ import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import { Switch } from "../../../../components/ui/switch";
 import type { RepositoryFormValues } from "../create-repository-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
 };
 
 export const SftpRepositoryForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const skipHostKeyCheck = useWatch({ control: form.control, name: "skipHostKeyCheck" });
 
 	return (
@@ -26,11 +28,11 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				name="host"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Host</FormLabel>
+						<FormLabel>{t("volumes.info.host")}</FormLabel>
 						<FormControl>
 							<Input placeholder="192.168.1.100" {...field} />
 						</FormControl>
-						<FormDescription>SFTP server hostname or IP address.</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.sftpServerHostnameOr")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -40,7 +42,7 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				name="port"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Port</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.port")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
@@ -49,7 +51,7 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 								onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
 							/>
 						</FormControl>
-						<FormDescription>SSH port (default: 22).</FormDescription>
+						<FormDescription>{t("repositories.sftpRepositoryForm.sshPortDefault22")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -59,11 +61,13 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				name="user"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>User</FormLabel>
+						<FormLabel>{t("settings.userManagement.user")}</FormLabel>
 						<FormControl>
 							<Input placeholder="backup-user" {...field} />
 						</FormControl>
-						<FormDescription>SSH username for authentication.</FormDescription>
+						<FormDescription>
+							{t("repositories.sftpRepositoryForm.sshUsernameForAuthentication")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -73,11 +77,11 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				name="path"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Path</FormLabel>
+						<FormLabel>{t("volumes.info.path")}</FormLabel>
 						<FormControl>
 							<Input placeholder="backups/zerobyte" {...field} />
 						</FormControl>
-						<FormDescription>Repository path on the SFTP server. </FormDescription>
+						<FormDescription>{t("repositories.sftpRepositoryForm.repositoryPathOnThe")} </FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -87,14 +91,14 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				name="privateKey"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>SSH Private Key</FormLabel>
+						<FormLabel>{t("repositories.sftpRepositoryForm.sshPrivateKey")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
-								placeholder="-----BEGIN OPENSSH PRIVATE KEY-----&#10;...&#10;-----END OPENSSH PRIVATE KEY-----"
+								placeholder={t("repositories.sftpRepositoryForm.beginOpensshPrivateKey")}
 							/>
 						</FormControl>
-						<FormDescription>Paste the contents of your SSH private key.</FormDescription>
+						<FormDescription>{t("repositories.sftpRepositoryForm.pasteTheContentsOf")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -105,10 +109,8 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 				render={({ field }) => (
 					<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 						<div className="space-y-0.5">
-							<FormLabel>Skip Host Key Verification</FormLabel>
-							<FormDescription>
-								Disable SSH host key checking. Useful for servers with dynamic IPs or self-signed keys.
-							</FormDescription>
+							<FormLabel>{t("volumes.sftpForm.skipHostKeyVerification")}</FormLabel>
+							<FormDescription>{t("volumes.sftpForm.disableSshHostKey")}</FormDescription>
 						</div>
 						<FormControl>
 							<Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -122,10 +124,10 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 					name="knownHosts"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Known Hosts</FormLabel>
+							<FormLabel>{t("volumes.sftpForm.knownHosts")}</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ..."
+									placeholder={t("volumes.sftpForm.exampleComSshEd25519")}
 									className="font-mono text-xs"
 									rows={3}
 									{...field}
@@ -133,7 +135,8 @@ export const SftpRepositoryForm = ({ form }: Props) => {
 								/>
 							</FormControl>
 							<FormDescription>
-								The contents of the <code>known_hosts</code> file for this server.
+								{t("volumes.sftpForm.theContentsOfThe")} <code>known_hosts</code>{" "}
+								{t("volumes.sftpForm.fileForThisServer")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>

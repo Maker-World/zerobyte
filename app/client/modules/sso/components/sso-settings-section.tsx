@@ -36,6 +36,7 @@ import { authClient } from "~/client/lib/auth-client";
 import { cn } from "~/client/lib/utils";
 import { parseError } from "~/client/lib/errors";
 import { useServerFn } from "@tanstack/react-start";
+import { useTranslation } from "~/client/lib/i18n";
 
 type InvitationRole = "member" | "admin" | "owner";
 
@@ -45,6 +46,7 @@ type Props = {
 };
 
 export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
+	const { t, tDynamic } = useTranslation();
 	const originQuery = useServerFn(getOrigin);
 	const { data } = useSuspenseQuery({ queryKey: ["app-origin"], queryFn: originQuery, initialData: initialOrigin });
 
@@ -59,23 +61,25 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 	const updateProviderAutoLinkingMutation = useMutation({
 		...updateSsoProviderAutoLinkingMutation(),
 		onSuccess: (_, v) => {
-			let message = "Automatic account linking disabled";
-			if (v.body?.enabled) message = "Automatic account linking enabled";
+			let message = t("sso.ssoSettingsSection.autoLinkingDisabled");
+			if (v.body?.enabled) message = t("sso.ssoSettingsSection.autoLinkingEnabled");
 
 			toast.success(message);
 		},
 		onError: (error) => {
-			toast.error("Failed to update provider", { description: parseError(error)?.message });
+			toast.error(t("sso.ssoSettingsSection.failedToUpdateProvider"), {
+				description: parseError(error)?.message,
+			});
 		},
 	});
 
 	const deleteProviderMutation = useMutation({
 		...deleteSsoProviderMutation(),
 		onSuccess: () => {
-			toast.success("SSO provider deleted");
+			toast.success(t("sso.ssoSettingsSection.ssoProviderDeleted"));
 		},
 		onError: (error) => {
-			toast.error("Failed to delete provider", { description: error.message });
+			toast.error(t("sso.ssoSettingsSection.failedToDeleteProvider"), { description: error.message });
 		},
 	});
 
@@ -101,12 +105,12 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Invitation created");
+			toast.success(t("sso.ssoSettingsSection.invitationCreated"));
 			setInviteEmail("");
 			setInviteRole("member");
 		},
 		onError: (error) => {
-			toast.error("Failed to create invitation", { description: error.message });
+			toast.error(t("sso.ssoSettingsSection.failedToCreateInvitation"), { description: error.message });
 		},
 	});
 
@@ -118,20 +122,20 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Invitation cancelled");
+			toast.success(t("sso.ssoSettingsSection.invitationCancelled"));
 		},
 		onError: (error) => {
-			toast.error("Failed to cancel invitation", { description: error.message });
+			toast.error(t("sso.ssoSettingsSection.failedToCancelInvitation"), { description: error.message });
 		},
 	});
 
 	const deleteInvitationMutation = useMutation({
 		...deleteSsoInvitationMutation(),
 		onSuccess: () => {
-			toast.success("Invitation deleted");
+			toast.success(t("sso.ssoSettingsSection.invitationDeleted"));
 		},
 		onError: (error) => {
-			toast.error("Failed to delete invitation", { description: error.message });
+			toast.error(t("sso.ssoSettingsSection.failedToDeleteInvitation"), { description: error.message });
 		},
 	});
 
@@ -143,9 +147,9 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 			<div className="space-y-3">
 				<div className="flex items-center justify-between gap-3">
 					<div className="space-y-1">
-						<p className="text-sm font-medium">Registered providers</p>
+						<p className="text-sm font-medium">{t("sso.ssoSettingsSection.registeredProviders")}</p>
 						<p className="text-xs text-muted-foreground">
-							Manage identity providers used for organization sign-in.
+							{t("sso.ssoSettingsSection.manageIdentityProvidersUsed")}
 						</p>
 					</div>
 
@@ -154,28 +158,25 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 						disabled={!activeOrganization}
 						onClick={() => void navigate({ to: "/settings/sso/new" })}
 					>
-						Register new
+						{t("sso.ssoSettingsSection.registerNew")}
 					</Button>
 				</div>
 
 				<Alert variant="warning">
-					<AlertDescription>
-						Only enable automatic account linking for identity providers you trust. You can change this per
-						provider at any time.
-					</AlertDescription>
+					<AlertDescription>{t("sso.ssoSettingsSection.onlyEnableAutomaticAccount")}</AlertDescription>
 				</Alert>
 
 				<div className="rounded-md border">
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Provider ID</TableHead>
-								<TableHead>Domain</TableHead>
-								<TableHead>Issuer</TableHead>
-								<TableHead>Type</TableHead>
-								<TableHead>Auto-link existing account</TableHead>
-								<TableHead>Callback URL</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
+								<TableHead>{t("sso.ssoSettingsSection.providerId")}</TableHead>
+								<TableHead>{t("sso.ssoSettingsSection.domain")}</TableHead>
+								<TableHead>{t("sso.ssoSettingsSection.issuer")}</TableHead>
+								<TableHead>{t("common.type")}</TableHead>
+								<TableHead>{t("sso.ssoSettingsSection.autoLinkExistingAccount")}</TableHead>
+								<TableHead>{t("sso.ssoSettingsSection.callbackUrl")}</TableHead>
+								<TableHead className="text-right">{t("common.actions")}</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -206,7 +207,9 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 												}}
 											/>
 											<span className="text-xs text-muted-foreground">
-												{provider.autoLinkMatchingEmails ? "On" : "Off"}
+												{provider.autoLinkMatchingEmails
+													? t("sso.ssoSettingsSection.on")
+													: t("repositories.createRepositoryForm.off")}
 											</span>
 										</div>
 									</TableCell>
@@ -229,7 +232,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 													type="button"
 													variant="ghost"
 													size="icon"
-													title="Delete provider"
+													title={t("sso.ssoSettingsSection.deleteProvider")}
 													loading={deleteProviderMutation.isPending}
 													disabled={deleteProviderMutation.isPending}
 												>
@@ -238,15 +241,17 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 											</AlertDialogTrigger>
 											<AlertDialogContent>
 												<AlertDialogHeader>
-													<AlertDialogTitle>Delete SSO provider</AlertDialogTitle>
+													<AlertDialogTitle>
+														{t("sso.ssoSettingsSection.deleteSsoProvider")}
+													</AlertDialogTitle>
 													<AlertDialogDescription>
-														Are you sure you want to delete the SSO provider{" "}
-														<strong>{provider.providerId}</strong>? This action cannot be
-														undone.
+														{t("sso.ssoSettingsSection.areYouSureYou")}{" "}
+														<strong>{provider.providerId}</strong>
+														{t("volumes.volumeDetails.thisActionCannotBe")}
 													</AlertDialogDescription>
 												</AlertDialogHeader>
 												<AlertDialogFooter>
-													<AlertDialogCancel>Cancel</AlertDialogCancel>
+													<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 													<AlertDialogAction
 														className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 														onClick={() =>
@@ -255,7 +260,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 															})
 														}
 													>
-														Delete
+														{t("settings.passkeysSection.delete")}
 													</AlertDialogAction>
 												</AlertDialogFooter>
 											</AlertDialogContent>
@@ -265,7 +270,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 							))}
 							<TableRow className={cn({ hidden: providers.length > 0 })}>
 								<TableCell colSpan={7} className="text-center text-sm text-muted-foreground">
-									No providers registered yet.
+									{t("sso.ssoSettingsSection.noProvidersRegisteredYet")}
 								</TableCell>
 							</TableRow>
 						</TableBody>
@@ -275,27 +280,25 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 
 			<div className="space-y-4 border-t border-border/50 pt-6">
 				<div className="space-y-1.5">
-					<p className="text-sm font-medium">Invite-only access</p>
-					<p className="text-xs text-muted-foreground">
-						Users must be invited or already have an account before they can sign in using SSO.
-					</p>
+					<p className="text-sm font-medium">{t("sso.ssoSettingsSection.inviteOnlyAccess")}</p>
+					<p className="text-xs text-muted-foreground">{t("sso.ssoSettingsSection.usersMustBeInvited")}</p>
 				</div>
 
 				<div className="grid gap-3 @md:grid-cols-[minmax(0,1fr)_180px_auto]">
 					<div className="space-y-2">
-						<Label htmlFor="invite-email">Email</Label>
+						<Label htmlFor="invite-email">{t("auth.email")}</Label>
 						<Input
 							id="invite-email"
 							type="email"
 							value={inviteEmail}
 							onChange={(event) => setInviteEmail(event.target.value)}
-							placeholder="teammate@example.com"
+							placeholder={t("sso.ssoSettingsSection.teammateExampleCom")}
 							disabled={!activeOrganization || inviteMemberMutation.isPending}
 						/>
 					</div>
 
 					<div className="space-y-2">
-						<Label htmlFor="invite-role">Role</Label>
+						<Label htmlFor="invite-role">{t("settings.orgMembersSection.role")}</Label>
 						<Select
 							value={inviteRole}
 							onValueChange={(value) => setInviteRole(value as InvitationRole)}
@@ -305,9 +308,9 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="member">Member</SelectItem>
-								<SelectItem value="admin">Admin</SelectItem>
-								<SelectItem value="owner">Owner</SelectItem>
+								<SelectItem value="member">{t("settings.orgMembersSection.member")}</SelectItem>
+								<SelectItem value="admin">{t("settings.createUserDialog.admin")}</SelectItem>
+								<SelectItem value="owner">{t("sso.ssoSettingsSection.owner")}</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -319,7 +322,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 							onClick={() => inviteMemberMutation.mutate()}
 							disabled={!activeOrganization}
 						>
-							Invite
+							{t("sso.ssoSettingsSection.invite")}
 						</Button>
 					</div>
 				</div>
@@ -328,18 +331,20 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Email</TableHead>
-								<TableHead>Role</TableHead>
-								<TableHead>Status</TableHead>
-								<TableHead>Expires</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
+								<TableHead>{t("auth.email")}</TableHead>
+								<TableHead>{t("settings.orgMembersSection.role")}</TableHead>
+								<TableHead>{t("common.status")}</TableHead>
+								<TableHead>{t("settings.apiKeysSection.expires")}</TableHead>
+								<TableHead className="text-right">{t("common.actions")}</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
 							{invitations.map((invitation) => (
 								<TableRow key={invitation.id}>
 									<TableCell className="font-medium">{invitation.email}</TableCell>
-									<TableCell className="uppercase">{invitation.role}</TableCell>
+									<TableCell className="uppercase">
+										{tDynamic(`roles.${invitation.role}`, invitation.role)}
+									</TableCell>
 									<TableCell>
 										<span
 											className={cn(`text-xs font-medium px-2 py-0.5 rounded border`, {
@@ -356,7 +361,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 											type="button"
 											variant="ghost"
 											size="icon"
-											title="Cancel invitation"
+											title={t("sso.ssoSettingsSection.cancelInvitation")}
 											loading={cancelInvitationMutation.isPending}
 											disabled={cancelInvitationMutation.isPending}
 											onClick={() => cancelInvitationMutation.mutate(invitation.id)}
@@ -368,7 +373,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 											type="button"
 											variant="ghost"
 											size="icon"
-											title="Delete invitation"
+											title={t("sso.ssoSettingsSection.deleteInvitation")}
 											loading={deleteInvitationMutation.isPending}
 											disabled={deleteInvitationMutation.isPending}
 											onClick={() =>
@@ -385,7 +390,7 @@ export function SsoSettingsSection({ initialSettings, initialOrigin }: Props) {
 							))}
 							<TableRow className={cn({ hidden: invitations.length > 0 })}>
 								<TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-									No invitations yet.
+									{t("sso.ssoSettingsSection.noInvitationsYet")}
 								</TableCell>
 							</TableRow>
 						</TableBody>

@@ -36,6 +36,7 @@ import {
 	SlackForm,
 	TelegramForm,
 } from "./notification-forms";
+import { useTranslation } from "~/client/lib/i18n";
 
 const baseFields = { name: z.string().min(2).max(32) };
 
@@ -122,6 +123,7 @@ const defaultValuesForType = {
 };
 
 export const CreateNotificationForm = ({ onSubmit, mode = "create", initialValues, formId, className }: Props) => {
+	const { t } = useTranslation();
 	const form = useForm<NotificationFormValues>({
 		resolver: zodResolver(formSchema, undefined, { raw: true }),
 		defaultValues: initialValues || {
@@ -149,11 +151,18 @@ export const CreateNotificationForm = ({ onSubmit, mode = "create", initialValue
 						name="name"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Name</FormLabel>
+								<FormLabel>{t("common.name")}</FormLabel>
 								<FormControl>
-									<Input {...field} placeholder="My notification" max={32} min={2} />
+									<Input
+										{...field}
+										placeholder={t("notifications.createNotificationForm.myNotification")}
+										max={32}
+										min={2}
+									/>
 								</FormControl>
-								<FormDescription>Unique identifier for this notification destination.</FormDescription>
+								<FormDescription>
+									{t("notifications.createNotificationForm.uniqueIdentifierForThis")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -164,7 +173,7 @@ export const CreateNotificationForm = ({ onSubmit, mode = "create", initialValue
 						name="type"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Type</FormLabel>
+								<FormLabel>{t("common.type")}</FormLabel>
 								<Select
 									onValueChange={(value) => {
 										field.onChange(value);
@@ -180,22 +189,34 @@ export const CreateNotificationForm = ({ onSubmit, mode = "create", initialValue
 								>
 									<FormControl>
 										<SelectTrigger className={mode === "update" ? "bg-gray-50" : ""}>
-											<SelectValue placeholder="Select notification type" />
+											<SelectValue
+												placeholder={t(
+													"notifications.createNotificationForm.selectNotificationType",
+												)}
+											/>
 										</SelectTrigger>
 									</FormControl>
 									<SelectContent>
-										<SelectItem value="email">Email (SMTP)</SelectItem>
+										<SelectItem value="email">
+											{t("notifications.createNotificationForm.emailSmtp")}
+										</SelectItem>
 										<SelectItem value="slack">Slack</SelectItem>
 										<SelectItem value="discord">Discord</SelectItem>
 										<SelectItem value="gotify">Gotify</SelectItem>
 										<SelectItem value="ntfy">Ntfy</SelectItem>
 										<SelectItem value="pushover">Pushover</SelectItem>
 										<SelectItem value="telegram">Telegram</SelectItem>
-										<SelectItem value="generic">Generic Webhook</SelectItem>
-										<SelectItem value="custom">Custom (Shoutrrr URL)</SelectItem>
+										<SelectItem value="generic">
+											{t("notifications.createNotificationForm.genericWebhook")}
+										</SelectItem>
+										<SelectItem value="custom">
+											{t("notifications.createNotificationForm.customShoutrrrUrl")}
+										</SelectItem>
 									</SelectContent>
 								</Select>
-								<FormDescription>Choose the notification delivery method.</FormDescription>
+								<FormDescription>
+									{t("notifications.createNotificationForm.chooseTheNotificationDelivery")}
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

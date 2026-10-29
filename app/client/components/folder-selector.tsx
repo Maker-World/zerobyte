@@ -14,6 +14,7 @@ import {
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import { useIsDesktop } from "~/client/hooks/use-is-desktop";
+import { useTranslation } from "~/client/lib/i18n";
 
 type WebFolderBrowser = {
 	mode?: "inline" | "dialog";
@@ -34,13 +35,8 @@ type Props = {
 	webBrowser?: WebFolderBrowser;
 };
 
-export const FolderSelector = ({
-	value,
-	onChange,
-	displayValue,
-	placeholder = "No folder selected",
-	webBrowser,
-}: Props) => {
+export const FolderSelector = ({ value, onChange, displayValue, placeholder, webBrowser }: Props) => {
+	const { t } = useTranslation();
 	const [showBrowser, setShowBrowser] = useState(false);
 	const [showWarning, setShowWarning] = useState(false);
 	const isDesktop = useIsDesktop();
@@ -49,7 +45,7 @@ export const FolderSelector = ({
 	const chooseDesktopFolder = async () => {
 		const desktop = window.zerobyteDesktop;
 		if (!desktop) {
-			toast.error("Desktop folder picker is unavailable");
+			toast.error(t("components.folderSelector.desktopFolderPickerIs"));
 			return;
 		}
 
@@ -59,7 +55,8 @@ export const FolderSelector = ({
 				onChange(path);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : "Failed to choose folder";
+			const message =
+				error instanceof Error ? error.message : t("components.folderSelector.failedToChooseFolder");
 			toast.error(message);
 		}
 	};
@@ -84,7 +81,7 @@ export const FolderSelector = ({
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
 				<div className="flex-1 text-sm font-mono bg-muted px-3 py-2 rounded-md border break-all">
-					{displayValue ?? (value || placeholder)}
+					{displayValue ?? (value || placeholder || t("volumes.trustedRootBrowser.noFolderSelected"))}
 				</div>
 				<Button
 					type="button"
@@ -93,7 +90,7 @@ export const FolderSelector = ({
 					size="sm"
 				>
 					{isDesktop && <FolderOpen className="h-4 w-4 mr-2" />}
-					{isDesktop ? "Choose" : "Change"}
+					{isDesktop ? t("components.folderSelector.choose") : t("volumes.trustedRootBrowser.change")}
 				</Button>
 			</div>
 
@@ -101,7 +98,7 @@ export const FolderSelector = ({
 				<>
 					<DirectoryBrowser selectedPath={value} onSelectPath={selectWebFolder} />
 					<Button type="button" variant="ghost" size="sm" onClick={() => setShowBrowser(false)}>
-						Cancel
+						{t("common.cancel")}
 					</Button>
 				</>
 			)}
@@ -118,14 +115,14 @@ export const FolderSelector = ({
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 							<AlertDialogAction
 								onClick={() => {
 									setShowBrowser(true);
 									setShowWarning(false);
 								}}
 							>
-								{webBrowser.warning.continueLabel ?? "Continue"}
+								{webBrowser.warning.continueLabel ?? t("common.continue")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
@@ -136,17 +133,21 @@ export const FolderSelector = ({
 				<AlertDialog open={showBrowser} onOpenChange={setShowBrowser}>
 					<AlertDialogContent className="max-w-2xl">
 						<AlertDialogHeader>
-							<AlertDialogTitle>{webBrowser?.title ?? "Select Folder"}</AlertDialogTitle>
+							<AlertDialogTitle>
+								{webBrowser?.title ?? t("components.folderSelector.selectFolder")}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
-								{webBrowser?.description ?? "Choose a directory from the filesystem."}
+								{webBrowser?.description ?? t("components.folderSelector.chooseADirectoryFrom")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<div className="py-4">
 							<DirectoryBrowser selectedPath={value} onSelectPath={selectWebFolder} />
 						</div>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
-							<AlertDialogAction onClick={() => setShowBrowser(false)}>Done</AlertDialogAction>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+							<AlertDialogAction onClick={() => setShowBrowser(false)}>
+								{t("settings.apiKeysSection.done")}
+							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>

@@ -10,12 +10,14 @@ import {
 import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import type { RepositoryFormValues } from "../create-repository-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
 };
 
 export const GCSRepositoryForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -23,11 +25,11 @@ export const GCSRepositoryForm = ({ form }: Props) => {
 				name="bucket"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Bucket</FormLabel>
+						<FormLabel>{t("repositories.gcsRepositoryForm.bucket")}</FormLabel>
 						<FormControl>
 							<Input placeholder="my-backup-bucket" {...field} />
 						</FormControl>
-						<FormDescription>GCS bucket name for storing backups.</FormDescription>
+						<FormDescription>{t("repositories.gcsRepositoryForm.gcsBucketNameFor")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -37,11 +39,11 @@ export const GCSRepositoryForm = ({ form }: Props) => {
 				name="projectId"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Project ID</FormLabel>
+						<FormLabel>{t("repositories.gcsRepositoryForm.projectId")}</FormLabel>
 						<FormControl>
 							<Input placeholder="my-gcp-project-123" {...field} />
 						</FormControl>
-						<FormDescription>Google Cloud project ID.</FormDescription>
+						<FormDescription>{t("repositories.gcsRepositoryForm.googleCloudProjectId")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -51,11 +53,16 @@ export const GCSRepositoryForm = ({ form }: Props) => {
 				name="credentialsJson"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Service Account JSON</FormLabel>
+						<FormLabel>{t("repositories.gcsRepositoryForm.serviceAccountJson")}</FormLabel>
 						<FormControl>
-							<Textarea placeholder="Paste service account JSON key..." {...field} />
+							<Textarea
+								placeholder={t("repositories.gcsRepositoryForm.pasteServiceAccountJson")}
+								{...field}
+							/>
 						</FormControl>
-						<FormDescription>Service account JSON credentials for authentication.</FormDescription>
+						<FormDescription>
+							{t("repositories.gcsRepositoryForm.serviceAccountJsonCredentials")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

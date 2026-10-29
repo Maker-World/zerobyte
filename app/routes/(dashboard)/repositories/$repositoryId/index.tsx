@@ -42,9 +42,9 @@ export const Route = createFileRoute("/(dashboard)/repositories/$repositoryId/")
 	},
 	validateSearch: z.object({ tab: z.string().optional() }),
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Repositories", href: "/repositories" },
-			{ label: match.loaderData?.name || "Repository Details" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.repositories"), href: "/repositories" },
+			{ label: match.loaderData?.name || t("breadcrumb.repositoryDetails") },
 		],
 	},
 	head: ({ loaderData }) => ({

@@ -24,6 +24,7 @@ import { dataTableFeatures } from "~/client/lib/data-table";
 import { cn } from "~/client/lib/utils";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
 import { getVolumeStatusLabel, getVolumeStatusVariant } from "../source-presentation";
+import { Trans, useTranslation } from "~/client/lib/i18n";
 
 type VolumeRow = ListVolumesResponse[number] & {
 	backend: string;
@@ -33,7 +34,7 @@ const volumeColumnHelper = createColumnHelper<typeof dataTableFeatures, VolumeRo
 const volumeColumns = volumeColumnHelper.columns([
 	volumeColumnHelper.accessor("name", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Name" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.name" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => (
 			<div className="min-w-0 max-w-64">
@@ -50,11 +51,15 @@ const volumeColumns = volumeColumnHelper.columns([
 	}),
 	volumeColumnHelper.accessor("backend", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Backend" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.backend" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => {
 			if (row.original.sourceKind === "filesystem") {
-				return <span className="font-sans text-sm">Filesystem</span>;
+				return (
+					<span className="font-sans text-sm">
+						<Trans k="volumes.filesystem" />
+					</span>
+				);
 			}
 			return <VolumeIcon backend={row.original.type} />;
 		},
@@ -62,7 +67,7 @@ const volumeColumns = volumeColumnHelper.columns([
 	}),
 	volumeColumnHelper.accessor("status", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Status" sortDirection={column.getIsSorted()} center />
+			<DataTableSortHeader column={column} title="common.status" sortDirection={column.getIsSorted()} center />
 		),
 		cell: ({ row }) => (
 			<StatusDot variant={getVolumeStatusVariant(row.original)} label={getVolumeStatusLabel(row.original)} />
@@ -72,6 +77,7 @@ const volumeColumns = volumeColumnHelper.columns([
 ]);
 
 export function VolumesPage() {
+	const { t } = useTranslation();
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useCookieState<SortingState>("sorting_volumes", []);
 
@@ -104,12 +110,12 @@ export function VolumesPage() {
 		return (
 			<EmptyState
 				icon={HardDrive}
-				title="No sources"
-				description="Add the files and folders you want Zerobyte to back up."
+				title={t("volumes.emptyTitle")}
+				description={t("volumes.emptyDescription")}
 				button={
 					<Button onClick={() => navigate({ to: "/volumes/create" })}>
 						<Plus size={16} className="mr-2" />
-						Create Source
+						{t("volumes.create")}
 					</Button>
 				}
 			/>
@@ -126,44 +132,44 @@ export function VolumesPage() {
 				<span className="flex flex-col sm:flex-row items-stretch md:items-center gap-2 flex-wrap">
 					<Input
 						className="w-full lg:w-45 min-w-45"
-						placeholder="Search…"
+						placeholder={t("common.searchPlaceholder")}
 						value={search}
 						onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
 					/>
 					<Select value={status} onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All status" />
+							<SelectValue placeholder={t("common.allStatus")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="mounted">Available</SelectItem>
-							<SelectItem value="unmounted">Unavailable</SelectItem>
-							<SelectItem value="error">Error</SelectItem>
+							<SelectItem value="mounted">{t("status.available")}</SelectItem>
+							<SelectItem value="unmounted">{t("status.unavailable")}</SelectItem>
+							<SelectItem value="error">{t("status.error")}</SelectItem>
 						</SelectContent>
 					</Select>
 					<Select value={type} onValueChange={(value) => table.getColumn("backend")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All backends" />
+							<SelectValue placeholder={t("common.allBackends")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="directory">Directory</SelectItem>
+							<SelectItem value="directory">{t("volumes.directory")}</SelectItem>
 							<SelectItem value="nfs">NFS</SelectItem>
 							<SelectItem value="smb">SMB</SelectItem>
 							<SelectItem value="webdav">WebDAV</SelectItem>
 							<SelectItem value="sftp">SFTP</SelectItem>
 							<SelectItem value="rclone">rclone</SelectItem>
-							<SelectItem value="filesystem">Filesystem</SelectItem>
+							<SelectItem value="filesystem">{t("volumes.filesystem")}</SelectItem>
 						</SelectContent>
 					</Select>
 					{hasFilters && (
 						<Button onClick={clearFilters} className="w-full lg:w-auto mt-2 lg:mt-0 lg:ml-2">
 							<RotateCcw className="h-4 w-4 mr-2" />
-							Clear filters
+							{t("common.clearFilters")}
 						</Button>
 					)}
 				</span>
 				<Button onClick={() => navigate({ to: "/volumes/create" })}>
 					<Plus size={16} className="mr-2" />
-					Create Source
+					{t("volumes.create")}
 				</Button>
 			</div>
 			<div className="overflow-x-auto">
@@ -191,10 +197,10 @@ export function VolumesPage() {
 						<TableRow className={cn({ hidden: !hasNoFilteredVolumes })}>
 							<TableCell colSpan={3} className="text-center py-12">
 								<div className="flex flex-col items-center gap-3">
-									<p className="text-muted-foreground">No sources match your filters.</p>
+									<p className="text-muted-foreground">{t("volumes.noMatchFilters")}</p>
 									<Button onClick={clearFilters} variant="outline" size="sm">
 										<RotateCcw className="h-4 w-4 mr-2" />
-										Clear filters
+										{t("common.clearFilters")}
 									</Button>
 								</div>
 							</TableCell>
@@ -223,10 +229,10 @@ export function VolumesPage() {
 				</Table>
 			</div>
 			<div className="px-4 py-2 text-sm text-muted-foreground bg-card-header flex justify-end border-t font-mono">
-				<span className={cn({ hidden: !hasNoFilteredVolumes })}>No sources match filters.</span>
+				<span className={cn({ hidden: !hasNoFilteredVolumes })}>{t("volumes.noMatchFilters")}</span>
 				<span className={cn("font-mono", { hidden: hasNoFilteredVolumes })}>
-					<span className="text-strong-accent font-bold">{rows.length}</span> source
-					{rows.length > 1 ? "s" : ""}
+					<span className="text-strong-accent font-bold">{rows.length}</span>{" "}
+					{rows.length > 1 ? t("volumes.countPlural") : t("volumes.countSingular")}
 				</span>
 			</div>
 		</Card>

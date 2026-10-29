@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { cn } from "~/client/lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
+import { useTranslation } from "~/client/lib/i18n";
 
 export const isStoredSecretValue = (value?: string): boolean => {
 	if (typeof value !== "string" || value.length === 0) {
@@ -18,6 +19,7 @@ export const isStoredSecretValue = (value?: string): boolean => {
 type SecretInputProps = Omit<React.ComponentProps<typeof Input>, "type">;
 
 export const SecretInput = ({ className, value, ...props }: SecretInputProps) => {
+	const { t } = useTranslation();
 	const [revealed, setRevealed] = useState(false);
 
 	const showAsPlaintext = useMemo(() => {
@@ -45,7 +47,7 @@ export const SecretInput = ({ className, value, ...props }: SecretInputProps) =>
 					size="icon"
 					className="absolute right-1 top-1/2 size-7 -translate-y-1/2"
 					onClick={() => setRevealed((v) => !v)}
-					aria-label={revealed ? "Hide secret" : "Show secret"}
+					aria-label={revealed ? t("common.hideSecret") : t("common.showSecret")}
 				>
 					{revealed ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
 				</Button>

@@ -15,6 +15,7 @@ import { Separator } from "~/client/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "~/client/components/ui/sheet";
 import { Skeleton } from "~/client/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/client/components/ui/tooltip";
+import { Trans } from "~/client/lib/i18n";
 
 export const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -246,7 +247,9 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
 			{...props}
 		>
 			<PanelLeftIcon />
-			<span className="sr-only">Toggle Sidebar</span>
+			<span className="sr-only">
+				<Trans k="common.toggleSidebar" />
+			</span>
 		</Button>
 	);
 }

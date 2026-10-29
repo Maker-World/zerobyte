@@ -22,8 +22,10 @@ import {
 	getUserDeletionImpactOptions,
 	deleteUserAccountMutation,
 } from "~/client/api-client/@tanstack/react-query.gen";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function UserManagement({ currentUser }: { currentUser: { id: string } | undefined | null }) {
+	const { t, tDynamic } = useTranslation();
 	const [search, setSearch] = useState("");
 	const [userToDelete, setUserToDelete] = useState<string | null>(null);
 	const [userToBan, setUserToBan] = useState<{ id: string; name: string; isBanned: boolean } | null>(null);
@@ -46,10 +48,10 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			toast.success("User role updated successfully");
+			toast.success(t("settings.userManagement.userRoleUpdatedSuccessfully"));
 		},
 		onError: (error) => {
-			toast.error("Failed to update role", { description: error.message });
+			toast.error(t("settings.orgMembersSection.failedToUpdateRole"), { description: error.message });
 		},
 	});
 
@@ -65,13 +67,13 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			if (result.error) throw result.error;
 		},
 		onSuccess: () => {
-			toast.success("User ban status updated successfully");
+			toast.success(t("settings.userManagement.userBanStatusUpdated"));
 		},
 		onMutate: () => {
 			setUserToBan(null);
 		},
 		onError: (error) => {
-			toast.error("Failed to update ban status", { description: error.message });
+			toast.error(t("settings.userManagement.failedToUpdateBan"), { description: error.message });
 		},
 	});
 
@@ -81,18 +83,18 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			if (error) throw error;
 		},
 		onSuccess: () => {
-			toast.success("User deleted successfully");
+			toast.success(t("settings.userManagement.userDeletedSuccessfully"));
 			setUserToDelete(null);
 		},
 		onError: (error) => {
-			toast.error("Failed to delete user", { description: error.message });
+			toast.error(t("settings.userManagement.failedToDeleteUser"), { description: error.message });
 		},
 	});
 
 	const deleteAccount = useMutation({
 		...deleteUserAccountMutation(),
 		onSuccess: (_data, variables) => {
-			toast.success("Account removed successfully");
+			toast.success(t("settings.userManagement.accountRemovedSuccessfully"));
 			setUserToManageAccounts((prev) => {
 				if (!prev) return prev;
 				return {
@@ -102,7 +104,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			});
 		},
 		onError: (error) => {
-			toast.error("Failed to remove account", { description: error.message });
+			toast.error(t("settings.userManagement.failedToRemoveAccount"), { description: error.message });
 		},
 	});
 
@@ -120,7 +122,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 				<div className="relative flex-1 max-w-sm">
 					<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
 					<Input
-						placeholder="Search users..."
+						placeholder={t("settings.userManagement.searchUsers")}
 						className="pl-8"
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
@@ -133,16 +135,16 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>User</TableHead>
-							<TableHead>Role</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead className="text-right">Actions</TableHead>
+							<TableHead>{t("settings.userManagement.user")}</TableHead>
+							<TableHead>{t("settings.orgMembersSection.role")}</TableHead>
+							<TableHead>{t("common.status")}</TableHead>
+							<TableHead className="text-right">{t("common.actions")}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						<TableRow className={cn({ hidden: filteredUsers.length > 0 })}>
 							<TableCell colSpan={4} className="h-24 text-center">
-								No users found.
+								{t("settings.userManagement.noUsersFound")}
 							</TableCell>
 						</TableRow>
 						{filteredUsers.map((user) => {
@@ -159,20 +161,20 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 										</div>
 									</TableCell>
 									<TableCell>
-										<Badge>{user.role}</Badge>
+										<Badge>{tDynamic(`roles.${user.role}`, user.role ?? "")}</Badge>
 									</TableCell>
 									<TableCell>
 										<Badge
 											variant="outline"
 											className={cn("text-red-500 border-red-500", { hidden: !isBanned })}
 										>
-											Banned
+											{t("settings.userManagement.banned")}
 										</Badge>
 										<Badge
 											variant="outline"
 											className={cn("bg-success/10 text-success", { hidden: isBanned })}
 										>
-											Active
+											{t("status.active")}
 										</Badge>
 									</TableCell>
 									<TableCell className="text-right">
@@ -180,7 +182,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Demote to User"
+												title={t("settings.userManagement.demoteToUser")}
 												className={cn({ hidden: user.role !== "admin" || isCurrentUser })}
 												onClick={() =>
 													setRoleMutation.mutate({ userId: user.id, role: "user" })
@@ -191,7 +193,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Promote to Admin"
+												title={t("settings.orgMembersSection.promoteToAdmin")}
 												className={cn({ hidden: user.role === "admin" || isCurrentUser })}
 												onClick={() =>
 													setRoleMutation.mutate({ userId: user.id, role: "admin" })
@@ -203,7 +205,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Unban user"
+												title={t("settings.userManagement.unbanUser")}
 												className={cn({ hidden: !isBanned || isCurrentUser })}
 												onClick={() =>
 													setUserToBan({ id: user.id, name: displayName, isBanned: true })
@@ -214,7 +216,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Ban user"
+												title={t("settings.userManagement.banUser")}
 												className={cn({ hidden: isBanned || isCurrentUser })}
 												onClick={() =>
 													setUserToBan({ id: user.id, name: displayName, isBanned: false })
@@ -226,7 +228,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Delete User"
+												title={t("settings.userManagement.deleteUser")}
 												className={cn({ hidden: isCurrentUser })}
 												onClick={() => setUserToDelete(user.id)}
 											>
@@ -236,7 +238,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 											<Button
 												variant="ghost"
 												size="icon"
-												title="Manage Accounts"
+												title={t("settings.userManagement.manageAccounts")}
 												onClick={() =>
 													setUserToManageAccounts({
 														id: user.id,
@@ -259,22 +261,16 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			<Dialog open={Boolean(userToDelete)} onOpenChange={(open) => !open && setUserToDelete(null)}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Are you absolutely sure?</DialogTitle>
-						<DialogDescription>
-							This action cannot be undone. This will permanently delete the user account and remove their
-							data from our servers.
-						</DialogDescription>
+						<DialogTitle>{t("settings.userManagement.areYouAbsolutelySure")}</DialogTitle>
+						<DialogDescription>{t("settings.userManagement.thisActionCannotBe")}</DialogDescription>
 					</DialogHeader>
 
 					<div className={cn("space-y-4", { hidden: !deletionImpact?.organizations.length })}>
 						<div className="flex items-start gap-3 p-3 text-sm border rounded-lg bg-destructive/10 border-destructive/20 text-destructive">
 							<AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
 							<div className="space-y-1">
-								<p className="font-semibold">Important: Data Deletion</p>
-								<p>
-									The following personal organizations and all their associated resources will be
-									permanently deleted:
-								</p>
+								<p className="font-semibold">{t("settings.userManagement.importantDataDeletion")}</p>
+								<p>{t("settings.userManagement.theFollowingPersonalOrganizations")}</p>
 							</div>
 						</div>
 
@@ -283,9 +279,21 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 								<div key={org.id} className="p-3 border rounded-md bg-muted/50">
 									<p className="font-medium">{org.name}</p>
 									<div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-xs text-muted-foreground">
-										<span>{org.resources.volumesCount} Volumes</span>
-										<span>{org.resources.repositoriesCount} Repositories</span>
-										<span>{org.resources.backupSchedulesCount} Backups</span>
+										<span>
+											{t("settings.userManagement.volumes", {
+												volumesCount: org.resources.volumesCount,
+											})}
+										</span>
+										<span>
+											{t("settings.userManagement.repositories", {
+												repositoriesCount: org.resources.repositoriesCount,
+											})}
+										</span>
+										<span>
+											{t("settings.userManagement.backups", {
+												backupSchedulesCount: org.resources.backupSchedulesCount,
+											})}
+										</span>
 									</div>
 								</div>
 							))}
@@ -293,19 +301,21 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 					</div>
 
 					<div className={cn("text-center py-4", { hidden: !isLoadingImpact })}>
-						<p className="text-sm text-muted-foreground">Analyzing deletion impact...</p>
+						<p className="text-sm text-muted-foreground">
+							{t("settings.userManagement.analyzingDeletionImpact")}
+						</p>
 					</div>
 
 					<DialogFooter>
 						<Button variant="outline" onClick={() => setUserToDelete(null)}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button
 							variant="destructive"
 							disabled={isLoadingImpact || deleteUser.isPending}
 							onClick={() => deleteUser.mutate(userToDelete!)}
 						>
-							Delete User
+							{t("settings.userManagement.deleteUser")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
@@ -314,31 +324,35 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			<Dialog open={Boolean(userToBan)} onOpenChange={(open) => !open && setUserToBan(null)}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>{userToBan?.isBanned ? "Unban" : "Ban"} User</DialogTitle>
-						<DialogDescription>
-							Are you sure you want to {userToBan?.isBanned ? "unban" : "ban"} {userToBan?.name}?
+						<DialogTitle>
 							{userToBan?.isBanned
-								? " They will regain access to the system."
-								: " They will be immediately signed out and lose access."}
+								? t("settings.userManagement.unban")
+								: t("settings.userManagement.ban")}{" "}
+							{t("settings.userManagement.user")}
+						</DialogTitle>
+						<DialogDescription>
+							{userToBan?.isBanned
+								? t("settings.userManagement.confirmUnban", { name: userToBan?.name ?? "" })
+								: t("settings.userManagement.confirmBan", { name: userToBan?.name ?? "" })}
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
 						<Button variant="outline" onClick={() => setUserToBan(null)}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button
 							variant="default"
 							className={cn({ hidden: !userToBan?.isBanned })}
 							onClick={() => toggleBanUserMutation.mutate({ userId: userToBan?.id ?? "", ban: false })}
 						>
-							Unban User
+							{t("settings.userManagement.unbanUser2")}
 						</Button>
 						<Button
 							variant="destructive"
 							className={cn({ hidden: Boolean(userToBan?.isBanned) })}
 							onClick={() => toggleBanUserMutation.mutate({ userId: userToBan?.id ?? "", ban: true })}
 						>
-							Ban User
+							{t("settings.userManagement.banUser2")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
@@ -350,9 +364,11 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Manage Accounts</DialogTitle>
+						<DialogTitle>{t("settings.userManagement.manageAccounts")}</DialogTitle>
 						<DialogDescription>
-							Linked authentication accounts for {userToManageAccounts?.name}.
+							{t("settings.userManagement.linkedAuthenticationAccountsFor", {
+								name: userToManageAccounts?.name,
+							})}
 						</DialogDescription>
 					</DialogHeader>
 
@@ -362,7 +378,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 								hidden: userToManageAccounts?.accounts.length,
 							})}
 						>
-							No accounts linked.
+							{t("settings.userManagement.noAccountsLinked")}
 						</p>
 						{userToManageAccounts?.accounts.map((account) => (
 							<div key={account.id} className="flex items-center justify-between p-3 border rounded-md">
@@ -370,7 +386,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 								<Button
 									variant="ghost"
 									size="icon"
-									title="Remove account"
+									title={t("settings.userManagement.removeAccount")}
 									disabled={deleteAccount.isPending}
 									onClick={() =>
 										deleteAccount.mutate({
@@ -385,7 +401,7 @@ export function UserManagement({ currentUser }: { currentUser: { id: string } | 
 					</div>
 					<DialogFooter>
 						<Button variant="outline" onClick={() => setUserToManageAccounts(undefined)}>
-							Close
+							{t("common.close")}
 						</Button>
 					</DialogFooter>
 				</DialogContent>

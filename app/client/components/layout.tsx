@@ -11,10 +11,12 @@ import { Outlet, useNavigate } from "@tanstack/react-router";
 import { AppBreadcrumb } from "./app-breadcrumb";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { ThemeToggle } from "./theme-toggle";
+import { LanguageSwitcher } from "./language-switcher";
 import { PermissionsProvider, usePermissions } from "../hooks/use-permissions";
 import { useOrganizationContext } from "../hooks/use-org-context";
 import { RecoveryKeyReminder } from "./recovery-key-reminder";
 import { useSystemInfo } from "../hooks/use-system-info";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	loaderData: AppContext;
@@ -22,6 +24,7 @@ type Props = {
 
 export function Layout({ loaderData }: Props) {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const { runtime } = useSystemInfo();
 	const isDesktop = runtime === "desktop";
 
@@ -32,7 +35,7 @@ export function Layout({ loaderData }: Props) {
 					void navigate({ to: "/login", replace: true });
 				},
 				onError: ({ error }) => {
-					toast.error("Logout failed", { description: error.message });
+					toast.error(t("layout.logoutFailed"), { description: error.message });
 				},
 			},
 		});
@@ -57,6 +60,7 @@ export function Layout({ loaderData }: Props) {
 											<span className="text-foreground">{loaderData.user.name}</span>
 										</span>
 									)}
+									<LanguageSwitcher />
 									<ThemeToggle />
 									{!isDesktop && (
 										<Tooltip>
@@ -66,12 +70,12 @@ export function Layout({ loaderData }: Props) {
 													size="icon"
 													className="rounded-full h-7 text-xs text-muted-foreground hover:text-foreground"
 													onClick={handleLogout}
-													aria-label="Logout"
+													aria-label={t("layout.logout")}
 												>
 													<LogOut className="w-4 h-4" />
 												</Button>
 											</TooltipTrigger>
-											<TooltipContent>Logout</TooltipContent>
+											<TooltipContent>{t("layout.logout")}</TooltipContent>
 										</Tooltip>
 									)}
 									<Tooltip>
@@ -90,7 +94,7 @@ export function Layout({ loaderData }: Props) {
 												<LifeBuoy className="w-4 h-4" />
 											</a>
 										</TooltipTrigger>
-										<TooltipContent>Report an issue</TooltipContent>
+										<TooltipContent>{t("layout.reportIssue")}</TooltipContent>
 									</Tooltip>
 								</div>
 							)}

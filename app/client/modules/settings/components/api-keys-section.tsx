@@ -36,6 +36,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~
 import { useTimeFormat } from "~/client/lib/datetime";
 import { cn } from "~/client/lib/utils";
 import { parseError } from "~/client/lib/errors";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	passwordAuthSupported: boolean;
@@ -45,15 +46,16 @@ type Props = {
 type ApiKey = GetApiKeysResponse["apiKeys"][number];
 
 const EXPIRATION_OPTIONS = [
-	{ value: "30", label: "30 days" },
-	{ value: "90", label: "90 days" },
-	{ value: "365", label: "1 year" },
-	{ value: "never", label: "No expiration" },
+	{ value: "30", label: "settings.apiKeysSection.expiration30Days" },
+	{ value: "90", label: "settings.apiKeysSection.expiration90Days" },
+	{ value: "365", label: "settings.apiKeysSection.expiration1Year" },
+	{ value: "never", label: "settings.apiKeysSection.noExpiration" },
 ] as const;
 
 type ExpirationValue = (typeof EXPIRATION_OPTIONS)[number]["value"];
 
 export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [newKeyName, setNewKeyName] = useState("");
@@ -70,24 +72,24 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 	const createKey = useMutation({
 		...createApiKeyMutation(),
 		onSuccess: (apiKey) => {
-			toast.success("API key created");
+			toast.success(t("settings.apiKeysSection.apiKeyCreated"));
 			setCreatedKey(apiKey.key);
 			setNewKeyName("");
 			setPassword("");
 		},
 		onError: (error) => {
-			toast.error("Failed to create API key", { description: parseError(error)?.message });
+			toast.error(t("settings.apiKeysSection.failedToCreateApi"), { description: parseError(error)?.message });
 		},
 	});
 
 	const deleteKey = useMutation({
 		...deleteApiKeyMutation(),
 		onSuccess: () => {
-			toast.success("API key revoked");
+			toast.success(t("settings.apiKeysSection.apiKeyRevoked"));
 			setDeleteTarget(null);
 		},
 		onError: (error) => {
-			toast.error("Failed to revoke API key", { description: error.message });
+			toast.error(t("settings.apiKeysSection.failedToRevokeApi"), { description: error.message });
 		},
 	});
 
@@ -104,12 +106,12 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 
 		const name = newKeyName.trim();
 		if (!name) {
-			toast.error("Name is required");
+			toast.error(t("settings.apiKeysSection.nameIsRequired"));
 			return;
 		}
 
 		if (passwordAuthSupported && !password) {
-			toast.error("Password is required");
+			toast.error(t("auth.passwordRequired"));
 			return;
 		}
 
@@ -122,67 +124,79 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 			<div className="border-t border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<KeyRound className="size-5" />
-					API Keys
+					{t("settings.apiKeysSection.apiKeys")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">
-					Create keys for API access to the active organization.
-				</CardDescription>
+				<CardDescription className="mt-1.5">{t("settings.apiKeysSection.createKeysForApi")}</CardDescription>
 			</div>
 			<CardContent className="p-6 space-y-4">
 				<div className="flex items-start justify-between gap-4">
 					<div className="space-y-1">
-						<p className="text-sm font-medium">{apiKeys.length} active keys for this organization</p>
-						<p className="text-xs text-muted-foreground">Limit {limit} active keys per user.</p>
+						<p className="text-sm font-medium">
+							{t("settings.apiKeysSection.activeKeysForThis", { length: apiKeys.length })}
+						</p>
+						<p className="text-xs text-muted-foreground">
+							{t("settings.apiKeysSection.limitActiveKeysPer", { limit: limit })}
+						</p>
 					</div>
 					<Button type="button" disabled={!canCreateApiKey} onClick={() => setCreateDialogOpen(true)}>
 						<Plus className="h-4 w-4 mr-2" />
-						Create key
+						{t("settings.apiKeysSection.createKey")}
 					</Button>
 				</div>
 
 				<Alert variant="warning" className={cn({ hidden: !passwordAuthSupported || hasPassword })}>
 					<KeyRound className="size-5" />
-					<AlertTitle>Local password required</AlertTitle>
-					<AlertDescription>A local password is required before API keys can be created.</AlertDescription>
+					<AlertTitle>{t("recoveryKey.localPasswordRequired")}</AlertTitle>
+					<AlertDescription>{t("settings.apiKeysSection.aLocalPasswordIs")}</AlertDescription>
 				</Alert>
 
-				<p className={cn("text-sm text-muted-foreground", { hidden: !isPending })}>Loading API keys...</p>
+				<p className={cn("text-sm text-muted-foreground", { hidden: !isPending })}>
+					{t("settings.apiKeysSection.loadingApiKeys")}
+				</p>
 				<div className="rounded-md border">
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Name</TableHead>
-								<TableHead>Created</TableHead>
-								<TableHead>Expires</TableHead>
-								<TableHead>Last used</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
+								<TableHead>{t("common.name")}</TableHead>
+								<TableHead>{t("taskLog.created")}</TableHead>
+								<TableHead>{t("settings.apiKeysSection.expires")}</TableHead>
+								<TableHead>{t("settings.apiKeysSection.lastUsed")}</TableHead>
+								<TableHead className="text-right">{t("common.actions")}</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
 							<TableRow className={cn({ hidden: isPending || apiKeys.length > 0 })}>
 								<TableCell colSpan={5} className="text-center text-sm text-muted-foreground">
-									No API keys yet.
+									{t("settings.apiKeysSection.noApiKeysYet")}
 								</TableCell>
 							</TableRow>
 							{apiKeys.map((apiKey) => (
 								<TableRow key={apiKey.id}>
-									<TableCell className="font-medium">{apiKey.name ?? "Unnamed key"}</TableCell>
+									<TableCell className="font-medium">
+										{apiKey.name ?? t("settings.apiKeysSection.unnamedKey")}
+									</TableCell>
 									<TableCell>{formatDateTime(new Date(apiKey.createdAt))}</TableCell>
 									<TableCell>
-										{apiKey.expiresAt ? formatDateTime(new Date(apiKey.expiresAt)) : "Never"}
+										{apiKey.expiresAt
+											? formatDateTime(new Date(apiKey.expiresAt))
+											: t("time.never")}
 									</TableCell>
 									<TableCell>
 										<span className={cn({ hidden: !apiKey.lastRequestAt })}>
 											{apiKey.lastRequestAt && formatDateTime(new Date(apiKey.lastRequestAt))}
 										</span>
-										<span className={cn({ hidden: !!apiKey.lastRequestAt })}>Never</span>
+										<span className={cn({ hidden: !!apiKey.lastRequestAt })}>
+											{t("time.never")}
+										</span>
 									</TableCell>
 									<TableCell className="text-right">
 										<Button
 											variant="ghost"
 											size="icon"
-											title="Revoke API key"
-											aria-label={`Revoke API key ${apiKey.name ?? "Unnamed key"}`}
+											title={t("settings.apiKeysSection.revokeApiKey")}
+											aria-label={t("settings.apiKeysSection.revokeApiKey3", {
+												value: apiKey.name ?? "Unnamed key",
+											})}
 											onClick={() => setDeleteTarget(apiKey)}
 										>
 											<Trash2 className="h-4 w-4 text-destructive" />
@@ -205,19 +219,23 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 				<DialogContent>
 					<form onSubmit={handleCreate} className="min-w-0">
 						<DialogHeader>
-							<DialogTitle>{createdKey ? "API key created" : "Create API key"}</DialogTitle>
+							<DialogTitle>
+								{createdKey
+									? t("settings.apiKeysSection.apiKeyCreated")
+									: t("settings.apiKeysSection.createApiKey")}
+							</DialogTitle>
 							<DialogDescription>
 								<span className={cn({ hidden: !createdKey })}>
-									Save this key now. For security reasons it will not be shown again.
+									{t("settings.apiKeysSection.saveThisKeyNow")}
 								</span>
 								<span className={cn({ hidden: !!createdKey })}>
-									The key is shown once after creation and cannot be revealed later.
+									{t("settings.apiKeysSection.theKeyIsShown")}
 								</span>
 							</DialogDescription>
 						</DialogHeader>
 						<div className="space-y-4 py-4">
 							<div className={cn("space-y-2", { hidden: Boolean(createdKey) })}>
-								<Label htmlFor="api-key-name">Name</Label>
+								<Label htmlFor="api-key-name">{t("common.name")}</Label>
 								<Input
 									id="api-key-name"
 									value={newKeyName}
@@ -227,7 +245,7 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 								/>
 							</div>
 							<div className={cn("space-y-2", { hidden: Boolean(createdKey) })}>
-								<Label htmlFor="api-key-expiration">Expiration</Label>
+								<Label htmlFor="api-key-expiration">{t("settings.apiKeysSection.expiration")}</Label>
 								<Select
 									value={newKeyExpiration}
 									onValueChange={(value) => setNewKeyExpiration(value as ExpirationValue)}
@@ -238,14 +256,14 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 									<SelectContent>
 										{EXPIRATION_OPTIONS.map((option) => (
 											<SelectItem key={option.value} value={option.value}>
-												{option.label}
+												{t(option.label)}
 											</SelectItem>
 										))}
 									</SelectContent>
 								</Select>
 							</div>
 							<div className={cn("space-y-2", { hidden: Boolean(createdKey) || !passwordAuthSupported })}>
-								<Label htmlFor="api-key-password">Current password</Label>
+								<Label htmlFor="api-key-password">{t("settings.apiKeysSection.currentPassword")}</Label>
 								<Input
 									id="api-key-password"
 									type="password"
@@ -256,7 +274,7 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 							</div>
 							<div className={cn("min-w-0", { hidden: !createdKey })}>
 								<div className="min-w-0 space-y-2">
-									<Label htmlFor="created-api-key">API key</Label>
+									<Label htmlFor="created-api-key">{t("settings.apiKeysSection.apiKey")}</Label>
 									<Input
 										id="created-api-key"
 										type="text"
@@ -270,16 +288,16 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 						</div>
 						<DialogFooter>
 							<Button type="button" onClick={closeCreateDialog} className={cn({ hidden: !createdKey })}>
-								Done
+								{t("settings.apiKeysSection.done")}
 							</Button>
 							<span className={cn("flex items-center gap-2", { hidden: Boolean(createdKey) })}>
 								<Button type="button" variant="outline" onClick={closeCreateDialog}>
 									<X className="h-4 w-4 mr-2" />
-									Cancel
+									{t("common.cancel")}
 								</Button>
 								<Button type="submit" loading={createKey.isPending}>
 									<KeyRound className="h-4 w-4 mr-2" />
-									Create
+									{t("common.create")}
 								</Button>
 							</span>
 						</DialogFooter>
@@ -290,13 +308,15 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 			<AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Revoke API key?</AlertDialogTitle>
+						<AlertDialogTitle>{t("settings.apiKeysSection.revokeApiKey2")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will revoke "{deleteTarget?.name ?? "this key"}". Future requests using it will fail.
+							{t("settings.apiKeysSection.thisWillRevoke", {
+								name: deleteTarget?.name ?? t("settings.apiKeysSection.thisKey"),
+							})}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={deleteKey.isPending}>Cancel</AlertDialogCancel>
+						<AlertDialogCancel disabled={deleteKey.isPending}>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={(event) => {
 								event.preventDefault();
@@ -306,7 +326,7 @@ export function ApiKeysSection({ passwordAuthSupported, hasPassword }: Props) {
 							}}
 							disabled={deleteKey.isPending}
 						>
-							Revoke
+							{t("settings.apiKeysSection.revoke")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

@@ -16,9 +16,9 @@ export const Route = createFileRoute("/(dashboard)/volumes/$volumeId/")({
 	},
 	validateSearch: z.object({ tab: z.string().optional() }),
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Sources", href: "/volumes" },
-			{ label: match.loaderData?.volume.name || "Source Details" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.sources"), href: "/volumes" },
+			{ label: match.loaderData?.volume.name || t("breadcrumb.sourceDetails") },
 		],
 	},
 	head: ({ loaderData }) => ({

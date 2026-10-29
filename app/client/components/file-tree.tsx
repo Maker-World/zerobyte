@@ -22,6 +22,7 @@ import { cn } from "~/client/lib/utils";
 import { Checkbox } from "~/client/components/ui/checkbox";
 import { ByteSize } from "~/client/components/bytes-size";
 import { buildFileEntryMap, type FileEntry } from "./file-tree-model";
+import { useTranslation } from "~/client/lib/i18n";
 export type { FileEntry } from "./file-tree-model";
 
 const NODE_PADDING_LEFT = 12;
@@ -404,6 +405,7 @@ const Folder = memo(
 		onFolderSelect,
 		selected,
 	}: FolderProps) => {
+		const { t } = useTranslation();
 		const { depth, name, fullPath } = folder;
 		const FolderIconComponent = collapsed ? FolderIcon : FolderOpen;
 
@@ -448,7 +450,9 @@ const Folder = memo(
 				icon={
 					<button
 						type="button"
-						aria-label={collapsed ? "Expand folder" : "Collapse folder"}
+						aria-label={
+							collapsed ? t("components.fileTree.expandFolder") : t("components.fileTree.collapseFolder")
+						}
 						title={`${collapsed ? "Expand" : "Collapse"} ${name}`}
 						aria-expanded={!collapsed}
 						aria-busy={loading}
@@ -540,6 +544,7 @@ interface LoadMoreButtonProps {
 }
 
 const LoadMoreButton = memo(({ depth, onClick, isLoading }: LoadMoreButtonProps) => {
+	const { t } = useTranslation();
 	return (
 		<NodeButton
 			depth={depth}
@@ -553,7 +558,9 @@ const LoadMoreButton = memo(({ depth, onClick, isLoading }: LoadMoreButtonProps)
 			}
 			onClick={onClick}
 		>
-			<span className="text-xs">{isLoading ? "Loading more..." : "Load more files"}</span>
+			<span className="text-xs">
+				{isLoading ? t("components.fileTree.loadingMore") : t("components.fileTree.loadMoreFiles")}
+			</span>
 		</NodeButton>
 	);
 });

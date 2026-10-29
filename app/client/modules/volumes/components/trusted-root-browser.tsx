@@ -2,6 +2,7 @@ import { useState } from "react";
 import { DirectoryBrowser } from "~/client/components/file-browsers/directory-browser";
 import { Button } from "~/client/components/ui/button";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	agentId: string;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export const TrustedRootBrowser = ({ agentId, rootId, rootLabel, value, disabled, onChange }: Props) => {
+	const { t } = useTranslation();
 	const [browsing, setBrowsing] = useState(false);
 
 	const select = (relativePath: string) => {
@@ -24,11 +26,15 @@ export const TrustedRootBrowser = ({ agentId, rootId, rootLabel, value, disabled
 		<div className="space-y-2">
 			<div className="flex items-center gap-2">
 				<div className="min-w-0 flex-1 text-sm font-mono bg-muted px-3 py-2 rounded-md border break-all">
-					<span className={cn({ hidden: value !== null })}>No folder selected</span>
+					<span className={cn({ hidden: value !== null })}>
+						{t("volumes.trustedRootBrowser.noFolderSelected")}
+					</span>
 					<span className={cn({ hidden: !value })}>
 						{rootLabel}/{value}
 					</span>
-					<span className={cn({ hidden: value !== "" })}>Entire {rootLabel}</span>
+					<span className={cn({ hidden: value !== "" })}>
+						{t("volumes.trustedRootBrowser.entire", { rootLabel: rootLabel })}
+					</span>
 				</div>
 				<Button
 					type="button"
@@ -37,15 +43,19 @@ export const TrustedRootBrowser = ({ agentId, rootId, rootLabel, value, disabled
 					disabled={disabled}
 					onClick={() => setBrowsing(!browsing)}
 				>
-					<span className={cn({ hidden: !browsing })}>Cancel</span>
-					<span className={cn({ hidden: browsing || value !== null })}>Choose folder</span>
-					<span className={cn({ hidden: browsing || value === null })}>Change</span>
+					<span className={cn({ hidden: !browsing })}>{t("common.cancel")}</span>
+					<span className={cn({ hidden: browsing || value !== null })}>
+						{t("volumes.trustedRootBrowser.chooseFolder")}
+					</span>
+					<span className={cn({ hidden: browsing || value === null })}>
+						{t("volumes.trustedRootBrowser.change")}
+					</span>
 				</Button>
 			</div>
 			{browsing && (
 				<>
 					<Button type="button" variant="outline" size="sm" onClick={() => select("")}>
-						Select entire location
+						{t("volumes.trustedRootBrowser.selectEntireLocation")}
 					</Button>
 					<DirectoryBrowser
 						trustedRoot={{ agentId, rootId }}

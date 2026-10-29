@@ -5,6 +5,7 @@ import { MutationCache, QueryClient } from "@tanstack/react-query";
 import { logger } from "./client/lib/logger";
 import { client } from "./client/api-client/client.gen";
 import type { BreadcrumbItemData } from "./client/components/app-breadcrumb";
+import type { TFunction } from "./client/lib/i18n";
 
 const baseUrl = typeof window === "undefined" ? "/" : window.location.origin;
 client.setConfig({
@@ -48,6 +49,6 @@ declare module "@tanstack/react-router" {
 		router: ReturnType<typeof getRouter>;
 	}
 	interface StaticDataRouteOption {
-		breadcrumb?: (match: any) => BreadcrumbItemData[] | null;
+		breadcrumb?: (match: any, t: TFunction) => BreadcrumbItemData[] | null;
 	}
 }

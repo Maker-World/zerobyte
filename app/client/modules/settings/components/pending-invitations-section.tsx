@@ -13,6 +13,7 @@ import { useTimeFormat } from "~/client/lib/datetime";
 import { parseError } from "~/client/lib/errors";
 import { cn } from "~/client/lib/utils";
 import { startSsoSignIn } from "~/client/modules/sso/start-sso-sign-in";
+import { useTranslation } from "~/client/lib/i18n";
 
 type UserInvitation = GetUserSsoInvitationsResponse[number];
 type VerifyInvitationVariables = Options<StartInvitationSsoVerificationData>;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export function PendingInvitationsSection({ initialInvitations, userEmail }: Props) {
+	const { t, tDynamic } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const [selectedInvitationProviders, setSelectedInvitationProviders] = useState<Record<string, string>>({});
 
@@ -45,7 +47,9 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 			window.location.href = url;
 		},
 		onError: (error) => {
-			toast.error("Failed to start SSO verification", { description: parseError(error)?.message });
+			toast.error(t("settings.pendingInvitationsSection.failedToStartSso"), {
+				description: parseError(error)?.message,
+			});
 		},
 	});
 
@@ -58,19 +62,21 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 			<div className="border-t border-border/50 bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<MailCheck className="size-5" />
-					Pending Invitations
+					{t("settings.pendingInvitationsSection.pendingInvitations")}
 				</CardTitle>
-				<CardDescription className="mt-1.5">Organization invitations sent to this account</CardDescription>
+				<CardDescription className="mt-1.5">
+					{t("settings.pendingInvitationsSection.organizationInvitationsSentTo")}
+				</CardDescription>
 			</div>
 			<CardContent className="p-6">
 				<div className="rounded-md border">
 					<Table>
 						<TableHeader>
 							<TableRow>
-								<TableHead>Organization</TableHead>
-								<TableHead>Role</TableHead>
-								<TableHead>Expires</TableHead>
-								<TableHead className="text-right">Actions</TableHead>
+								<TableHead>{t("settings.scopes.organization")}</TableHead>
+								<TableHead>{t("settings.orgMembersSection.role")}</TableHead>
+								<TableHead>{t("settings.apiKeysSection.expires")}</TableHead>
+								<TableHead className="text-right">{t("common.actions")}</TableHead>
 							</TableRow>
 						</TableHeader>
 						<TableBody>
@@ -84,7 +90,9 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 								return (
 									<TableRow key={invitation.id}>
 										<TableCell className="font-medium">{invitation.organizationName}</TableCell>
-										<TableCell className="uppercase">{invitation.role}</TableCell>
+										<TableCell className="uppercase">
+											{tDynamic(`roles.${invitation.role}`, invitation.role)}
+										</TableCell>
 										<TableCell>{formatDateTime(new Date(invitation.expiresAt))}</TableCell>
 										<TableCell className="text-right">
 											<div className="flex justify-end gap-2">
@@ -98,7 +106,12 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 															}))
 														}
 													>
-														<SelectTrigger className="h-9 w-40" aria-label="SSO provider">
+														<SelectTrigger
+															className="h-9 w-40"
+															aria-label={t(
+																"settings.pendingInvitationsSection.ssoProvider",
+															)}
+														>
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
@@ -117,7 +130,7 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 													type="button"
 													variant="outline"
 													size="sm"
-													title="Verify with SSO"
+													title={t("settings.pendingInvitationsSection.verifyWithSso")}
 													loading={isVerifying}
 													disabled={!providerId || verifyInvitation.isPending}
 													onClick={() =>
@@ -128,7 +141,7 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 													}
 												>
 													<ShieldCheck size={16} className="mr-2" />
-													Verify
+													{t("auth.verify")}
 												</Button>
 											</div>
 										</TableCell>
@@ -137,7 +150,7 @@ export function PendingInvitationsSection({ initialInvitations, userEmail }: Pro
 							})}
 							<TableRow className={cn({ hidden: pendingInvitations.length > 0 })}>
 								<TableCell colSpan={4} className="text-center text-sm text-muted-foreground">
-									No pending invitations.
+									{t("settings.pendingInvitationsSection.noPendingInvitations")}
 								</TableCell>
 							</TableRow>
 						</TableBody>

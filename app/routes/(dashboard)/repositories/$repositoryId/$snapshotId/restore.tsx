@@ -36,17 +36,17 @@ export const Route = createFileRoute("/(dashboard)/repositories/$repositoryId/$s
 		};
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Repositories", href: "/repositories" },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.repositories"), href: "/repositories" },
 			{
-				label: match.loaderData?.repository?.name || "Repository",
+				label: match.loaderData?.repository?.name || t("breadcrumb.repository"),
 				href: `/repositories/${match.params.repositoryId}`,
 			},
 			{
 				label: match.params.snapshotId,
 				href: `/repositories/${match.params.repositoryId}/${match.params.snapshotId}`,
 			},
-			{ label: "Restore" },
+			{ label: t("common.restore") },
 		],
 	},
 	head: ({ params }) => ({

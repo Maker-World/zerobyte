@@ -13,12 +13,14 @@ import { SecretInput } from "../../../../components/ui/secret-input";
 import { Textarea } from "../../../../components/ui/textarea";
 import { Switch } from "../../../../components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../../components/ui/collapsible";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<FormValues>;
 };
 
 export const SFTPForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const skipHostKeyCheck = useWatch({ control: form.control, name: "skipHostKeyCheck" });
 	const unsafeSymlinkTargetsDisabled = Boolean(skipHostKeyCheck);
 
@@ -29,11 +31,11 @@ export const SFTPForm = ({ form }: Props) => {
 				name="host"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Host</FormLabel>
+						<FormLabel>{t("volumes.info.host")}</FormLabel>
 						<FormControl>
 							<Input placeholder="example.com" {...field} />
 						</FormControl>
-						<FormDescription>SFTP server hostname or IP address.</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.sftpServerHostnameOr")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -43,7 +45,7 @@ export const SFTPForm = ({ form }: Props) => {
 				name="port"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Port</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.port")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
@@ -52,7 +54,7 @@ export const SFTPForm = ({ form }: Props) => {
 								onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
 							/>
 						</FormControl>
-						<FormDescription>SFTP server port (default: 22).</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.sftpServerPortDefault")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -62,11 +64,11 @@ export const SFTPForm = ({ form }: Props) => {
 				name="username"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Username</FormLabel>
+						<FormLabel>{t("auth.username")}</FormLabel>
 						<FormControl>
 							<Input placeholder="root" {...field} />
 						</FormControl>
-						<FormDescription>Username for SFTP authentication.</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.usernameForSftpAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -76,13 +78,11 @@ export const SFTPForm = ({ form }: Props) => {
 				name="password"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Password (Optional)</FormLabel>
+						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
 							<SecretInput placeholder="••••••••" value={field.value ?? ""} onChange={field.onChange} />
 						</FormControl>
-						<FormDescription>
-							Password for SFTP authentication (optional if using private key).
-						</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.passwordForSftpAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -92,19 +92,17 @@ export const SFTPForm = ({ form }: Props) => {
 				name="privateKey"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Private Key (Optional)</FormLabel>
+						<FormLabel>{t("volumes.sftpForm.privateKeyOptional")}</FormLabel>
 						<FormControl>
 							<Textarea
-								placeholder="-----BEGIN OPENSSH PRIVATE KEY-----"
+								placeholder={t("volumes.sftpForm.beginOpensshPrivateKey")}
 								className="font-mono text-xs"
 								rows={5}
 								{...field}
 								value={field.value ?? ""}
 							/>
 						</FormControl>
-						<FormDescription>
-							SSH private key for authentication (optional if using password).
-						</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.sshPrivateKeyFor")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -114,11 +112,11 @@ export const SFTPForm = ({ form }: Props) => {
 				name="path"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Path</FormLabel>
+						<FormLabel>{t("volumes.info.path")}</FormLabel>
 						<FormControl>
 							<Input placeholder="/backups" {...field} />
 						</FormControl>
-						<FormDescription>Path to the directory on the SFTP server.</FormDescription>
+						<FormDescription>{t("volumes.sftpForm.pathToTheDirectory")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -129,10 +127,8 @@ export const SFTPForm = ({ form }: Props) => {
 				render={({ field }) => (
 					<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 						<div className="space-y-0.5">
-							<FormLabel>Skip Host Key Verification</FormLabel>
-							<FormDescription>
-								Disable SSH host key checking. Useful for servers with dynamic IPs or self-signed keys.
-							</FormDescription>
+							<FormLabel>{t("volumes.sftpForm.skipHostKeyVerification")}</FormLabel>
+							<FormDescription>{t("volumes.sftpForm.disableSshHostKey")}</FormDescription>
 						</div>
 						<FormControl>
 							<Switch
@@ -157,10 +153,10 @@ export const SFTPForm = ({ form }: Props) => {
 					name="knownHosts"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Known Hosts</FormLabel>
+							<FormLabel>{t("volumes.sftpForm.knownHosts")}</FormLabel>
 							<FormControl>
 								<Textarea
-									placeholder="example.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ..."
+									placeholder={t("volumes.sftpForm.exampleComSshEd25519")}
 									className="font-mono text-xs"
 									rows={3}
 									{...field}
@@ -168,7 +164,8 @@ export const SFTPForm = ({ form }: Props) => {
 								/>
 							</FormControl>
 							<FormDescription>
-								The contents of the <code>known_hosts</code> file for this server.
+								{t("volumes.sftpForm.theContentsOfThe")} <code>known_hosts</code>{" "}
+								{t("volumes.sftpForm.fileForThisServer")}
 							</FormDescription>
 							<FormMessage />
 						</FormItem>
@@ -176,7 +173,7 @@ export const SFTPForm = ({ form }: Props) => {
 				/>
 			)}
 			<Collapsible>
-				<CollapsibleTrigger>Advanced Settings</CollapsibleTrigger>
+				<CollapsibleTrigger>{t("volumes.sftpForm.advancedSettings")}</CollapsibleTrigger>
 				<CollapsibleContent className="pb-4 pt-4 space-y-4">
 					<FormField
 						control={form.control}
@@ -184,10 +181,10 @@ export const SFTPForm = ({ form }: Props) => {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 								<div className="space-y-0.5">
-									<FormLabel>Allow legacy SSH RSA/SHA1 algorithms</FormLabel>
+									<FormLabel>{t("volumes.sftpForm.allowLegacySshRsa")}</FormLabel>
 									<FormDescription>
-										Only enable this for legacy SFTP servers that offer <code>ssh-rsa</code> only.
-										It permits RSA/SHA1 signatures, which are weaker than modern SSH algorithms.
+										{t("volumes.sftpForm.onlyEnableThisFor")} <code>ssh-rsa</code>{" "}
+										{t("volumes.sftpForm.onlyItPermitsRsa")}
 									</FormDescription>
 								</div>
 								<FormControl>
@@ -202,11 +199,10 @@ export const SFTPForm = ({ form }: Props) => {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 								<div className="space-y-0.5">
-									<FormLabel>Allow absolute and parent-directory symlinks</FormLabel>
+									<FormLabel>{t("volumes.sftpForm.allowAbsoluteAndParent")}</FormLabel>
 									<FormDescription>
-										Only enable this for trusted SFTP servers with host key verification and known
-										hosts configured. It disables SSHFS symlink containment so Restic can archive
-										symlinks with absolute targets or <code>..</code> path components.
+										{t("volumes.sftpForm.onlyEnableThisFor2")} <code>..</code>{" "}
+										{t("volumes.sftpForm.pathComponents")}
 									</FormDescription>
 								</div>
 								<FormControl>

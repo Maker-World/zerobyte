@@ -1,5 +1,6 @@
 import { cn } from "~/client/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { useTranslation } from "~/client/lib/i18n";
 
 export type StatusVariant = "success" | "neutral" | "error" | "warning" | "info";
 
@@ -10,6 +11,8 @@ interface StatusDotProps {
 }
 
 export const StatusDot = ({ variant, label, animated }: StatusDotProps) => {
+	const { tDynamic } = useTranslation();
+	const translatedLabel = tDynamic(`status.${label}`, label);
 	const statusMapping = {
 		success: {
 			color: "bg-success shadow-[0_0_8px_rgba(16,185,129,0.5)]",
@@ -40,7 +43,7 @@ export const StatusDot = ({ variant, label, animated }: StatusDotProps) => {
 
 	return (
 		<Tooltip>
-			<TooltipTrigger asChild aria-label={label}>
+			<TooltipTrigger asChild aria-label={translatedLabel}>
 				<span className="relative flex size-3 mx-auto">
 					{statusMapping?.animated && (
 						<span
@@ -54,7 +57,7 @@ export const StatusDot = ({ variant, label, animated }: StatusDotProps) => {
 				</span>
 			</TooltipTrigger>
 			<TooltipContent>
-				<p className="capitalize">{label}</p>
+				<p className="capitalize">{translatedLabel}</p>
 			</TooltipContent>
 		</Tooltip>
 	);

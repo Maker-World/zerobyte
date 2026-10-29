@@ -5,6 +5,7 @@ import { useRootLoaderData } from "~/client/hooks/use-root-loader-data";
 import { Card } from "~/client/components/ui/card";
 import { Progress } from "~/client/components/ui/progress";
 import { formatDuration } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 type RestoreTaskProgress = Extract<NonNullable<ListTasksResponse[number]["progress"]>, { kind: "restore" }>["progress"];
 
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export const RestoreProgress = ({ progress }: Props) => {
+	const { t } = useTranslation();
 	const formatBytes = useFormatBytes();
 	const { locale } = useRootLoaderData();
 
@@ -21,7 +23,7 @@ export const RestoreProgress = ({ progress }: Props) => {
 			<Card className="p-4">
 				<div className="flex items-center gap-2">
 					<div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-					<span className="font-medium">Restore in progress</span>
+					<span className="font-medium">{t("components.restoreProgress.restoreInProgress")}</span>
 				</div>
 			</Card>
 		);
@@ -43,7 +45,7 @@ export const RestoreProgress = ({ progress }: Props) => {
 			<div className="flex items-center justify-between mb-4">
 				<div className="flex items-center gap-2">
 					<div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-					<span className="font-medium">Restore in progress</span>
+					<span className="font-medium">{t("components.restoreProgress.restoreInProgress")}</span>
 				</div>
 				<span className="text-sm font-medium text-primary">{percentDone}%</span>
 			</div>
@@ -52,7 +54,7 @@ export const RestoreProgress = ({ progress }: Props) => {
 
 			<div className="grid grid-cols-2 gap-4 text-sm">
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Files</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("volumes.volumeDetails.files")}</p>
 					<p className="font-medium">
 						{filesRestored.toLocaleString(locale)}
 						&nbsp;/&nbsp;
@@ -60,7 +62,7 @@ export const RestoreProgress = ({ progress }: Props) => {
 					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Data</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.backupProgressCard.data")}</p>
 					<p className="font-medium">
 						<ByteSize bytes={bytesRestored} base={1024} />
 						&nbsp;/&nbsp;
@@ -68,12 +70,14 @@ export const RestoreProgress = ({ progress }: Props) => {
 					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Elapsed</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.backupProgressCard.elapsed")}</p>
 					<p className="font-medium">{formatDuration(secondsElapsed)}</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Speed</p>
-					<p className="font-medium">{speed ? `${speed.text} ${speed.unit}/s` : "Calculating..."}</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("components.restoreProgress.speed")}</p>
+					<p className="font-medium">
+						{speed ? `${speed.text} ${speed.unit}/s` : t("backups.backupProgressCard.calculating")}
+					</p>
 				</div>
 			</div>
 		</Card>

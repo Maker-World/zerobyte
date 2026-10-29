@@ -6,6 +6,7 @@ import { Button } from "~/client/components/ui/button";
 import type { UseFormReturn } from "react-hook-form";
 import type { InternalFormValues } from "./types";
 import { weeklyDays } from "./types";
+import { useTranslation } from "~/client/lib/i18n";
 
 type FrequencySectionProps = {
 	form: UseFormReturn<InternalFormValues>;
@@ -13,6 +14,7 @@ type FrequencySectionProps = {
 };
 
 export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -20,23 +22,25 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 				name="frequency"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Backup frequency</FormLabel>
+						<FormLabel>{t("backups.frequencySection.backupFrequency")}</FormLabel>
 						<FormControl>
 							<Select {...field} onValueChange={field.onChange} value={field.value ?? ""}>
 								<SelectTrigger>
-									<SelectValue placeholder="Select frequency" />
+									<SelectValue placeholder={t("backups.frequencySection.selectFrequency")} />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="manual">Manual only</SelectItem>
-									<SelectItem value="hourly">Hourly</SelectItem>
-									<SelectItem value="daily">Daily</SelectItem>
-									<SelectItem value="weekly">Weekly</SelectItem>
-									<SelectItem value="monthly">Specific days</SelectItem>
-									<SelectItem value="cron">Custom (Cron)</SelectItem>
+									<SelectItem value="manual">{t("backups.card.manualOnly")}</SelectItem>
+									<SelectItem value="hourly">{t("backups.frequencySection.hourly")}</SelectItem>
+									<SelectItem value="daily">{t("backups.frequencySection.daily")}</SelectItem>
+									<SelectItem value="weekly">{t("backups.frequencySection.weekly")}</SelectItem>
+									<SelectItem value="monthly">
+										{t("backups.frequencySection.specificDays")}
+									</SelectItem>
+									<SelectItem value="cron">{t("backups.frequencySection.customCron")}</SelectItem>
 								</SelectContent>
 							</Select>
 						</FormControl>
-						<FormDescription>Define how often snapshots should be taken.</FormDescription>
+						<FormDescription>{t("backups.frequencySection.defineHowOftenSnapshots")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -62,11 +66,11 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 					name="dailyTime"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Execution time</FormLabel>
+							<FormLabel>{t("backups.frequencySection.executionTime")}</FormLabel>
 							<FormControl>
 								<Input type="time" {...field} />
 							</FormControl>
-							<FormDescription>Time of day when the backup will run.</FormDescription>
+							<FormDescription>{t("backups.frequencySection.timeOfDayWhen")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -79,11 +83,11 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 					name="weeklyDay"
 					render={({ field }) => (
 						<FormItem className="@medium:col-span-2">
-							<FormLabel>Execution day</FormLabel>
+							<FormLabel>{t("backups.frequencySection.executionDay")}</FormLabel>
 							<FormControl>
 								<Select {...field} onValueChange={field.onChange} value={field.value ?? ""}>
 									<SelectTrigger>
-										<SelectValue placeholder="Select a day" />
+										<SelectValue placeholder={t("backups.frequencySection.selectADay")} />
 									</SelectTrigger>
 									<SelectContent>
 										{weeklyDays.map((day) => (
@@ -94,7 +98,7 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 									</SelectContent>
 								</Select>
 							</FormControl>
-							<FormDescription>Choose which day of the week to run the backup.</FormDescription>
+							<FormDescription>{t("backups.frequencySection.chooseWhichDayOf")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -107,7 +111,7 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 					name="monthlyDays"
 					render={({ field }) => (
 						<FormItem className="@medium:col-span-2">
-							<FormLabel>Days of the month</FormLabel>
+							<FormLabel>{t("backups.frequencySection.daysOfTheMonth")}</FormLabel>
 							<FormControl>
 								<div className="grid grid-cols-7 gap-4 w-max">
 									{Array.from({ length: 31 }, (_, i) => {
@@ -133,7 +137,7 @@ export const FrequencySection = ({ form, frequency }: FrequencySectionProps) => 
 									})}
 								</div>
 							</FormControl>
-							<FormDescription>Select one or more days when the backup should run.</FormDescription>
+							<FormDescription>{t("backups.frequencySection.selectOneOrMore")}</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}

@@ -25,6 +25,7 @@ import { Alert, AlertDescription } from "~/client/components/ui/alert";
 import type { RepositoryConfig } from "@zerobyte/core/restic";
 import { useNavigate } from "@tanstack/react-router";
 import { ManagedBadge } from "~/client/components/managed-badge";
+import { useTranslation } from "~/client/lib/i18n";
 
 const riskyLocationFieldsByBackend = {
 	local: ["path"],
@@ -46,6 +47,7 @@ const hasRiskyLocationChange = (initialConfig: RepositoryConfig, nextConfig: Rep
 };
 
 export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [showRiskConfirm, setShowRiskConfirm] = useState(false);
 	const [pendingValues, setPendingValues] = useState<RepositoryFormValues | null>(null);
@@ -57,13 +59,13 @@ export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
 	const updateRepository = useMutation({
 		...updateRepositoryMutation(),
 		onSuccess: async (data) => {
-			toast.success("Repository updated successfully");
+			toast.success(t("repositories.editRepository.repositoryUpdatedSuccessfully"));
 			setShowRiskConfirm(false);
 			setPendingValues(null);
 			void navigate({ to: `/repositories/${data.shortId}` });
 		},
 		onError: (error) => {
-			toast.error("Failed to update repository", {
+			toast.error(t("repositories.editRepository.failedToUpdateRepository"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -136,7 +138,7 @@ export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
 								<Database className="w-5 h-5 text-primary" />
 							</div>
 							<div className="flex items-center gap-2">
-								<CardTitle>Edit Repository</CardTitle>
+								<CardTitle>{t("repositories.editRepository.editRepository")}</CardTitle>
 								{repository.provisioningId && <ManagedBadge />}
 							</div>
 						</div>
@@ -145,7 +147,7 @@ export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
 						{updateRepository.isError && (
 							<Alert variant="destructive">
 								<AlertDescription>
-									<strong>Failed to update repository:</strong>
+									<strong>{t("repositories.editRepository.failedToUpdateRepository2")}</strong>
 									<br />
 									{parseError(updateRepository.error)?.message}
 								</AlertDescription>
@@ -164,7 +166,7 @@ export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
 								variant="secondary"
 								onClick={() => navigate({ to: `/repositories/${repository.shortId}` })}
 							>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 						</div>
 					</CardContent>
@@ -174,16 +176,17 @@ export function EditRepositoryPage({ repositoryId }: { repositoryId: string }) {
 			<AlertDialog open={showRiskConfirm} onOpenChange={handleRiskConfirmOpenChange}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Repository location changed</AlertDialogTitle>
+						<AlertDialogTitle>
+							{t("repositories.editRepository.repositoryLocationChanged")}
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							Changing endpoint, bucket, host, or path fields may point to a different repository
-							location. Before saving, ensure the repository already exists at the new target.
+							{t("repositories.editRepository.changingEndpointBucketHost")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction onClick={handleSaveAnyway} disabled={updateRepository.isPending}>
-							Save anyway
+							{t("repositories.editRepository.saveAnyway")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

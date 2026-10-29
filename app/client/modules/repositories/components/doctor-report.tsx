@@ -3,6 +3,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/client/co
 import { useTimeFormat } from "~/client/lib/datetime";
 import { cn, safeJsonParse } from "~/client/lib/utils";
 import { Card, CardTitle } from "~/client/components/ui/card";
+import { useTranslation } from "~/client/lib/i18n";
 
 type DoctorStep = {
 	step: string;
@@ -23,6 +24,7 @@ type Props = {
 };
 
 export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const showRunning = isDoctorRunning;
 	const showEmpty = !showRunning && result == null;
@@ -31,7 +33,7 @@ export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
 	return (
 		<Card className="px-6 py-6 flex flex-col gap-4 h-full">
 			<div className="flex items-center justify-between">
-				<CardTitle>Doctor Report</CardTitle>
+				<CardTitle>{t("repositories.doctorReport.doctorReport")}</CardTitle>
 				{showResult && result && (
 					<span className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
 						{formatDateTime(result.completedAt)}
@@ -66,7 +68,7 @@ export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
 									{step.error && (
 										<div className="space-y-2">
 											<div className="text-[10px] uppercase font-bold text-red-500/70 tracking-wider">
-												Error
+												{t("status.error")}
 											</div>
 											<pre className="text-xs font-mono bg-red-500/10 text-red-500 p-3 rounded-md border border-red-500/20 overflow-auto whitespace-pre-wrap">
 												{step.error}
@@ -74,7 +76,9 @@ export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
 										</div>
 									)}
 									{!step.output && !step.error && (
-										<div className="text-sm text-muted-foreground italic">No output recorded</div>
+										<div className="text-sm text-muted-foreground italic">
+											{t("repositories.doctorReport.noOutputRecorded")}
+										</div>
 									)}
 								</div>
 							</CollapsibleContent>
@@ -87,7 +91,9 @@ export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
 					hidden: !showEmpty,
 				})}
 			>
-				<p className="text-sm text-muted-foreground">No doctor report available.</p>
+				<p className="text-sm text-muted-foreground">
+					{t("repositories.doctorReport.noDoctorReportAvailable")}
+				</p>
 			</div>
 			<div
 				className={cn("border border-border/50 rounded-lg p-6 text-center bg-muted/20", {
@@ -96,7 +102,7 @@ export const DoctorReport = ({ result, isDoctorRunning = false }: Props) => {
 			>
 				<div className="flex items-center justify-center gap-2">
 					<div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-					<p className="text-sm font-medium">Doctor operation running...</p>
+					<p className="text-sm font-medium">{t("repositories.doctorReport.doctorOperationRunning")}</p>
 				</div>
 			</div>
 		</Card>

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/(dashboard)/backups/")({
 		]);
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Backup Jobs" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.backupJobs") }],
 	},
 	head: () => ({
 		meta: [

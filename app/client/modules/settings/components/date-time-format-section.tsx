@@ -13,8 +13,10 @@ import {
 	type TimeFormatPreference,
 	useTimeFormat,
 } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function DateTimeFormatSection() {
+	const { t } = useTranslation();
 	const [previewDate] = useState(() => new Date());
 
 	const { dateFormat, timeFormat } = useRootLoaderData();
@@ -29,7 +31,7 @@ export function DateTimeFormatSection() {
 			timeFormat: nextTimeFormat,
 			fetchOptions: {
 				onError: ({ error }) => {
-					toast.error("Failed to update date and time format", {
+					toast.error(t("settings.dateTimeFormatSection.failedToUpdateDate"), {
 						description: error.message,
 					});
 				},
@@ -61,17 +63,17 @@ export function DateTimeFormatSection() {
 			<div className="bg-card-header p-6">
 				<CardTitle className="flex items-center gap-2">
 					<Settings className="size-5" />
-					Date and Time Format
+					{t("settings.dateTimeFormatSection.dateAndTimeFormat")}
 				</CardTitle>
 				<CardDescription className="mt-1.5">
-					Choose how dates and times are shown throughout the app
+					{t("settings.dateTimeFormatSection.chooseHowDatesAnd")}
 				</CardDescription>
 			</div>
 			<CardContent className="p-6">
 				<div className="space-y-4 max-w-2xl">
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">
-							<Label htmlFor="date-format">Date format</Label>
+							<Label htmlFor="date-format">{t("settings.dateTimeFormatSection.dateFormat")}</Label>
 							<Select
 								value={dateFormat}
 								onValueChange={(value) => void handleDateFormatChange(value as DateFormatPreference)}
@@ -89,7 +91,7 @@ export function DateTimeFormatSection() {
 							</Select>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="time-format">Time format</Label>
+							<Label htmlFor="time-format">{t("settings.dateTimeFormatSection.timeFormat")}</Label>
 							<Select
 								value={timeFormat}
 								onValueChange={(value) => void handleTimeFormatChange(value as TimeFormatPreference)}
@@ -107,7 +109,9 @@ export function DateTimeFormatSection() {
 							</Select>
 						</div>
 					</div>
-					<p className="text-sm text-muted-foreground">Preview: {formatDateTime(previewDate)}</p>
+					<p className="text-sm text-muted-foreground">
+						{t("settings.dateTimeFormatSection.preview", { dateTime: formatDateTime(previewDate) })}
+					</p>
 				</div>
 			</CardContent>
 		</>

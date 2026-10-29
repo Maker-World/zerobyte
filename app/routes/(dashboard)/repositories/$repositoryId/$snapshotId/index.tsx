@@ -30,9 +30,12 @@ export const Route = createFileRoute("/(dashboard)/repositories/$repositoryId/$s
 		};
 	},
 	staticData: {
-		breadcrumb: (match) => [
-			{ label: "Repositories", href: "/repositories" },
-			{ label: match.loaderData?.name || "Repository", href: `/repositories/${match.params.repositoryId}` },
+		breadcrumb: (match, t) => [
+			{ label: t("nav.repositories"), href: "/repositories" },
+			{
+				label: match.loaderData?.name || t("breadcrumb.repository"),
+				href: `/repositories/${match.params.repositoryId}`,
+			},
 			{ label: match.params.snapshotId },
 		],
 	},

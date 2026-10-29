@@ -17,12 +17,13 @@ import {
 } from "~/lib/machine-name";
 import { createConnectionCommand } from "./connection-command";
 import { createDockerCompose } from "./connection-docker";
+import { useTranslation } from "~/client/lib/i18n";
 
 const installationGuide = "https://zerobyte.app/docs/guides/remote-agents";
 
 function CopyField({
 	value,
-	label = "Connection command",
+	label: labelProp,
 	rows = 6,
 	wrap = "soft",
 }: {
@@ -31,6 +32,8 @@ function CopyField({
 	rows?: number;
 	wrap?: "soft" | "off";
 }) {
+	const { t } = useTranslation();
+	const label = labelProp ?? t("settings.machineSetupForms.connectionCommand");
 	const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
 
 	const fieldId = useId();
@@ -74,7 +77,11 @@ function CopyField({
 					variant="outline"
 					size="icon"
 					className="shrink-0"
-					aria-label={`${copyStatus === "copied" ? "Copied" : "Copy"} ${label.toLowerCase()}`}
+					aria-label={
+						copyStatus === "copied"
+							? t("settings.machineSetupForms.copiedLabel", { label: label.toLowerCase() })
+							: t("settings.machineSetupForms.copyLabel", { label: label.toLowerCase() })
+					}
 					onClick={copy}
 				>
 					{copyStatus === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -85,14 +92,15 @@ function CopyField({
 				aria-atomic="true"
 				className={copyStatus === "failed" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}
 			>
-				{copyStatus === "copied" && `${label} copied.`}
-				{copyStatus === "failed" && "Could not copy. The text is selected; copy it with Ctrl+C or Command+C."}
+				{copyStatus === "copied" && t("settings.machineSetupForms.labelCopied", { label })}
+				{copyStatus === "failed" && t("settings.machineSetupForms.couldNotCopyThe")}
 			</p>
 		</div>
 	);
 }
 
 export function DeploymentInstructions({ credential }: { credential: CreateRemoteAgentResponse }) {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const insecure = toControllerOrigin(credential.controllerUrl).startsWith("http:");
 
@@ -101,38 +109,43 @@ export function DeploymentInstructions({ credential }: { credential: CreateRemot
 			{insecure && (
 				<Alert variant="warning">
 					<AlertTriangle className="size-4" aria-hidden="true" />
-					<AlertTitle>Connection isn’t secure</AlertTitle>
+					<AlertTitle>{t("settings.machineSetupForms.connectionIsnTSecure")}</AlertTitle>
 					<AlertDescription>
-						Credentials and controller traffic will be sent unencrypted. Use HTTPS, or explicitly set
-						ZEROBYTE_AGENT_ALLOW_INSECURE_HTTP=true on the controller to allow HTTP connections.
+						{t("settings.machineSetupForms.credentialsAndControllerTraffic")}
 					</AlertDescription>
 				</Alert>
 			)}
 			<Tabs defaultValue="linux" className="min-w-0 gap-4">
-				<TabsList aria-label="Deployment method" className="justify-start">
-					<TabsTrigger value="linux">Linux installer</TabsTrigger>
-					<TabsTrigger value="docker">Docker</TabsTrigger>
+				<TabsList aria-label={t("settings.machineSetupForms.deploymentMethod")} className="justify-start">
+					<TabsTrigger value="linux">{t("settings.machineSetupForms.linuxInstaller")}</TabsTrigger>
+					<TabsTrigger value="docker">{t("settings.machineSetupForms.docker")}</TabsTrigger>
 				</TabsList>
 				<TabsContent value="linux" className="min-w-0 space-y-4">
 					<p className="text-sm text-muted-foreground">
-						Copy and run this command on {getMachineDisplayName(credential.agent.name)}.
+						{t("settings.machineSetupForms.copyAndRunThis", {
+							machineDisplayName: getMachineDisplayName(credential.agent.name),
+						})}
 					</p>
 					<CopyField value={createConnectionCommand(credential.controllerUrl, credential.token)} />
 				</TabsContent>
 				<TabsContent value="docker" className="min-w-0 space-y-4">
 					<ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
 						<li>
-							Save this as <code>compose.yaml</code> on {getMachineDisplayName(credential.agent.name)}.
+							{t("settings.machineSetupForms.saveThisAs")} <code>compose.yaml</code>{" "}
+							{t("settings.machineSetupForms.on", {
+								machineDisplayName: getMachineDisplayName(credential.agent.name),
+							})}
 						</li>
 						<li>
-							Replace <code>/path/on/host</code> with the folder to back up.
+							{t("settings.machineSetupForms.replace")} <code>/path/on/host</code>{" "}
+							{t("settings.machineSetupForms.withTheFolderTo")}
 						</li>
 						<li>
-							Run <code>docker compose up -d</code>.
+							{t("settings.machineSetupForms.run")} <code>docker compose up -d</code>.
 						</li>
 					</ol>
 					<CopyField
-						label="Docker Compose configuration"
+						label={t("settings.machineSetupForms.dockerComposeConfiguration")}
 						rows={16}
 						wrap="off"
 						value={createDockerCompose(
@@ -142,15 +155,15 @@ export function DeploymentInstructions({ credential }: { credential: CreateRemot
 						)}
 					/>
 					<p className="text-sm text-muted-foreground">
-						Reconnecting? Update only the connection code in your existing file.
+						{t("settings.machineSetupForms.reconnectingUpdateOnlyThe")}
 					</p>
 				</TabsContent>
 			</Tabs>
-			<p className="text-sm text-muted-foreground">Keep this page open until your machine connects.</p>
+			<p className="text-sm text-muted-foreground">{t("settings.machineSetupForms.keepThisPageOpen")}</p>
 			<p className="text-xs text-muted-foreground">
-				Expires {formatDateTime(credential.expiresAt)}.{" "}
+				{t("settings.machineSetupForms.expires", { dateTime: formatDateTime(credential.expiresAt) })}{" "}
 				<a href={installationGuide} target="_blank" rel="noreferrer" className="underline underline-offset-4">
-					Setup guide
+					{t("settings.machineSetupForms.setupGuide")}
 				</a>
 			</p>
 		</div>
@@ -168,6 +181,7 @@ export function CreateMachineForm({
 	onCreate: (name: string) => void;
 	onCancel: () => void;
 }) {
+	const { t } = useTranslation();
 	const [machineName, setMachineName] = useState("");
 
 	const isValid = isValidMachineName(machineName);
@@ -182,11 +196,11 @@ export function CreateMachineForm({
 			}}
 		>
 			<div className="space-y-2">
-				<Label htmlFor="remote-machine-name">Machine name</Label>
+				<Label htmlFor="remote-machine-name">{t("settings.machineSetupForms.machineName")}</Label>
 				<Input
 					id="remote-machine-name"
 					value={machineName}
-					placeholder="e.g. Archive server"
+					placeholder={t("settings.machineSetupForms.eGArchiveServer")}
 					disabled={pending}
 					onChange={(event) => setMachineName(event.target.value)}
 					maxLength={MACHINE_NAME_MAX_LENGTH}
@@ -197,25 +211,25 @@ export function CreateMachineForm({
 					required
 				/>
 				<p id="remote-machine-name-hint" className="text-pretty text-xs text-muted-foreground">
-					Choose a name you’ll recognize.
+					{t("settings.machineSetupForms.chooseANameYou")}
 				</p>
 				{hasError && (
 					<p id="remote-machine-name-error" role="alert" className="text-pretty text-sm text-destructive">
-						Enter a non-empty machine name without invisible control or formatting characters.
+						{t("settings.machineSetupForms.enterANonEmpty")}
 					</p>
 				)}
 			</div>
 			{failed && (
 				<p role="alert" className="text-sm text-destructive">
-					Could not get the connection command. Check the name and try again.
+					{t("settings.machineSetupForms.couldNotGetThe")}
 				</p>
 			)}
 			<div className="flex justify-end gap-2 pt-4 border-t">
 				<Button type="button" variant="secondary" onClick={onCancel}>
-					Cancel
+					{t("common.cancel")}
 				</Button>
 				<Button type="submit" loading={pending} disabled={!isValid}>
-					Continue
+					{t("common.continue")}
 				</Button>
 			</div>
 		</form>

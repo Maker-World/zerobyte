@@ -39,6 +39,7 @@ import { useRepositoryDoctorTask } from "../doctor-tasks";
 import { RepositoryInfoTabContent } from "../tabs/info";
 import { RepositorySnapshotsTabContent } from "../tabs/snapshots";
 import { useTimeFormat } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 export default function RepositoryDetailsPage({
 	repositoryId,
@@ -51,6 +52,7 @@ export default function RepositoryDetailsPage({
 	initialBackupSchedules?: BackupSchedule[];
 	initialStats?: GetRepositoryStatsResponse;
 }) {
+	const { t } = useTranslation();
 	const { formatDateTime, formatTimeAgo } = useTimeFormat();
 	const navigate = useNavigate();
 	const { tab } = useSearch({ from: "/(dashboard)/repositories/$repositoryId/" });
@@ -66,11 +68,11 @@ export default function RepositoryDetailsPage({
 	const deleteRepo = useMutation({
 		...deleteRepositoryMutation(),
 		onSuccess: () => {
-			toast.success("Repository deleted successfully");
+			toast.success(t("repositories.repositoryDetails.repositoryDeletedSuccessfully"));
 			void navigate({ to: "/repositories" });
 		},
 		onError: (error) => {
-			toast.error("Failed to delete repository", {
+			toast.error(t("repositories.repositoryDetails.failedToDeleteRepository"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -79,10 +81,10 @@ export default function RepositoryDetailsPage({
 	const startDoctor = useMutation({
 		...startDoctorMutation(),
 		onSuccess: () => {
-			toast.info("Doctor started");
+			toast.info(t("repositories.repositoryDetails.doctorStarted"));
 		},
 		onError: (error) => {
-			toast.error("Failed to start doctor", {
+			toast.error(t("repositories.repositoryDetails.failedToStartDoctor"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -91,7 +93,7 @@ export default function RepositoryDetailsPage({
 	const cancelDoctor = useMutation({
 		...cancelTaskMutation(),
 		onError: (error) => {
-			toast.error("Failed to cancel doctor", {
+			toast.error(t("repositories.repositoryDetails.failedToCancelDoctor"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -132,14 +134,18 @@ export default function RepositoryDetailsPage({
 												"animate-pulse": isDoctorRunning,
 											})}
 										/>
-										{displayStatus || "Unknown"}
+										{displayStatus || t("status.unknown")}
 									</Badge>
 									<Badge variant="secondary">{repository.type}</Badge>
-									{repository.provisioningId && <Badge variant="secondary">Managed</Badge>}
+									{repository.provisioningId && (
+										<Badge variant="secondary">{t("repositories.repositoryDetails.managed")}</Badge>
+									)}
 								</div>
 								<p className="text-sm text-muted-foreground mt-0.5">
-									Created {formatDateTime(repository.createdAt)} &middot; Last checked&nbsp;
-									{formatTimeAgo(repository.lastChecked)}
+									{t("repositories.repositoryDetails.createdLastChecked", {
+										dateTime: formatDateTime(repository.createdAt),
+										timeAgo: formatTimeAgo(repository.lastChecked),
+									})}
 								</p>
 							</div>
 						</div>
@@ -152,7 +158,7 @@ export default function RepositoryDetailsPage({
 									onClick={() => cancelDoctor.mutate({ path: { taskId: activeDoctorTask.id } })}
 								>
 									<Square className="h-4 w-4 mr-2" />
-									Cancel doctor
+									{t("repositories.repositoryDetails.cancelDoctor")}
 								</Button>
 							) : (
 								<Button
@@ -162,13 +168,13 @@ export default function RepositoryDetailsPage({
 									disabled={startDoctor.isPending}
 								>
 									<Stethoscope className="h-4 w-4 mr-2" />
-									Run doctor
+									{t("repositories.repositoryDetails.runDoctor")}
 								</Button>
 							)}
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="outline">
-										Actions
+										{t("common.actions")}
 										<ChevronDown className="h-4 w-4 ml-1" />
 									</Button>
 								</DropdownMenuTrigger>
@@ -177,26 +183,33 @@ export default function RepositoryDetailsPage({
 										onClick={() => navigate({ to: `/repositories/${repository.shortId}/edit` })}
 									>
 										<Pencil />
-										Edit
+										{t("common.edit")}
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() =>
 											toast.promise(
 												unlockRepo.mutateAsync({ path: { shortId: repository.shortId } }),
 												{
-													loading: "Unlocking repo",
-													success: "Repository unlocked successfully",
+													loading: t("repositories.repositoryDetails.unlockingRepo"),
+													success: t(
+														"repositories.repositoryDetails.repositoryUnlockedSuccessfully",
+													),
 													error: (e) =>
-														toast.error("Failed to unlock repository", {
-															description: parseError(e)?.message,
-														}),
+														toast.error(
+															t(
+																"repositories.repositoryDetails.failedToUnlockRepository",
+															),
+															{
+																description: parseError(e)?.message,
+															},
+														),
 												},
 											)
 										}
 										disabled={unlockRepo.isPending}
 									>
 										<Unlock />
-										Unlock
+										{t("repositories.repositoryDetails.unlock")}
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem
@@ -205,7 +218,7 @@ export default function RepositoryDetailsPage({
 										disabled={deleteRepo.isPending}
 									>
 										<Trash2 />
-										Delete
+										{t("settings.passkeysSection.delete")}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
@@ -216,7 +229,9 @@ export default function RepositoryDetailsPage({
 				{repository.lastError && (
 					<Card className="px-6 py-6">
 						<div className="space-y-2">
-							<p className="text-sm font-medium text-destructive">Last Error</p>
+							<p className="text-sm font-medium text-destructive">
+								{t("volumes.volumeDetails.lastError")}
+							</p>
 							<p className="text-sm text-muted-foreground wrap-break-word">{repository.lastError}</p>
 						</div>
 					</Card>
@@ -227,8 +242,10 @@ export default function RepositoryDetailsPage({
 					onValueChange={(value) => navigate({ to: ".", search: () => ({ tab: value }) })}
 				>
 					<TabsList className="mb-2">
-						<TabsTrigger value="info">Configuration</TabsTrigger>
-						<TabsTrigger value="snapshots">Snapshots</TabsTrigger>
+						<TabsTrigger value="info">{t("volumes.volumeDetails.configuration")}</TabsTrigger>
+						<TabsTrigger value="snapshots">
+							{t("repositories.compressionStatsChart.snapshots2")}
+						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="info">
 						<RepositoryInfoTabContent
@@ -250,25 +267,24 @@ export default function RepositoryDetailsPage({
 			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete repository?</AlertDialogTitle>
+						<AlertDialogTitle>{t("repositories.repositoryDetails.deleteRepository")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete the repository <strong>{repository.name}</strong>? This will
-							not remove the actual data from the backend storage, only the repository configuration will
-							be deleted.
+							{t("repositories.repositoryDetails.areYouSureYou")} <strong>{repository.name}</strong>
+							{t("repositories.repositoryDetails.thisWillNotRemove")}
 							<br />
 							<br />
-							All backup schedules associated with this repository will also be removed.
+							{t("repositories.repositoryDetails.allBackupSchedulesAssociated")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmDelete}
 							disabled={deleteRepo.isPending}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
 							<Trash2 className="h-4 w-4 mr-2" />
-							Delete repository
+							{t("repositories.repositoryDetails.deleteRepository2")}
 						</AlertDialogAction>
 					</div>
 				</AlertDialogContent>

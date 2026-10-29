@@ -21,6 +21,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { dataTableFeatures } from "~/client/lib/data-table";
 import { cn } from "~/client/lib/utils";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
+import { useTranslation } from "~/client/lib/i18n";
 
 type NotificationRow = {
 	id: number;
@@ -42,13 +43,13 @@ const notificationColumnHelper = createColumnHelper<typeof dataTableFeatures, No
 const notificationColumns = notificationColumnHelper.columns([
 	notificationColumnHelper.accessor("name", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Name" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.name" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => row.original.name,
 	}),
 	notificationColumnHelper.accessor("type", {
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Type" sortDirection={column.getIsSorted()} />
+			<DataTableSortHeader column={column} title="common.type" sortDirection={column.getIsSorted()} />
 		),
 		cell: ({ row }) => row.original.type,
 		filterFn: (row, id, value) => row.getValue(id) === value,
@@ -56,7 +57,7 @@ const notificationColumns = notificationColumnHelper.columns([
 	notificationColumnHelper.accessor(getNotificationStatus, {
 		id: "status",
 		header: ({ column }) => (
-			<DataTableSortHeader column={column} title="Status" sortDirection={column.getIsSorted()} center />
+			<DataTableSortHeader column={column} title="common.status" sortDirection={column.getIsSorted()} center />
 		),
 		cell: ({ row }) => (
 			<StatusDot
@@ -69,6 +70,7 @@ const notificationColumns = notificationColumnHelper.columns([
 ]);
 
 export function NotificationsPage() {
+	const { t } = useTranslation();
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [sorting, setSorting] = useCookieState<SortingState>("sorting_notifications", []);
 
@@ -99,12 +101,12 @@ export function NotificationsPage() {
 		return (
 			<EmptyState
 				icon={Bell}
-				title="No notification destinations"
-				description="Set up notification channels to receive alerts when your backups complete or fail."
+				title={t("notifications.emptyTitle")}
+				description={t("notifications.emptyDescription")}
 				button={
 					<Button onClick={() => navigate({ to: "/notifications/create" })}>
 						<Plus size={16} className="mr-2" />
-						Create Destination
+						{t("notifications.create")}
 					</Button>
 				}
 			/>
@@ -121,47 +123,47 @@ export function NotificationsPage() {
 				<span className="flex flex-col sm:flex-row items-stretch md:items-center gap-2 flex-wrap">
 					<Input
 						className="w-full lg:w-45 min-w-45"
-						placeholder="Search…"
+						placeholder={t("common.searchPlaceholder")}
 						value={search}
 						onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
 					/>
 					<Select value={type} onValueChange={(value) => table.getColumn("type")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All types" />
+							<SelectValue placeholder={t("common.allTypes")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="email">Email</SelectItem>
+							<SelectItem value="email">{t("auth.email")}</SelectItem>
 							<SelectItem value="slack">Slack</SelectItem>
 							<SelectItem value="discord">Discord</SelectItem>
 							<SelectItem value="gotify">Gotify</SelectItem>
 							<SelectItem value="ntfy">Ntfy</SelectItem>
 							<SelectItem value="pushover">Pushover</SelectItem>
 							<SelectItem value="telegram">Telegram</SelectItem>
-							<SelectItem value="generic">Generic</SelectItem>
-							<SelectItem value="custom">Custom</SelectItem>
+							<SelectItem value="generic">{t("notifications.generic")}</SelectItem>
+							<SelectItem value="custom">{t("notifications.custom")}</SelectItem>
 						</SelectContent>
 					</Select>
 					<Select value={status} onValueChange={(value) => table.getColumn("status")?.setFilterValue(value)}>
 						<SelectTrigger className="w-full lg:w-45 min-w-45">
-							<SelectValue placeholder="All status" />
+							<SelectValue placeholder={t("common.allStatus")} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="healthy">Healthy</SelectItem>
-							<SelectItem value="error">Error</SelectItem>
-							<SelectItem value="unknown">Unknown</SelectItem>
-							<SelectItem value="disabled">Disabled</SelectItem>
+							<SelectItem value="healthy">{t("status.healthy")}</SelectItem>
+							<SelectItem value="error">{t("status.error")}</SelectItem>
+							<SelectItem value="unknown">{t("status.unknown")}</SelectItem>
+							<SelectItem value="disabled">{t("status.disabled")}</SelectItem>
 						</SelectContent>
 					</Select>
 					{hasFilters && (
 						<Button onClick={clearFilters} className="w-full lg:w-auto mt-2 lg:mt-0 lg:ml-2">
 							<RotateCcw className="h-4 w-4 mr-2" />
-							Clear filters
+							{t("common.clearFilters")}
 						</Button>
 					)}
 				</span>
 				<Button onClick={() => navigate({ to: "/notifications/create" })}>
 					<Plus size={16} className="mr-2" />
-					Create Destination
+					{t("notifications.create")}
 				</Button>
 			</div>
 			<div className="overflow-x-auto">
@@ -190,10 +192,10 @@ export function NotificationsPage() {
 						<TableRow className={cn({ hidden: !hasNoFilteredNotifications })}>
 							<TableCell colSpan={3} className="text-center py-12">
 								<div className="flex flex-col items-center gap-3">
-									<p className="text-muted-foreground">No destinations match your filters.</p>
+									<p className="text-muted-foreground">{t("notifications.noMatchFilters")}</p>
 									<Button onClick={clearFilters} variant="outline" size="sm">
 										<RotateCcw className="h-4 w-4 mr-2" />
-										Clear filters
+										{t("common.clearFilters")}
 									</Button>
 								</div>
 							</TableCell>
@@ -223,11 +225,11 @@ export function NotificationsPage() {
 			</div>
 			<div className="px-4 py-2 text-sm text-muted-foreground bg-card-header flex justify-end border-t">
 				{hasNoFilteredNotifications ? (
-					"No destinations match filters."
+					t("notifications.noMatchFilters")
 				) : (
 					<span>
-						<span className="text-strong-accent">{rows.length}</span> destination
-						{rows.length !== 1 ? "s" : ""}
+						<span className="text-strong-accent">{rows.length}</span>{" "}
+						{rows.length !== 1 ? t("notifications.countPlural") : t("notifications.countSingular")}
 					</span>
 				)}
 			</div>

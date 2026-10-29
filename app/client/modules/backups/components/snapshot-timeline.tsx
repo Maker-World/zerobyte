@@ -8,6 +8,7 @@ import { useTimeFormat } from "~/client/lib/datetime";
 import { cn } from "~/client/lib/utils";
 import { RetentionCategoryBadges } from "~/client/components/retention-category-badges";
 import { useCookieState } from "~/client/hooks/use-cookie-state";
+import { useTranslation } from "~/client/lib/i18n";
 
 export type SnapshotTimelineSortOrder = "asc" | "desc";
 
@@ -43,6 +44,7 @@ interface Props {
 }
 
 export const SnapshotTimeline = (props: Props) => {
+	const { t } = useTranslation();
 	const { snapshots, snapshotId, loading, onSnapshotSelect, error, deletingSnapshotIds } = props;
 	const selectedRef = useRef<HTMLButtonElement>(null);
 	const { formatDateWithMonth, formatShortDate, formatTime } = useTimeFormat();
@@ -53,7 +55,7 @@ export const SnapshotTimeline = (props: Props) => {
 	const sortedSnapshots = useMemo(() => getSortedSnapshots(snapshots, sortOrder), [snapshots, sortOrder]);
 	const snapshotRange = useMemo(() => getSnapshotRange(snapshots), [snapshots]);
 
-	const sortOrderButtonLabel = "Toggle snapshot sort order";
+	const sortOrderButtonLabel = t("backups.snapshotTimeline.toggleSortOrder");
 
 	const handleToggleSortOrder = () => {
 		setSortOrder((currentSortOrder) => (currentSortOrder === "asc" ? "desc" : "asc"));
@@ -73,7 +75,7 @@ export const SnapshotTimeline = (props: Props) => {
 		return (
 			<Card>
 				<div className="flex items-center justify-center h-24">
-					<p className="text-muted-foreground">Loading snapshots...</p>
+					<p className="text-muted-foreground">{t("backups.snapshotTimeline.loadingSnapshots")}</p>
 				</div>
 			</Card>
 		);
@@ -83,7 +85,7 @@ export const SnapshotTimeline = (props: Props) => {
 		return (
 			<Card>
 				<div className="flex items-center justify-center h-24">
-					<p className="text-muted-foreground">No snapshots available</p>
+					<p className="text-muted-foreground">{t("backups.snapshotTimeline.noSnapshotsAvailable")}</p>
 				</div>
 			</Card>
 		);
@@ -93,7 +95,7 @@ export const SnapshotTimeline = (props: Props) => {
 		<Card className="p-0 pt-2">
 			<div className="w-full bg-card">
 				<div className="items-center flex flex-col gap-3 border-b border-border px-4 pb-2 sm:flex-row sm:items-center sm:justify-between">
-					<span className="text-sm font-medium">Snapshots</span>
+					<span className="text-sm font-medium">{t("repositories.compressionStatsChart.snapshots2")}</span>
 					<div className="flex flex-wrap gap-2">
 						<Button
 							type="button"
@@ -115,7 +117,9 @@ export const SnapshotTimeline = (props: Props) => {
 								const date = new Date(snapshot.time);
 								const isSelected = snapshotId === snapshot.short_id;
 								const isDeleting = deletingSnapshotIds?.has(snapshot.short_id) ?? false;
-								const selectSnapshotLabel = `Select snapshot ${snapshot.short_id}`;
+								const selectSnapshotLabel = t("backups.snapshotTimeline.selectSnapshot", {
+									short_id: snapshot.short_id,
+								});
 
 								return (
 									<div
@@ -150,7 +154,7 @@ export const SnapshotTimeline = (props: Props) => {
 												)}
 											>
 												<Loader2 className="h-3 w-3 animate-spin" />
-												<span>Deleting</span>
+												<span>{t("backups.snapshotTimeline.deleting")}</span>
 											</div>
 											<div
 												className={cn("text-xs text-muted-foreground opacity-75", {
@@ -172,7 +176,7 @@ export const SnapshotTimeline = (props: Props) => {
 				</div>
 
 				<div className="px-4 py-2 text-xs text-muted-foreground bg-card-header border-t border-border flex justify-between">
-					<span>{snapshots.length} snapshots</span>
+					<span>{t("backups.snapshotTimeline.snapshots", { length: snapshots.length })}</span>
 					{snapshotRange && (
 						<span>
 							{formatDateWithMonth(snapshotRange.oldest.time)}&nbsp;-&nbsp;

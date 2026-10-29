@@ -15,6 +15,7 @@ import {
 import { parseError } from "~/client/lib/errors";
 import type { NotificationDestination } from "~/client/lib/types";
 import type { GetScheduleNotificationsResponse } from "~/client/api-client";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	scheduleShortId: string;
@@ -31,6 +32,7 @@ type NotificationAssignment = {
 };
 
 export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, initialData }: Props) => {
+	const { t } = useTranslation();
 	const map = new Map<number, NotificationAssignment>();
 	for (const assignment of initialData) {
 		map.set(assignment.destinationId, {
@@ -54,11 +56,11 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 	const updateNotifications = useMutation({
 		...updateScheduleNotificationsMutation(),
 		onSuccess: () => {
-			toast.success("Notification settings saved successfully");
+			toast.success(t("backups.scheduleNotificationsConfig.notificationSettingsSavedSuccessfully"));
 			setHasChanges(false);
 		},
 		onError: (error) => {
-			toast.error("Failed to save notification settings", {
+			toast.error(t("backups.scheduleNotificationsConfig.failedToSaveNotification"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -147,16 +149,16 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 					<div>
 						<CardTitle className="flex items-center gap-2">
 							<Bell className="h-5 w-5" />
-							Notifications
+							{t("nav.notifications")}
 						</CardTitle>
 						<CardDescription className="hidden @md:block mt-1">
-							Configure which notifications to send for this backup schedule
+							{t("backups.scheduleNotificationsConfig.configureWhichNotificationsTo")}
 						</CardDescription>
 					</div>
 					{!isAddingNew && availableDestinations.length > 0 && (
 						<Button variant="outline" size="sm" onClick={() => setIsAddingNew(true)}>
 							<Plus className="h-4 w-4 mr-2" />
-							Add notification
+							{t("backups.scheduleNotificationsConfig.addNotification")}
 						</Button>
 					)}
 				</div>
@@ -166,7 +168,11 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 					<div className="mb-6 flex items-center gap-2 max-w-md">
 						<Select onValueChange={addDestination}>
 							<SelectTrigger className="w-full">
-								<SelectValue placeholder="Select a notification destination..." />
+								<SelectValue
+									placeholder={t(
+										"backups.scheduleNotificationsConfig.selectANotificationDestination",
+									)}
+								/>
 							</SelectTrigger>
 							<SelectContent>
 								{availableDestinations.map((destination) => (
@@ -182,7 +188,7 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 							</SelectContent>
 						</Select>
 						<Button variant="ghost" size="sm" onClick={() => setIsAddingNew(false)}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 					</div>
 				)}
@@ -190,19 +196,29 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 				{assignedDestinations.length === 0 ? (
 					<div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
 						<Bell className="h-8 w-8 mb-2 opacity-20" />
-						<p className="text-sm">No notifications configured for this schedule.</p>
-						<p className="text-xs mt-1">Click "Add notification" to get started.</p>
+						<p className="text-sm">
+							{t("backups.scheduleNotificationsConfig.noNotificationsConfiguredFor")}
+						</p>
+						<p className="text-xs mt-1">
+							{t("backups.scheduleNotificationsConfig.clickAddNotificationTo")}
+						</p>
 					</div>
 				) : (
 					<div className="rounded-md border">
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>Destination</TableHead>
-									<TableHead className="text-center w-25">Start</TableHead>
-									<TableHead className="text-center w-25">Success</TableHead>
-									<TableHead className="text-center w-25">Warnings</TableHead>
-									<TableHead className="text-center w-25">Failures</TableHead>
+									<TableHead>{t("backups.scheduleNotificationsConfig.destination")}</TableHead>
+									<TableHead className="text-center w-25">
+										{t("backups.scheduleNotificationsConfig.start")}
+									</TableHead>
+									<TableHead className="text-center w-25">{t("taskLog.outcomes.success")}</TableHead>
+									<TableHead className="text-center w-25">
+										{t("backups.scheduleNotificationsConfig.warnings")}
+									</TableHead>
+									<TableHead className="text-center w-25">
+										{t("backups.scheduleNotificationsConfig.failures")}
+									</TableHead>
 									<TableHead className="w-12.5"></TableHead>
 								</TableRow>
 							</TableHeader>
@@ -276,7 +292,7 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 				{hasChanges && (
 					<div className="flex gap-2 justify-end mt-4 pt-4">
 						<Button variant="outline" size="sm" onClick={handleReset}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button
 							variant="default"
@@ -284,7 +300,7 @@ export const ScheduleNotificationsConfig = ({ scheduleShortId, destinations, ini
 							onClick={handleSave}
 							loading={updateNotifications.isPending}
 						>
-							Save changes
+							{t("volumes.createVolumeForm.saveChanges")}
 						</Button>
 					</div>
 				)}

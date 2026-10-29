@@ -10,6 +10,7 @@ import { Textarea } from "./ui/textarea";
 import { listRepositoriesOptions } from "~/client/api-client/@tanstack/react-query.gen";
 import { devPanelExec } from "~/client/api-client/sdk.gen";
 import { parseError } from "../lib/errors";
+import { useTranslation } from "~/client/lib/i18n";
 
 type DevPanelProps = {
 	open: boolean;
@@ -34,6 +35,7 @@ type SseErrorEvent = {
 type SseEvent = SseOutputEvent | SseDoneEvent | SseErrorEvent;
 
 export function DevPanel({ open, onOpenChange }: DevPanelProps) {
+	const { t } = useTranslation();
 	const { data: repositories = [] } = useQuery({
 		...listRepositoriesOptions(),
 		enabled: open,
@@ -101,17 +103,17 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 					appendOutput(data.line);
 				} else if (data.type === "done") {
 					appendOutput(`---`);
-					appendOutput(`Command finished with exit code: ${data.exitCode}`);
+					appendOutput(t("components.devPanel.commandFinishedWithExit", { exitCode: data.exitCode }));
 				} else if (data.type === "error") {
-					appendOutput(`Error: ${data.message}`);
+					appendOutput(t("components.devPanel.error", { message: data.message }));
 				}
 			}
 		} catch (err) {
 			if (err instanceof Error && err.name === "AbortError") {
 				appendOutput("---");
-				appendOutput("Command cancelled");
+				appendOutput(t("components.devPanel.commandCancelled"));
 			} else {
-				appendOutput(`Error: ${parseError(err)?.message}`);
+				appendOutput(t("components.devPanel.error", { message: parseError(err)?.message }));
 			}
 		} finally {
 			setIsRunning(false);
@@ -140,18 +142,18 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 				<SheetHeader>
 					<SheetTitle className="flex items-center gap-2">
 						<Terminal className="h-5 w-5" />
-						Dev Panel
+						{t("components.devPanel.devPanel")}
 					</SheetTitle>
-					<SheetDescription>Execute restic commands against a repository</SheetDescription>
+					<SheetDescription>{t("components.devPanel.executeResticCommandsAgainst")}</SheetDescription>
 				</SheetHeader>
 
 				<div className="flex flex-col gap-4 flex-1 min-h-0 mt-4">
 					<div className="grid gap-4">
 						<div className="grid gap-2">
-							<Label htmlFor="repository">Repository</Label>
+							<Label htmlFor="repository">{t("breadcrumb.repository")}</Label>
 							<Select value={selectedRepoId} onValueChange={setSelectedRepoId}>
 								<SelectTrigger id="repository">
-									<SelectValue placeholder="Select a repository" />
+									<SelectValue placeholder={t("backups.basicInfoSection.selectARepository")} />
 								</SelectTrigger>
 								<SelectContent>
 									{repositories.map((repo) => (
@@ -164,10 +166,10 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 						</div>
 
 						<div className="grid gap-2">
-							<Label htmlFor="command">Command</Label>
+							<Label htmlFor="command">{t("components.devPanel.command")}</Label>
 							<Textarea
 								id="command"
-								placeholder="e.g., snapshots, check --dry-run, forget --keep-last 10"
+								placeholder={t("components.devPanel.eGSnapshotsCheck")}
 								value={commandLine}
 								onChange={(e) => setCommandLine(e.target.value)}
 								className="font-mono text-sm"
@@ -179,15 +181,15 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 							<Button onClick={handleRun} disabled={isRunning || !selectedRepoId || !commandLine.trim()}>
 								<Loader2 className={cn("h-4 w-4 animate-spin mr-2", { hidden: !isRunning })} />
 								<Play className={cn("h-4 w-4 mr-2", { hidden: isRunning })} />
-								<span className={cn({ hidden: !isRunning })}>Running...</span>
-								<span className={cn({ hidden: isRunning })}>Run</span>
+								<span className={cn({ hidden: !isRunning })}>{t("components.devPanel.running")}</span>
+								<span className={cn({ hidden: isRunning })}>{t("settings.machineSetupForms.run")}</span>
 							</Button>
 							<Button variant="destructive" onClick={handleCancel} className={cn({ hidden: !isRunning })}>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 							<Button variant="outline" onClick={handleClear} disabled={isRunning}>
 								<Trash2 className="h-4 w-4 mr-2" />
-								Clear
+								{t("components.devPanel.clear")}
 							</Button>
 						</div>
 					</div>
@@ -195,7 +197,7 @@ export function DevPanel({ open, onOpenChange }: DevPanelProps) {
 					<div className="flex-1 min-h-0 border rounded-md bg-muted/30">
 						<div ref={outputRef} className="h-full overflow-auto p-3 font-mono text-xs">
 							<div className={cn("text-muted-foreground", { hidden: output.length > 0 })}>
-								Output will appear here...
+								{t("components.devPanel.outputWillAppearHere")}
 							</div>
 							<div className={cn("space-y-0.5", { hidden: output.length === 0 })}>
 								{output.map((line, i) => {

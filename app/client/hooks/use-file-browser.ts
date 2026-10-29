@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { parseError } from "~/client/lib/errors";
 import { logger } from "~/client/lib/logger";
 import type { FileEntry } from "../components/file-tree";
+import { translateForDocument } from "~/client/lib/i18n";
 
 export type FetchFolderResult = {
 	files?: FileEntry[];
@@ -155,7 +156,10 @@ export const useFileBrowser = (props: UseFileBrowserOptions) => {
 				setFetchedFolders((prev) => new Set(prev).add(folderPath));
 			} catch (error) {
 				logger.error("Failed to fetch folder contents:", error);
-				setFolderError(folderPath, parseError(error)?.message ?? "Failed to read folder");
+				setFolderError(
+					folderPath,
+					parseError(error)?.message ?? translateForDocument("fileBrowser.readFolderFailed"),
+				);
 			} finally {
 				setLoadingFolders((prev) => {
 					const next = new Set(prev);
@@ -211,7 +215,10 @@ export const useFileBrowser = (props: UseFileBrowserOptions) => {
 				}
 			} catch (error) {
 				logger.error("Failed to load more files:", error);
-				setFolderError(folderPath, parseError(error)?.message ?? "Failed to read folder");
+				setFolderError(
+					folderPath,
+					parseError(error)?.message ?? translateForDocument("fileBrowser.readFolderFailed"),
+				);
 				setFolderPagination((prev) => {
 					const next = new Map(prev);
 					next.set(folderPath, { ...pagination, isLoadingMore: false });

@@ -12,6 +12,7 @@ import { Button } from "~/client/components/ui/button";
 import { getMachineDisplayName } from "~/lib/machine-name";
 import { ConfirmActionDialog, type ConfirmActionDialogProps } from "./confirm-action-dialog";
 import { MachineRow, type MachineAction } from "./machine-row";
+import { useTranslation } from "~/client/lib/i18n";
 
 /** Kept after closing so the dialog can animate out with its content intact. */
 type Confirmation = { action: Exclude<MachineAction, "rotate">; agentId: string; machineName: string; open: boolean };
@@ -19,6 +20,7 @@ type Confirmation = { action: Exclude<MachineAction, "rotate">; agentId: string;
 type ActionDialog = Omit<ConfirmActionDialogProps, "open" | "onOpenChange" | "returnFocusRef"> & { reset: () => void };
 
 export function MachinesSection() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
 
@@ -50,10 +52,9 @@ export function MachinesSection() {
 
 	const actionDialogs: Record<Exclude<MachineAction, "rotate">, ActionDialog> = {
 		revoke: {
-			title: `Revoke ${machineName}`,
-			description:
-				"This machine will disconnect and its credential will stop working immediately. Existing Sources are retained, and you can get a fresh connection command later.",
-			confirmLabel: "Revoke",
+			title: t("settings.machinesSection.revoke", { machineName: machineName }),
+			description: t("settings.machinesSection.thisMachineWillDisconnect"),
+			confirmLabel: t("settings.apiKeysSection.revoke"),
 			variant: "destructive",
 			pending: revokeCredential.isPending,
 			error: revokeCredential.isError
@@ -63,9 +64,9 @@ export function MachinesSection() {
 			reset: revokeCredential.reset,
 		},
 		delete: {
-			title: `Delete ${machineName}?`,
-			description: "This machine will disconnect and be removed. Delete its sources first.",
-			confirmLabel: "Delete machine",
+			title: t("settings.machinesSection.delete", { machineName: machineName }),
+			description: t("settings.machinesSection.thisMachineWillDisconnect2"),
+			confirmLabel: t("settings.machineRow.deleteMachine"),
 			variant: "destructive",
 			pending: deleteMachine.isPending,
 			error: deleteMachine.isError
@@ -87,8 +88,10 @@ export function MachinesSection() {
 				<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 					<p className="text-sm font-medium">
 						{remoteCount === 0
-							? "No remote machines"
-							: `${remoteCount} remote machine${remoteCount === 1 ? "" : "s"}`}
+							? t("settings.machinesSection.noRemoteMachines")
+							: remoteCount === 1
+								? t("settings.machinesSection.remoteMachine", { count: remoteCount })
+								: t("settings.machinesSection.remoteMachines", { count: remoteCount })}
 					</p>
 					<Button
 						ref={connectButtonRef}
@@ -100,15 +103,15 @@ export function MachinesSection() {
 						}
 					>
 						<Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-						Connect machine
+						{t("breadcrumb.connectMachine")}
 					</Button>
 				</div>
 
 				{agentsQuery.isError && (
 					<Alert variant="destructive">
 						<AlertContent>
-							<AlertTitle>Could not refresh machines</AlertTitle>
-							<AlertDescription>Showing the last known details.</AlertDescription>
+							<AlertTitle>{t("settings.machinesSection.couldNotRefreshMachines")}</AlertTitle>
+							<AlertDescription>{t("settings.machinesSection.showingTheLastKnown")}</AlertDescription>
 						</AlertContent>
 						<AlertAction>
 							<Button
@@ -119,13 +122,16 @@ export function MachinesSection() {
 								loading={agentsQuery.isFetching}
 							>
 								<RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
-								Retry
+								{t("settings.machinesSection.retry")}
 							</Button>
 						</AlertAction>
 					</Alert>
 				)}
 
-				<ul className="min-w-0 divide-y overflow-hidden rounded-lg border" aria-label="Machines">
+				<ul
+					className="min-w-0 divide-y overflow-hidden rounded-lg border"
+					aria-label={t("settings.machinesSection.machines")}
+				>
 					{agentsQuery.data.map((agent) => (
 						<MachineRow
 							key={agent.id}

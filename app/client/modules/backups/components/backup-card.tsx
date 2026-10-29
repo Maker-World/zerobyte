@@ -6,9 +6,11 @@ import { useTimeFormat } from "~/client/lib/datetime";
 import type { BackupSchedule } from "~/client/lib/types";
 import { BackupStatusDot } from "./backup-status-dot";
 import { getSourceLabel } from "~/client/modules/volumes/source-presentation";
+import { useTranslation } from "~/client/lib/i18n";
 
 export const BackupCard = ({ schedule, isRunning }: { schedule: BackupSchedule; isRunning: boolean }) => {
 	const { formatShortDateTime } = useTimeFormat();
+	const { t } = useTranslation();
 	const sourceLabel = getSourceLabel(schedule.volume);
 
 	return (
@@ -46,17 +48,17 @@ export const BackupCard = ({ schedule, isRunning }: { schedule: BackupSchedule; 
 				<CardContent className="flex-1 min-w-0 space-y-4">
 					<div className="space-y-3">
 						<div className="flex min-w-0 items-center text-sm gap-2">
-							<span className="text-muted-foreground shrink-0">Schedule</span>
+							<span className="text-muted-foreground shrink-0">{t("backups.card.schedule")}</span>
 							<div className="min-w-0 flex-1 border-b border-dashed border-border/80 dark:border-border/50" />
 							<code
 								className="max-w-[60%] truncate text-xs text-foreground font-mono bg-muted px-2 py-1 rounded"
 								title={schedule.cronExpression || undefined}
 							>
-								{schedule.cronExpression || "Manual only"}
+								{schedule.cronExpression || t("backups.card.manualOnly")}
 							</code>
 						</div>
 						<div className="flex items-center text-sm gap-2">
-							<span className="text-muted-foreground shrink-0">Last backup</span>
+							<span className="text-muted-foreground shrink-0">{t("backups.card.lastBackup")}</span>
 							<div className="flex-1 border-b border-dashed border-border/80 dark:border-border/50" />
 							<TimeAgo
 								date={schedule.lastBackupAt}
@@ -64,7 +66,7 @@ export const BackupCard = ({ schedule, isRunning }: { schedule: BackupSchedule; 
 							/>
 						</div>
 						<div className="flex items-center text-sm gap-2">
-							<span className="text-muted-foreground shrink-0">Next backup</span>
+							<span className="text-muted-foreground shrink-0">{t("backups.card.nextBackup")}</span>
 							<div className="flex-1 border-b border-dashed border-border/80 dark:border-border/50" />
 							<span className="text-foreground font-mono text-sm shrink-0">
 								{formatShortDateTime(schedule.nextBackupAt)}

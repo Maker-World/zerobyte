@@ -7,6 +7,7 @@ import { parseError } from "~/client/lib/errors";
 import { logger } from "~/client/lib/logger";
 import { useIsDesktop } from "~/client/hooks/use-is-desktop";
 import { FolderAccessError } from "./folder-access-error";
+import { useTranslation } from "~/client/lib/i18n";
 
 export type TrustedRootRef = { agentId: string; rootId: string };
 
@@ -33,6 +34,7 @@ export const LocalFileBrowser = ({
 	trustedRoot,
 	...uiProps
 }: LocalFileBrowserProps) => {
+	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const isDesktop = useIsDesktop();
 	const initialLocalPath = toLocalBrowserPath(initialPath);
@@ -82,8 +84,8 @@ export const LocalFileBrowser = ({
 			isLoading={fileBrowser.isLoading}
 			isEmpty={fileBrowser.isEmpty}
 			errorMessage={parseError(error)?.message}
-			loadingMessage={uiProps.loadingMessage ?? "Loading directories..."}
-			emptyMessage={uiProps.emptyMessage ?? "No subdirectories found"}
+			loadingMessage={uiProps.loadingMessage ?? t("components.directoryBrowser.loadingDirectories")}
+			emptyMessage={uiProps.emptyMessage ?? t("components.directoryBrowser.noSubdirectoriesFound")}
 		/>
 	);
 };

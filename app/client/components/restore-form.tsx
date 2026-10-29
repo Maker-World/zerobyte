@@ -28,6 +28,8 @@ import { handleRepositoryError } from "~/client/lib/errors";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "~/client/lib/utils";
 import { useTimeFormat } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
+import { getUnavailableReasonKey } from "~/client/lib/restore-context";
 
 type RestoreLocation = "original" | "custom";
 
@@ -48,12 +50,16 @@ export function RestoreForm({
 	displayBasePath,
 	originalLocationUnavailableReason,
 }: RestoreFormProps) {
+	const { t } = useTranslation();
 	const snapshotId = snapshot.short_id;
 	const navigate = useNavigate();
 	const { formatDateTime } = useTimeFormat();
 
 	const snapshotBasePath = queryBasePath ?? "/";
 	const restoreRequiresCustomTarget = originalLocationUnavailableReason !== null;
+	const unavailableReasonKey = originalLocationUnavailableReason
+		? getUnavailableReasonKey(originalLocationUnavailableReason)
+		: undefined;
 
 	const [requestedRestoreLocation, setRestoreLocation] = useState<RestoreLocation>(
 		restoreRequiresCustomTarget ? "custom" : "original",
@@ -80,7 +86,7 @@ export function RestoreForm({
 	} = useMutation({
 		...restoreSnapshotMutation(),
 		onError: (error) => {
-			handleRepositoryError("Restore failed", error, repository.shortId);
+			handleRepositoryError(t("components.restoreForm.restoreFailed"), error, repository.shortId);
 		},
 	});
 
@@ -95,7 +101,7 @@ export function RestoreForm({
 	const cancelRestore = useMutation({
 		...cancelTaskMutation(),
 		onError: (error) => {
-			handleRepositoryError("Failed to cancel restore", error, repository.shortId);
+			handleRepositoryError(t("components.restoreForm.failedToCancelRestore"), error, repository.shortId);
 		},
 	});
 
@@ -171,26 +177,30 @@ export function RestoreForm({
 
 	function getDownloadButtonText(): string {
 		if (selectedPathCount > 0) {
-			return `Download ${selectedPathCount} ${selectedPathCount === 1 ? "item" : "items"}`;
+			return selectedPathCount === 1
+				? t("components.restoreForm.downloadItem", { count: selectedPathCount })
+				: t("components.restoreForm.downloadItems", { count: selectedPathCount });
 		}
-		return "Download All";
+		return t("components.restoreForm.downloadAll");
 	}
 
 	function getRestoreButtonText(): string {
 		if (isRestoreRunning) {
-			return "Restoring...";
+			return t("components.restoreForm.restoring");
 		}
 		if (selectedPathCount > 0) {
-			return `Restore ${selectedPathCount} ${selectedPathCount === 1 ? "item" : "items"}`;
+			return selectedPathCount === 1
+				? t("components.restoreForm.restoreItem", { count: selectedPathCount })
+				: t("components.restoreForm.restoreItems", { count: selectedPathCount });
 		}
-		return "Restore All";
+		return t("components.restoreForm.restoreAll");
 	}
 
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 				<div>
-					<h1 className="text-2xl font-bold">Restore Snapshot</h1>
+					<h1 className="text-2xl font-bold">{t("components.restoreForm.restoreSnapshot")}</h1>
 					<p className="text-sm text-muted-foreground">
 						{repository.name} / {snapshotId}
 						{` / ${snapshot.hostname || "Unknown"} / ${formatDateTime(snapshot.time)}`}
@@ -198,7 +208,7 @@ export function RestoreForm({
 				</div>
 				<div className="flex flex-wrap gap-2">
 					<Button variant="outline" onClick={() => navigate({ to: returnPath })}>
-						Cancel
+						{t("common.cancel")}
 					</Button>
 					<Tooltip>
 						<TooltipTrigger asChild>
@@ -210,10 +220,7 @@ export function RestoreForm({
 							</span>
 						</TooltipTrigger>
 						<TooltipContent className={cn({ hidden: canDownload })}>
-							<p>
-								Download is available only for one selected item, or with no selection to download
-								everything.
-							</p>
+							<p>{t("components.restoreForm.downloadIsAvailableOnly")}</p>
 						</TooltipContent>
 					</Tooltip>
 					<Button
@@ -228,7 +235,7 @@ export function RestoreForm({
 						}
 					>
 						<Square className="h-4 w-4 mr-2" />
-						Cancel restore
+						{t("components.restoreForm.cancelRestore")}
 					</Button>
 					<Button
 						variant="primary"
@@ -249,20 +256,23 @@ export function RestoreForm({
 					{restoreRequiresCustomTarget && (
 						<Alert variant="warning">
 							<AlertTriangle className="size-4" />
-							<AlertTitle>Choose a destination on this server</AlertTitle>
-							<AlertDescription>{originalLocationUnavailableReason}</AlertDescription>
+							<AlertTitle>{t("components.restoreForm.chooseADestinationOn")}</AlertTitle>
+							<AlertDescription>
+								{unavailableReasonKey ? t(unavailableReasonKey) : originalLocationUnavailableReason}
+							</AlertDescription>
 						</Alert>
 					)}
 
 					<Card>
 						<CardHeader>
-							<CardTitle>Restore Location</CardTitle>
-							<CardDescription>
-								Destination: This server. Choose a folder on this server to restore the files.
-							</CardDescription>
+							<CardTitle>{t("components.restoreForm.restoreLocation")}</CardTitle>
+							<CardDescription>{t("components.restoreForm.destinationThisServerChoose")}</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
-							<fieldset className="min-w-0 grid grid-cols-1 gap-2" aria-label="Restore destination">
+							<fieldset
+								className="min-w-0 grid grid-cols-1 gap-2"
+								aria-label={t("components.restoreForm.restoreDestination")}
+							>
 								<Button
 									type="button"
 									variant={restoreLocation === "original" ? "secondary" : "outline"}
@@ -281,7 +291,7 @@ export function RestoreForm({
 											className={cn({ hidden: restoreLocation !== "original" })}
 										/>
 										<Circle size={16} className={cn({ hidden: restoreLocation === "original" })} />
-										Original path on this server
+										{t("components.restoreForm.originalPathOnThis")}
 									</span>
 								</Button>
 								<Button
@@ -301,7 +311,7 @@ export function RestoreForm({
 											className={cn({ hidden: restoreLocation !== "custom" })}
 										/>
 										<Circle size={16} className={cn({ hidden: restoreLocation === "custom" })} />
-										Custom location
+										{t("components.restoreForm.customLocation")}
 									</span>
 								</Button>
 							</fieldset>
@@ -309,14 +319,13 @@ export function RestoreForm({
 								<div className="space-y-2">
 									<FolderSelector value={customTargetPath} onChange={setCustomTargetPath} />
 									<p className="text-xs text-muted-foreground">
-										Files will be restored directly to this path
+										{t("components.restoreForm.filesWillBeRestored")}
 									</p>
 								</div>
 							)}
 							{restoreLocation === "original" && (
 								<p className="text-xs text-muted-foreground break-words">
-									Restore to the original paths on this server, starting at{" "}
-									<code>{snapshotBasePath}</code>.
+									{t("components.restoreForm.restoreToTheOriginal")} <code>{snapshotBasePath}</code>.
 								</p>
 							)}
 						</CardContent>
@@ -324,8 +333,8 @@ export function RestoreForm({
 
 					<Card>
 						<CardHeader>
-							<CardTitle>Overwrite Mode</CardTitle>
-							<CardDescription>How to handle existing files</CardDescription>
+							<CardTitle>{t("components.restoreForm.overwriteMode")}</CardTitle>
+							<CardDescription>{t("components.restoreForm.howToHandleExisting")}</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<Select
@@ -333,24 +342,32 @@ export function RestoreForm({
 								onValueChange={(value) => setOverwriteMode(value as OverwriteMode)}
 							>
 								<SelectTrigger className="w-full">
-									<SelectValue placeholder="Select overwrite behavior" />
+									<SelectValue placeholder={t("components.restoreForm.selectOverwriteBehavior")} />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value={OVERWRITE_MODES.always}>Always overwrite</SelectItem>
-									<SelectItem value={OVERWRITE_MODES.ifChanged}>Only if content changed</SelectItem>
-									<SelectItem value={OVERWRITE_MODES.ifNewer}>Only if snapshot is newer</SelectItem>
-									<SelectItem value={OVERWRITE_MODES.never}>Never overwrite</SelectItem>
+									<SelectItem value={OVERWRITE_MODES.always}>
+										{t("components.restoreForm.alwaysOverwrite")}
+									</SelectItem>
+									<SelectItem value={OVERWRITE_MODES.ifChanged}>
+										{t("components.restoreForm.onlyIfContentChanged")}
+									</SelectItem>
+									<SelectItem value={OVERWRITE_MODES.ifNewer}>
+										{t("components.restoreForm.onlyIfSnapshotIs")}
+									</SelectItem>
+									<SelectItem value={OVERWRITE_MODES.never}>
+										{t("components.restoreForm.neverOverwrite")}
+									</SelectItem>
 								</SelectContent>
 							</Select>
 							<p className="text-xs text-muted-foreground">
 								{overwriteMode === OVERWRITE_MODES.always &&
-									"Existing files will always be replaced with the snapshot version."}
+									t("components.restoreForm.existingFilesWillAlways")}
 								{overwriteMode === OVERWRITE_MODES.ifChanged &&
-									"Files are only replaced if their content differs from the snapshot."}
+									t("components.restoreForm.filesAreOnlyReplaced")}
 								{overwriteMode === OVERWRITE_MODES.ifNewer &&
-									"Files are only replaced if the snapshot version has a newer modification time."}
+									t("components.restoreForm.filesAreOnlyReplaced2")}
 								{overwriteMode === OVERWRITE_MODES.never &&
-									"Existing files will never be replaced, only missing files are restored."}
+									t("components.restoreForm.existingFilesWillNever")}
 							</p>
 						</CardContent>
 					</Card>
@@ -358,7 +375,9 @@ export function RestoreForm({
 					<Card>
 						<CardHeader className="cursor-pointer" onClick={() => setShowAdvanced(!showAdvanced)}>
 							<div className="flex items-center justify-between">
-								<CardTitle className="text-base">Advanced options</CardTitle>
+								<CardTitle className="text-base">
+									{t("components.restoreForm.advancedOptions")}
+								</CardTitle>
 								<ChevronDown
 									size={16}
 									className={`transition-transform ${showAdvanced ? "rotate-180" : ""}`}
@@ -369,16 +388,16 @@ export function RestoreForm({
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
 									<Label htmlFor="exclude-xattr" className="text-sm">
-										Exclude extended attributes
+										{t("components.restoreForm.excludeExtendedAttributes")}
 									</Label>
 									<Input
 										id="exclude-xattr"
-										placeholder="com.apple.metadata,user.*,nfs4.*"
+										placeholder={t("components.restoreForm.comAppleMetadataUser")}
 										value={excludeXattr}
 										onChange={(e) => setExcludeXattr(e.target.value)}
 									/>
 									<p className="text-xs text-muted-foreground">
-										Exclude specific extended attributes during restore (comma-separated)
+										{t("components.restoreForm.excludeSpecificExtendedAttributes")}
 									</p>
 								</div>
 							</CardContent>
@@ -387,13 +406,15 @@ export function RestoreForm({
 				</div>
 				<Card className="lg:col-span-2 flex flex-col pb-0">
 					<CardHeader>
-						<CardTitle>Select Files to Restore</CardTitle>
+						<CardTitle>{t("components.restoreForm.selectFilesToRestore")}</CardTitle>
 						<CardDescription>
 							<span className={cn({ hidden: selectedPaths.size === 0 })}>
-								{selectedPaths.size} {selectedPaths.size === 1 ? "item" : "items"} selected
+								{selectedPaths.size === 1
+									? t("components.restoreForm.itemSelected", { count: selectedPaths.size })
+									: t("components.restoreForm.itemsSelected", { count: selectedPaths.size })}
 							</span>
 							<span className={cn({ hidden: selectedPaths.size > 0 })}>
-								Select specific files or folders, or leave empty to restore everything
+								{t("components.restoreForm.selectSpecificFilesOr")}
 							</span>
 						</CardDescription>
 					</CardHeader>
@@ -407,8 +428,8 @@ export function RestoreForm({
 							className="flex flex-1 min-h-0 flex-col"
 							treeContainerClassName="overflow-auto flex-1 min-h-0 border border-border rounded-md bg-card m-4"
 							treeClassName="px-2 py-2"
-							loadingMessage="Loading files..."
-							emptyMessage="No files in this snapshot"
+							loadingMessage={t("components.snapshotTreeBrowser.loadingFiles")}
+							emptyMessage={t("components.restoreForm.noFilesInThis")}
 							withCheckboxes
 							selectedPaths={selectedPaths}
 							onSelectionChange={setSelectedPaths}
@@ -423,19 +444,29 @@ export function RestoreForm({
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							<span className={cn({ hidden: !restoreSucceeded })}>Restore completed</span>
-							<span className={cn({ hidden: !restoreCancelled })}>Restore cancelled</span>
-							<span className={cn({ hidden: restoreSucceeded || restoreCancelled })}>Restore failed</span>
+							<span className={cn({ hidden: !restoreSucceeded })}>
+								{t("components.restoreForm.restoreCompleted")}
+							</span>
+							<span className={cn({ hidden: !restoreCancelled })}>
+								{t("components.restoreForm.restoreCancelled")}
+							</span>
+							<span className={cn({ hidden: restoreSucceeded || restoreCancelled })}>
+								{t("components.restoreForm.restoreFailed")}
+							</span>
 						</AlertDialogTitle>
 						<AlertDialogDescription>
 							<span className={cn({ hidden: !restoreSucceeded })}>
-								Snapshot {snapshotId} was restored successfully.
+								{t("components.restoreForm.snapshotWasRestoredSuccessfully", {
+									snapshotId: snapshotId,
+								})}
 							</span>
 							<span className={cn({ hidden: !restoreCancelled })}>
-								{finishedRestoreTask?.error || `Restore of snapshot ${snapshotId} was cancelled.`}
+								{finishedRestoreTask?.error ||
+									t("components.restoreForm.restoreOfSnapshotWas", { snapshotId: snapshotId })}
 							</span>
 							<span className={cn({ hidden: restoreSucceeded || restoreCancelled })}>
-								{finishedRestoreTask?.error || `Snapshot ${snapshotId} could not be restored.`}
+								{finishedRestoreTask?.error ||
+									t("components.restoreForm.snapshotCouldNotBe", { snapshotId: snapshotId })}
 							</span>
 						</AlertDialogDescription>
 					</AlertDialogHeader>

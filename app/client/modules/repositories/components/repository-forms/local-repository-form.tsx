@@ -6,6 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getServerConstants } from "~/server/lib/functions/server-constants";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { FolderSelector } from "~/client/components/folder-selector";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export const LocalRepositoryForm = ({ form, exactPath }: Props) => {
+	const { t } = useTranslation();
 	const getConstants = useServerFn(getServerConstants);
 	const { data: constants } = useSuspenseQuery({
 		queryKey: ["server-constants"],
@@ -25,7 +27,7 @@ export const LocalRepositoryForm = ({ form, exactPath }: Props) => {
 			name="path"
 			render={({ field }) => (
 				<FormItem>
-					<FormLabel>Repository Directory</FormLabel>
+					<FormLabel>{t("repositories.localRepositoryForm.repositoryDirectory")}</FormLabel>
 					<FormControl>
 						<FolderSelector
 							value={field.value || constants.REPOSITORY_BASE}
@@ -38,31 +40,27 @@ export const LocalRepositoryForm = ({ form, exactPath }: Props) => {
 							}
 							webBrowser={{
 								mode: "dialog",
-								title: "Select Repository Directory",
-								description: "Choose a directory from the filesystem to store the repository.",
+								title: t("repositories.localRepositoryForm.selectRepositoryDirectory"),
+								description: t("repositories.localRepositoryForm.chooseADirectoryFrom"),
 								warning: {
 									title: (
 										<>
 											<AlertTriangle className="h-5 w-5 text-yellow-500" />
-											Important: Host mount required
+											{t("repositories.localRepositoryForm.importantHostMountRequired")}
 										</>
 									),
 									description: (
 										<>
-											<div>
-												When selecting a custom path, ensure it is mounted from the host machine
-												into the container.
-											</div>
+											<div>{t("repositories.localRepositoryForm.whenSelectingACustom")}</div>
 											<div className="font-medium">
-												If the path is not a host mount, you will lose your repository data when
-												the container restarts.
+												{t("repositories.localRepositoryForm.ifThePathIs")}
 											</div>
 											<div className="text-sm text-muted-foreground">
-												The default path{" "}
+												{t("repositories.localRepositoryForm.theDefaultPath")}{" "}
 												<code className="bg-muted px-1 rounded">
 													{constants.REPOSITORY_BASE}
 												</code>{" "}
-												is safe to use if you followed the recommended Docker Compose setup.
+												{t("repositories.localRepositoryForm.isSafeToUse")}
 											</div>
 										</>
 									),
@@ -73,8 +71,8 @@ export const LocalRepositoryForm = ({ form, exactPath }: Props) => {
 					</FormControl>
 					<FormDescription>
 						{exactPath
-							? "The exact path to your existing repository."
-							: "A unique subdirectory will be created inside this directory to store the repository."}
+							? t("repositories.localRepositoryForm.theExactPathTo")
+							: t("repositories.localRepositoryForm.aUniqueSubdirectoryWill")}
 					</FormDescription>
 				</FormItem>
 			)}

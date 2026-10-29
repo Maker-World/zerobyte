@@ -138,7 +138,7 @@ export const Route = createFileRoute("/(dashboard)/settings/")({
 		};
 	},
 	staticData: {
-		breadcrumb: () => [{ label: "Settings" }],
+		breadcrumb: (_match, t) => [{ label: t("nav.settings") }],
 	},
 });
 

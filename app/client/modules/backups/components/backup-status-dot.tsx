@@ -1,4 +1,5 @@
 import { StatusDot } from "~/client/components/status-dot";
+import { useTranslation } from "~/client/lib/i18n";
 
 export const BackupStatusDot = ({
 	enabled,
@@ -11,24 +12,25 @@ export const BackupStatusDot = ({
 	hasWarning?: boolean;
 	isInProgress?: boolean;
 }) => {
+	const { t } = useTranslation();
 	let variant: "success" | "neutral" | "error" | "warning" | "info";
 	let label: string;
 
 	if (isInProgress) {
 		variant = "info";
-		label = "Backup in progress";
+		label = t("backups.status.inProgress");
 	} else if (hasError) {
 		variant = "error";
-		label = "Error";
+		label = t("status.error");
 	} else if (hasWarning) {
 		variant = "warning";
-		label = "Warning";
+		label = t("status.warning");
 	} else if (enabled) {
 		variant = "success";
-		label = "Active";
+		label = t("status.active");
 	} else {
 		variant = "neutral";
-		label = "Paused";
+		label = t("status.paused");
 	}
 
 	return <StatusDot variant={variant} label={label} />;

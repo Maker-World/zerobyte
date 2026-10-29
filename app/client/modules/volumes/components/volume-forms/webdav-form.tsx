@@ -10,12 +10,14 @@ import {
 } from "../../../../components/ui/form";
 import { Input } from "../../../../components/ui/input";
 import { SecretInput } from "../../../../components/ui/secret-input";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<FormValues>;
 };
 
 export const WebDAVForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -23,11 +25,11 @@ export const WebDAVForm = ({ form }: Props) => {
 				name="server"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Server</FormLabel>
+						<FormLabel>{t("volumes.info.server")}</FormLabel>
 						<FormControl>
 							<Input placeholder="example.com" {...field} />
 						</FormControl>
-						<FormDescription>WebDAV server hostname or IP address.</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.webdavServerHostnameOr")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -37,11 +39,11 @@ export const WebDAVForm = ({ form }: Props) => {
 				name="path"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Path</FormLabel>
+						<FormLabel>{t("volumes.info.path")}</FormLabel>
 						<FormControl>
 							<Input placeholder="/webdav" {...field} />
 						</FormControl>
-						<FormDescription>Path to the WebDAV directory on the server.</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.pathToTheWebdav")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -51,11 +53,11 @@ export const WebDAVForm = ({ form }: Props) => {
 				name="username"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Username (Optional)</FormLabel>
+						<FormLabel>{t("volumes.webdavForm.usernameOptional")}</FormLabel>
 						<FormControl>
 							<Input placeholder="admin" {...field} />
 						</FormControl>
-						<FormDescription>Username for WebDAV authentication (optional).</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.usernameForWebdavAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -65,11 +67,11 @@ export const WebDAVForm = ({ form }: Props) => {
 				name="password"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Password (Optional)</FormLabel>
+						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
 							<SecretInput placeholder="••••••••" value={field.value ?? ""} onChange={field.onChange} />
 						</FormControl>
-						<FormDescription>Password for WebDAV authentication (optional).</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.passwordForWebdavAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -80,7 +82,7 @@ export const WebDAVForm = ({ form }: Props) => {
 				defaultValue={80}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Port</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.port")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
@@ -89,7 +91,7 @@ export const WebDAVForm = ({ form }: Props) => {
 								onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
 							/>
 						</FormControl>
-						<FormDescription>WebDAV server port (default: 80 for HTTP, 443 for HTTPS).</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.webdavServerPortDefault")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -100,20 +102,20 @@ export const WebDAVForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Use SSL/HTTPS</FormLabel>
+						<FormLabel>{t("volumes.webdavForm.useSslHttps")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Enable HTTPS for secure connections"
+									aria-label={t("volumes.webdavForm.enableHttpsForSecure")}
 									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Enable HTTPS for secure connections</span>
+								<span className="text-sm">{t("volumes.webdavForm.enableHttpsForSecure")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>Use HTTPS instead of HTTP for secure connections.</FormDescription>
+						<FormDescription>{t("volumes.webdavForm.useHttpsInsteadOf")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -124,22 +126,20 @@ export const WebDAVForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Read-only Mode</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.readOnlyMode")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Mount source as read-only"
+									aria-label={t("volumes.nfsForm.mountSourceAsRead")}
 									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Mount source as read-only</span>
+								<span className="text-sm">{t("volumes.nfsForm.mountSourceAsRead")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>
-							Prevent any modifications to the source. Recommended for sensitive data.
-						</FormDescription>
+						<FormDescription>{t("volumes.nfsForm.preventAnyModificationsTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

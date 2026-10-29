@@ -55,6 +55,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import type { GetNotificationDestinationResponse } from "~/client/api-client/types.gen";
 import { useTimeFormat } from "~/client/lib/datetime";
+import { useTranslation } from "~/client/lib/i18n";
 
 type NotificationConfig = GetNotificationDestinationResponse["config"];
 type NotificationStatus = GetNotificationDestinationResponse["status"];
@@ -89,20 +90,25 @@ function getStatusClass(enabled: boolean, status: NotificationStatus) {
 }
 
 function NotificationConfigRows({ config }: { config: NotificationConfig }) {
+	const { t } = useTranslation();
 	switch (config.type) {
 		case "slack":
 			return (
 				<>
 					<ConfigRow
 						icon={<Globe className="h-4 w-4" />}
-						label="Webhook URL"
+						label={t("notifications.discordForm.webhookUrl")}
 						value={config.webhookUrl}
 						mono
 					/>
-					<ConfigRow icon={<Bot className="h-4 w-4" />} label="Bot Username" value={config.username || "—"} />
+					<ConfigRow
+						icon={<Bot className="h-4 w-4" />}
+						label={t("notifications.notificationDetails.botUsername")}
+						value={config.username || "—"}
+					/>
 					<ConfigRow
 						icon={<Smile className="h-4 w-4" />}
-						label="Icon Emoji"
+						label={t("notifications.notificationDetails.iconEmoji")}
 						value={config.iconEmoji || "—"}
 					/>
 				</>
@@ -112,20 +118,24 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 				<>
 					<ConfigRow
 						icon={<Globe className="h-4 w-4" />}
-						label="Webhook URL"
+						label={t("notifications.discordForm.webhookUrl")}
 						value={config.webhookUrl}
 						mono
 					/>
-					<ConfigRow icon={<Bot className="h-4 w-4" />} label="Username" value={config.username || "—"} />
+					<ConfigRow
+						icon={<Bot className="h-4 w-4" />}
+						label={t("auth.username")}
+						value={config.username || "—"}
+					/>
 					<ConfigRow
 						icon={<Link className="h-4 w-4" />}
-						label="Avatar URL"
+						label={t("notifications.notificationDetails.avatarUrl")}
 						value={config.avatarUrl || "—"}
 						mono
 					/>
 					<ConfigRow
 						icon={<MessageSquare className="h-4 w-4" />}
-						label="Thread ID"
+						label={t("notifications.notificationDetails.threadId")}
 						value={config.threadId || "—"}
 					/>
 				</>
@@ -133,19 +143,44 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 		case "email":
 			return (
 				<>
-					<ConfigRow icon={<Server className="h-4 w-4" />} label="SMTP Host" value={config.smtpHost} mono />
 					<ConfigRow
 						icon={<Server className="h-4 w-4" />}
-						label="SMTP Port"
+						label={t("notifications.emailForm.smtpHost")}
+						value={config.smtpHost}
+						mono
+					/>
+					<ConfigRow
+						icon={<Server className="h-4 w-4" />}
+						label={t("notifications.emailForm.smtpPort")}
 						value={String(config.smtpPort)}
 					/>
-					<ConfigRow icon={<AtSign className="h-4 w-4" />} label="Username" value={config.username || "—"} />
-					<ConfigRow icon={<Lock className="h-4 w-4" />} label="Password" value={config.password || "—"} />
-					<ConfigRow icon={<Mail className="h-4 w-4" />} label="From" value={config.from} />
+					<ConfigRow
+						icon={<AtSign className="h-4 w-4" />}
+						label={t("auth.username")}
+						value={config.username || "—"}
+					/>
+					<ConfigRow
+						icon={<Lock className="h-4 w-4" />}
+						label={t("auth.password")}
+						value={config.password || "—"}
+					/>
+					<ConfigRow
+						icon={<Mail className="h-4 w-4" />}
+						label={t("notifications.notificationDetails.from")}
+						value={config.from}
+					/>
 					{config.fromName && (
-						<ConfigRow icon={<Mail className="h-4 w-4" />} label="From Name" value={config.fromName} />
+						<ConfigRow
+							icon={<Mail className="h-4 w-4" />}
+							label={t("notifications.notificationDetails.fromName")}
+							value={config.fromName}
+						/>
 					)}
-					<ConfigRow icon={<Users className="h-4 w-4" />} label="To" value={config.to.join(", ")} />
+					<ConfigRow
+						icon={<Users className="h-4 w-4" />}
+						label={t("notifications.notificationDetails.to")}
+						value={config.to.join(", ")}
+					/>
 					<ConfigRow
 						icon={<Shield className="h-4 w-4" />}
 						label="TLS"
@@ -156,12 +191,27 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 		case "gotify":
 			return (
 				<>
-					<ConfigRow icon={<Globe className="h-4 w-4" />} label="Server URL" value={config.serverUrl} mono />
-					<ConfigRow icon={<Key className="h-4 w-4" />} label="Token" value={config.token} mono />
-					<ConfigRow icon={<Globe className="h-4 w-4" />} label="Path" value={config.path || "—"} mono />
+					<ConfigRow
+						icon={<Globe className="h-4 w-4" />}
+						label={t("notifications.gotifyForm.serverUrl")}
+						value={config.serverUrl}
+						mono
+					/>
+					<ConfigRow
+						icon={<Key className="h-4 w-4" />}
+						label={t("notifications.notificationDetails.token")}
+						value={config.token}
+						mono
+					/>
+					<ConfigRow
+						icon={<Globe className="h-4 w-4" />}
+						label={t("volumes.info.path")}
+						value={config.path || "—"}
+						mono
+					/>
 					<ConfigRow
 						icon={<Settings className="h-4 w-4" />}
-						label="Priority"
+						label={t("notifications.gotifyForm.priority")}
 						value={String(config.priority)}
 					/>
 				</>
@@ -171,17 +221,33 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 				<>
 					<ConfigRow
 						icon={<Globe className="h-4 w-4" />}
-						label="Server URL"
+						label={t("notifications.gotifyForm.serverUrl")}
 						value={config.serverUrl || "Default (ntfy.sh)"}
 						mono
 					/>
-					<ConfigRow icon={<Hash className="h-4 w-4" />} label="Topic" value={config.topic} />
-					<ConfigRow icon={<Settings className="h-4 w-4" />} label="Priority" value={config.priority} />
-					<ConfigRow icon={<AtSign className="h-4 w-4" />} label="Username" value={config.username || "—"} />
-					<ConfigRow icon={<Lock className="h-4 w-4" />} label="Password" value={config.password || "—"} />
+					<ConfigRow
+						icon={<Hash className="h-4 w-4" />}
+						label={t("notifications.ntfyForm.topic")}
+						value={config.topic}
+					/>
+					<ConfigRow
+						icon={<Settings className="h-4 w-4" />}
+						label={t("notifications.gotifyForm.priority")}
+						value={config.priority}
+					/>
+					<ConfigRow
+						icon={<AtSign className="h-4 w-4" />}
+						label={t("auth.username")}
+						value={config.username || "—"}
+					/>
+					<ConfigRow
+						icon={<Lock className="h-4 w-4" />}
+						label={t("auth.password")}
+						value={config.password || "—"}
+					/>
 					<ConfigRow
 						icon={<Key className="h-4 w-4" />}
-						label="Access Token"
+						label={t("notifications.notificationDetails.accessToken")}
 						value={config.accessToken || "—"}
 					/>
 				</>
@@ -189,12 +255,26 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 		case "pushover":
 			return (
 				<>
-					<ConfigRow icon={<Key className="h-4 w-4" />} label="User Key" value={config.userKey} mono />
-					<ConfigRow icon={<Key className="h-4 w-4" />} label="API Token" value={config.apiToken} mono />
-					<ConfigRow icon={<Settings className="h-4 w-4" />} label="Devices" value={config.devices || "—"} />
+					<ConfigRow
+						icon={<Key className="h-4 w-4" />}
+						label={t("notifications.pushoverForm.userKey")}
+						value={config.userKey}
+						mono
+					/>
+					<ConfigRow
+						icon={<Key className="h-4 w-4" />}
+						label={t("notifications.pushoverForm.apiToken")}
+						value={config.apiToken}
+						mono
+					/>
 					<ConfigRow
 						icon={<Settings className="h-4 w-4" />}
-						label="Priority"
+						label={t("notifications.notificationDetails.devices")}
+						value={config.devices || "—"}
+					/>
+					<ConfigRow
+						icon={<Settings className="h-4 w-4" />}
+						label={t("notifications.gotifyForm.priority")}
 						value={String(config.priority)}
 					/>
 				</>
@@ -202,11 +282,21 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 		case "telegram":
 			return (
 				<>
-					<ConfigRow icon={<Key className="h-4 w-4" />} label="Bot Token" value={config.botToken} mono />
-					<ConfigRow icon={<Hash className="h-4 w-4" />} label="Chat ID" value={config.chatId} mono />
+					<ConfigRow
+						icon={<Key className="h-4 w-4" />}
+						label={t("notifications.telegramForm.botToken")}
+						value={config.botToken}
+						mono
+					/>
+					<ConfigRow
+						icon={<Hash className="h-4 w-4" />}
+						label={t("notifications.telegramForm.chatId")}
+						value={config.chatId}
+						mono
+					/>
 					<ConfigRow
 						icon={<MessageSquare className="h-4 w-4" />}
-						label="Thread ID"
+						label={t("notifications.notificationDetails.threadId")}
 						value={config.threadId || "—"}
 					/>
 				</>
@@ -215,26 +305,30 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 			return (
 				<>
 					<ConfigRow icon={<Globe className="h-4 w-4" />} label="URL" value={config.url} mono />
-					<ConfigRow icon={<Settings className="h-4 w-4" />} label="Method" value={config.method} />
 					<ConfigRow
 						icon={<Settings className="h-4 w-4" />}
-						label="Content Type"
+						label={t("notifications.genericForm.method")}
+						value={config.method}
+					/>
+					<ConfigRow
+						icon={<Settings className="h-4 w-4" />}
+						label={t("notifications.genericForm.contentType")}
 						value={config.contentType || "—"}
 					/>
 					<ConfigRow
 						icon={<Settings className="h-4 w-4" />}
-						label="JSON Mode"
+						label={t("notifications.notificationDetails.jsonMode")}
 						value={config.useJson ? "Enabled" : "Disabled"}
 					/>
 					<ConfigRow
 						icon={<Key className="h-4 w-4" />}
-						label="Title Key"
+						label={t("notifications.genericForm.titleKey")}
 						value={config.titleKey || "—"}
 						mono
 					/>
 					<ConfigRow
 						icon={<Key className="h-4 w-4" />}
-						label="Message Key"
+						label={t("notifications.genericForm.messageKey")}
 						value={config.messageKey || "—"}
 						mono
 					/>
@@ -242,7 +336,7 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 						<ConfigRow
 							key={i}
 							icon={<Link className="h-4 w-4" />}
-							label={`Header ${i + 1}`}
+							label={t("notifications.notificationDetails.header", { value: i + 1 })}
 							value={h}
 							mono
 						/>
@@ -251,12 +345,18 @@ function NotificationConfigRows({ config }: { config: NotificationConfig }) {
 			);
 		case "custom":
 			return (
-				<ConfigRow icon={<Globe className="h-4 w-4" />} label="Shoutrrr URL" value={config.shoutrrrUrl} mono />
+				<ConfigRow
+					icon={<Globe className="h-4 w-4" />}
+					label={t("notifications.customForm.shoutrrrUrl")}
+					value={config.shoutrrrUrl}
+					mono
+				/>
 			);
 	}
 }
 
 export function NotificationDetailsPage({ notificationId }: { notificationId: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 	const { formatDateTime } = useTimeFormat();
@@ -268,11 +368,11 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 	const deleteDestination = useMutation({
 		...deleteNotificationDestinationMutation(),
 		onSuccess: () => {
-			toast.success("Notification destination deleted successfully");
+			toast.success(t("notifications.notificationDetails.notificationDestinationDeletedSuccessfully"));
 			void navigate({ to: "/notifications" });
 		},
 		onError: (error) => {
-			toast.error("Failed to delete notification destination", {
+			toast.error(t("notifications.notificationDetails.failedToDeleteNotification"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -281,10 +381,10 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 	const testDestination = useMutation({
 		...testNotificationDestinationMutation(),
 		onSuccess: () => {
-			toast.success("Test notification sent successfully");
+			toast.success(t("notifications.notificationDetails.testNotificationSentSuccessfully"));
 		},
 		onError: (error) => {
-			toast.error("Failed to send test notification", {
+			toast.error(t("notifications.notificationDetails.failedToSendTest"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -326,7 +426,7 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 									</Badge>
 								</div>
 								<p className="text-sm text-muted-foreground mt-0.5">
-									Created {formatDateTime(data.createdAt)}
+									{t("volumes.volumeDetails.created", { dateTime: formatDateTime(data.createdAt) })}
 								</p>
 							</div>
 						</div>
@@ -338,12 +438,12 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 								loading={testDestination.isPending}
 							>
 								<TestTube2 className="h-4 w-4 mr-2" />
-								Test
+								{t("notifications.notificationDetails.test")}
 							</Button>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="outline">
-										Actions
+										{t("common.actions")}
 										<ChevronDown className="h-4 w-4 ml-1" />
 									</Button>
 								</DropdownMenuTrigger>
@@ -352,7 +452,7 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 										onClick={() => navigate({ to: `/notifications/${data.id}/edit` })}
 									>
 										<Pencil />
-										Edit
+										{t("common.edit")}
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem
@@ -361,7 +461,7 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 										disabled={deleteDestination.isPending}
 									>
 										<Trash2 />
-										Delete
+										{t("settings.passkeysSection.delete")}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
@@ -372,7 +472,7 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 				<Card className="px-6 py-6">
 					<CardTitle className="flex items-center gap-2 mb-5">
 						<Settings className="h-4 w-4 text-muted-foreground" />
-						Configuration
+						{t("volumes.volumeDetails.configuration")}
 					</CardTitle>
 					<div className="space-y-0 divide-y divide-border/50">
 						<NotificationConfigRows config={data.config} />
@@ -382,22 +482,22 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 				<Card className="px-6 py-6">
 					<CardTitle className="flex items-center gap-2 mb-5">
 						<Clock className="h-4 w-4 text-muted-foreground" />
-						Delivery Health
+						{t("notifications.notificationDetails.deliveryHealth")}
 					</CardTitle>
 					<div className="space-y-0 divide-y divide-border/50">
 						<ConfigRow
 							icon={<Bell className="h-4 w-4" />}
-							label="Status"
+							label={t("common.status")}
 							value={getStatusLabel(data.enabled, data.status)}
 						/>
 						<ConfigRow
 							icon={<Settings className="h-4 w-4" />}
-							label="Enabled"
+							label={t("settings.twoFactorSection.enabled")}
 							value={data.enabled ? "Yes" : "No"}
 						/>
 						<ConfigRow
 							icon={<Clock className="h-4 w-4" />}
-							label="Last Checked"
+							label={t("repositories.info.lastChecked")}
 							value={data.lastChecked ? formatDateTime(data.lastChecked) : "Never"}
 						/>
 					</div>
@@ -406,7 +506,7 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 				<Card className={cn("px-6 py-6", { hidden: !data.lastError })}>
 					<CardTitle className="flex items-center gap-2 mb-3 text-red-600">
 						<AlertCircle className="h-4 w-4" />
-						Last Delivery Error
+						{t("notifications.notificationDetails.lastDeliveryError")}
 					</CardTitle>
 					<p className="text-sm text-muted-foreground wrap-break-word">{data.lastError}</p>
 				</Card>
@@ -415,17 +515,18 @@ export function NotificationDetailsPage({ notificationId }: { notificationId: st
 			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete Notification Destination</AlertDialogTitle>
+						<AlertDialogTitle>
+							{t("notifications.notificationDetails.deleteNotificationDestination")}
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete the notification destination "{data.name}"? This action
-							cannot be undone and will remove this destination from all backup schedules.
+							{t("notifications.notificationDetails.areYouSureYou", { name: data.name })}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction onClick={handleConfirmDelete}>
 							<Trash2 className="h-4 w-4 mr-2" />
-							Delete
+							{t("settings.passkeysSection.delete")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

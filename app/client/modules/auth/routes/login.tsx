@@ -14,24 +14,33 @@ import { Label } from "~/client/components/ui/label";
 import { authClient } from "~/client/lib/auth-client";
 import { logger } from "~/client/lib/logger";
 import { cn } from "~/client/lib/utils";
-import { decodeLoginError, getLoginErrorDescription } from "~/client/lib/sso-errors";
+import { decodeLoginError } from "~/client/lib/sso-errors";
 import { getLoginOptions } from "~/server/lib/functions/login-options";
 import { RECOVERY_KEY_DOWNLOAD_SKIPPED_COOKIE_NAME } from "~/lib/recovery-key-skip";
-import { PASSKEY_LOGIN_FAILED_ERROR } from "~/lib/sso-errors";
+import { type LoginErrorCode, PASSKEY_LOGIN_FAILED_ERROR } from "~/lib/sso-errors";
 import { normalizeUsername } from "~/lib/username";
 import { ResetPasswordDialog } from "../components/reset-password-dialog";
 import { AlternativeSignInSection } from "../components/alternative-sign-in-section";
 import { z } from "zod";
+import { type TFunction, type TranslationKey, useTranslation } from "~/client/lib/i18n";
 
-const loginSchema = z.object({
-	username: z
-		.string()
-		.min(2, "Username must be at least 2 characters")
-		.max(50, "Username must be at most 50 characters"),
-	password: z.string().min(1, "Password is required"),
-});
+const createLoginSchema = (t: TFunction) =>
+	z.object({
+		username: z.string().min(2, t("auth.usernameMin")).max(50, t("auth.usernameMax")),
+		password: z.string().min(1, t("auth.passwordRequired")),
+	});
 
-type LoginFormValues = z.input<typeof loginSchema>;
+type LoginFormValues = z.input<ReturnType<typeof createLoginSchema>>;
+
+const loginErrorKeys = {
+	ACCOUNT_LINK_REQUIRED: "auth.loginErrors.accountLinkRequired",
+	EMAIL_NOT_VERIFIED: "auth.loginErrors.emailNotVerified",
+	INVITE_REQUIRED: "auth.loginErrors.inviteRequired",
+	BANNED_USER: "auth.loginErrors.bannedUser",
+	SSO_LOGIN_FAILED: "auth.loginErrors.ssoLoginFailed",
+	[PASSKEY_LOGIN_FAILED_ERROR]: "auth.loginErrors.passkeyLoginFailed",
+	ERROR_INVALID_RP_ID: "auth.loginErrors.invalidRpId",
+} as const satisfies Record<LoginErrorCode, TranslationKey>;
 
 type LoginPageProps = {
 	error?: string;
@@ -56,6 +65,7 @@ function hasSkippedRecoveryKeyDownload(userId: string) {
 
 export function LoginPage({ error }: LoginPageProps = {}) {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const getOptions = useServerFn(getLoginOptions);
 	const { data: loginOptions } = useSuspenseQuery({
 		queryKey: ["login-options"],
@@ -68,7 +78,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 	const [isVerifying2FA, setIsVerifying2FA] = useState(false);
 	const [trustDevice, setTrustDevice] = useState(false);
 	const errorCode = decodeLoginError(error);
-	const errorDescription = errorCode ? getLoginErrorDescription(errorCode) : null;
+	const errorDescription = errorCode ? t(loginErrorKeys[errorCode]) : null;
 
 	const navigateAfterLogin = useCallback(async () => {
 		const session = await authClient.getSession();
@@ -117,7 +127,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 	}, [navigate, navigateAfterLogin]);
 
 	const form = useForm<LoginFormValues>({
-		resolver: zodResolver(loginSchema),
+		resolver: zodResolver(createLoginSchema(t)),
 		defaultValues: {
 			username: "",
 			password: "",
@@ -140,7 +150,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 
 		if (error) {
 			logger.error(error);
-			toast.error("Login failed", { description: error.message });
+			toast.error(t("auth.loginFailed"), { description: error.message });
 			return;
 		}
 
@@ -154,7 +164,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 
 	const handleVerify2FA = async () => {
 		if (totpCode.length !== 6) {
-			toast.error("Please enter a 6-digit code");
+			toast.error(t("auth.enterSixDigitCode"));
 			return;
 		}
 
@@ -173,13 +183,13 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 
 		if (error) {
 			logger.error(error);
-			toast.error("Verification failed", { description: error.message });
+			toast.error(t("auth.verificationFailed"), { description: error.message });
 			setTotpCode("");
 			return;
 		}
 
 		if (data) {
-			toast.success("Login successful");
+			toast.success(t("auth.loginSuccessful"));
 			const session = await authClient.getSession();
 			if (
 				session.data?.user &&
@@ -202,13 +212,10 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 
 	if (requires2FA) {
 		return (
-			<AuthLayout
-				title="Two-Factor Authentication"
-				description="Enter the 6-digit code from your authenticator app"
-			>
+			<AuthLayout title={t("auth.twoFactorTitle")} description={t("auth.twoFactorDescription")}>
 				<div className="space-y-6">
 					<div className="space-y-4 flex flex-col items-center">
-						<Label htmlFor="totp-code">Authentication code</Label>
+						<Label htmlFor="totp-code">{t("auth.authenticationCode")}</Label>
 						<div>
 							<InputOTP
 								maxLength={6}
@@ -236,13 +243,13 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 						<input
 							type="checkbox"
 							id="trust-device"
-							aria-label="Trust this device for 30 days"
+							aria-label={t("auth.trustDevice")}
 							checked={trustDevice}
 							onChange={(e) => setTrustDevice(e.target.checked)}
 							className="h-4 w-4"
 						/>
 						<label htmlFor="trust-device" className="text-sm text-muted-foreground cursor-pointer">
-							Trust this device for 30 days
+							{t("auth.trustDevice")}
 						</label>
 					</div>
 
@@ -254,7 +261,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 							onClick={handleVerify2FA}
 							disabled={totpCode.length !== 6}
 						>
-							Verify
+							{t("auth.verify")}
 						</Button>
 						<Button
 							type="button"
@@ -263,7 +270,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 							onClick={handleBackToLogin}
 							disabled={isVerifying2FA}
 						>
-							Back to Login
+							{t("auth.backToLogin")}
 						</Button>
 					</div>
 				</div>
@@ -272,7 +279,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 	}
 
 	return (
-		<AuthLayout title="Login to your account" description="Enter your credentials below to login to your account">
+		<AuthLayout title={t("auth.loginTitle")} description={t("auth.loginDescription")}>
 			<div
 				className={cn("rounded-md border border-destructive/50 p-3 text-sm", {
 					hidden: !errorDescription,
@@ -289,7 +296,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 							name="username"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Username</FormLabel>
+									<FormLabel>{t("auth.username")}</FormLabel>
 									<FormControl>
 										<Input
 											{...field}
@@ -309,13 +316,13 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 							render={({ field }) => (
 								<FormItem>
 									<div className="flex items-center justify-between">
-										<FormLabel>Password</FormLabel>
+										<FormLabel>{t("auth.password")}</FormLabel>
 										<button
 											type="button"
 											className="text-xs text-muted-foreground hover:underline"
 											onClick={() => setShowResetDialog(true)}
 										>
-											Forgot your password?
+											{t("auth.forgotPassword")}
 										</button>
 									</div>
 									<FormControl>
@@ -331,7 +338,7 @@ export function LoginPage({ error }: LoginPageProps = {}) {
 							)}
 						/>
 						<Button type="submit" className="w-full" loading={isLoggingIn}>
-							Login
+							{t("auth.login")}
 						</Button>
 					</form>
 				</Form>
