@@ -2,12 +2,14 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from "~/client/components/ui/input";
 import type { UseFormReturn } from "react-hook-form";
 import type { InternalFormValues } from "./types";
+import { useTranslation } from "~/client/lib/i18n";
 
 type RetentionSectionProps = {
 	form: UseFormReturn<InternalFormValues>;
 };
 
 export const RetentionSection = ({ form }: RetentionSectionProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -15,18 +17,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepLast"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep last N snapshots</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepLastNSnapshots")}</FormLabel>
 						<FormControl>
 							<Input
 								{...field}
 								type="number"
 								min={0}
-								placeholder="Optional"
+								placeholder={t("backups.retentionSection.optional")}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the N most recent snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheNMost")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -37,18 +39,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepHourly"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep hourly</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepHourly")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
 								min={0}
-								placeholder="Optional"
+								placeholder={t("backups.retentionSection.optional")}
 								{...field}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the last N hourly snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheLastN")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -59,18 +61,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepDaily"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep daily</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepDaily")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
 								min={0}
-								placeholder="e.g., 7"
+								placeholder={t("backups.retentionSection.eG7")}
 								{...field}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the last N daily snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheLastN2")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -81,18 +83,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepWeekly"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep weekly</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepWeekly")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
 								min={0}
-								placeholder="e.g., 4"
+								placeholder={t("backups.retentionSection.eG4")}
 								{...field}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the last N weekly snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheLastN3")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -103,18 +105,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepMonthly"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep monthly</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepMonthly")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
 								min={0}
-								placeholder="e.g., 6"
+								placeholder={t("backups.retentionSection.eG6")}
 								{...field}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the last N monthly snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheLastN4")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -125,18 +127,18 @@ export const RetentionSection = ({ form }: RetentionSectionProps) => {
 				name="keepYearly"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Keep yearly</FormLabel>
+						<FormLabel>{t("backups.retentionSection.keepYearly")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
 								min={0}
-								placeholder="Optional"
+								placeholder={t("backups.retentionSection.optional")}
 								{...field}
 								value={field.value ?? ""}
 								onChange={(v) => field.onChange(v.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>Keep the last N yearly snapshots.</FormDescription>
+						<FormDescription>{t("backups.retentionSection.keepTheLastN5")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

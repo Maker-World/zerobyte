@@ -15,6 +15,7 @@ import { RetentionSection } from "./retention-section";
 import { SummarySection } from "./summary-section";
 import { internalFormSchema, type BackupScheduleFormValues, type InternalFormValues } from "./types";
 import { backupScheduleToFormValues, parseMultilineEntries, toWebhookConfig } from "./utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 export type { BackupScheduleFormValues };
 
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: Props) => {
+	const { t } = useTranslation();
 	const initialFormValues = backupScheduleToFormValues(initialValues);
 	const defaultValues = initialFormValues ?? { compressionMode: null };
 	const form = useForm<InternalFormValues>({
@@ -112,9 +114,10 @@ export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: 
 				<div className="grid gap-4 min-w-0">
 					<Card className="min-w-0 @container">
 						<CardHeader>
-							<CardTitle>Backup automation</CardTitle>
+							<CardTitle>{t("backups.createScheduleForm.backupAutomation")}</CardTitle>
 							<CardDescription className="mt-1">
-								Schedule automated backups of <strong>{volume.name}</strong> to a secure repository.
+								{t("backups.createScheduleForm.scheduleAutomatedBackupsOf")}{" "}
+								<strong>{volume.name}</strong> {t("backups.createScheduleForm.toASecureRepository")}
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="grid gap-6 @medium:grid-cols-2">
@@ -125,11 +128,8 @@ export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: 
 
 					<Card className="min-w-0">
 						<CardHeader>
-							<CardTitle>Backup paths</CardTitle>
-							<CardDescription>
-								Select which folders or files to include in the backup. If no paths are selected, the
-								entire source will be backed up.
-							</CardDescription>
+							<CardTitle>{t("backups.createScheduleForm.backupPaths")}</CardTitle>
+							<CardDescription>{t("backups.createScheduleForm.selectWhichFoldersOr")}</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<PathsSection
@@ -146,10 +146,9 @@ export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: 
 
 					<Card className="min-w-0">
 						<CardHeader>
-							<CardTitle>Exclude patterns</CardTitle>
+							<CardTitle>{t("backups.createScheduleForm.excludePatterns")}</CardTitle>
 							<CardDescription>
-								Optionally specify patterns to exclude from backups. Enter one pattern per line (e.g.,
-								*.tmp, node_modules/**, .cache/).
+								{t("backups.createScheduleForm.optionallySpecifyPatternsTo")}
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -159,10 +158,8 @@ export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: 
 
 					<Card className="min-w-0 @container">
 						<CardHeader>
-							<CardTitle>Retention policy</CardTitle>
-							<CardDescription>
-								Define how many snapshots to keep. Leave empty to keep all.
-							</CardDescription>
+							<CardTitle>{t("backups.createScheduleForm.retentionPolicy")}</CardTitle>
+							<CardDescription>{t("backups.createScheduleForm.defineHowManySnapshots")}</CardDescription>
 						</CardHeader>
 						<CardContent className="grid gap-4 @medium:grid-cols-2">
 							<RetentionSection form={form} />
@@ -172,7 +169,7 @@ export const CreateScheduleForm = ({ initialValues, formId, onSubmit, volume }: 
 					<Card className="min-w-0 @container">
 						<CardContent>
 							<Collapsible>
-								<CollapsibleTrigger>Advanced</CollapsibleTrigger>
+								<CollapsibleTrigger>{t("backups.createScheduleForm.advanced")}</CollapsibleTrigger>
 								<CollapsibleContent className="pb-4 space-y-4">
 									<AdvancedSection form={form} />
 								</CollapsibleContent>

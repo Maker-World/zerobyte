@@ -156,8 +156,11 @@ export function TaskLogResults({
 			</Table>
 			<div className="flex min-h-16 flex-col gap-3 border-t bg-card-header/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
 				<p className="text-sm text-muted-foreground tabular-nums">
-					Showing {(page - 1) * history.pageSize + 1}&ndash;
-					{Math.min(page * history.pageSize, history.totalItems)} of {history.totalItems}
+					{t("taskLog.taskLogResults.showingOf", {
+						start: (page - 1) * history.pageSize + 1,
+						end: Math.min(page * history.pageSize, history.totalItems),
+						total: history.totalItems,
+					})}
 				</p>
 				{history.totalPages > 1 && (
 					<TaskLogPagination

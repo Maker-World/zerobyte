@@ -19,6 +19,7 @@ import { useTimeFormat } from "~/client/lib/datetime";
 import { parseError } from "~/client/lib/errors";
 import type { Repository } from "~/client/lib/types";
 import { useMirrorStatus } from "../mirror-tasks";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	scheduleShortId: string;
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) => {
+	const { t } = useTranslation();
 	const { formatDateTime } = useTimeFormat();
 	const [selectedSnapshotIds, setSelectedSnapshotIds] = useState<Set<string>>(new Set());
 	const lookup = useMirrorStatus(scheduleShortId, mirror.shortId);
@@ -39,11 +41,11 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 	const triggerSync = useMutation({
 		...syncMirrorMutation(),
 		onSuccess: () => {
-			toast.success("Mirror sync started");
+			toast.success(t("backups.mirrorSyncDialog.mirrorSyncStarted"));
 			onClose();
 		},
 		onError: (error) => {
-			toast.error("Failed to start sync", {
+			toast.error(t("backups.mirrorSyncDialog.failedToStartSync"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -90,7 +92,7 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 		if (!cancellation) return;
 
 		void cancellation.catch((error) => {
-			toast.error("Failed to cancel snapshot lookup", {
+			toast.error(t("backups.mirrorSyncDialog.failedToCancelSnapshot"), {
 				description: parseError(error)?.message,
 			});
 		});
@@ -120,7 +122,7 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 		<Dialog open onOpenChange={handleOpenChange}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Sync snapshots</DialogTitle>
+					<DialogTitle>{t("backups.mirrorSyncDialog.syncSnapshots")}</DialogTitle>
 					<DialogDescription>{`Sync missing snapshots to ${mirrorName}.`}</DialogDescription>
 				</DialogHeader>
 
@@ -135,13 +137,17 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 					</div>
 				) : statusResult && statusResult.missingSnapshots.length === 0 ? (
 					<div className="py-6 text-center text-muted-foreground text-sm">
-						All {statusResult.sourceCount} snapshots are already synced to this mirror.
+						{t("backups.mirrorSyncDialog.allSnapshotsAreAlready", {
+							sourceCount: statusResult.sourceCount,
+						})}
 					</div>
 				) : statusResult ? (
 					<div className="space-y-3">
 						<p className="text-sm text-muted-foreground">
-							{statusResult.missingSnapshots.length} of {statusResult.sourceCount} snapshots are missing
-							in this mirror.
+							{t("backups.mirrorSyncDialog.ofSnapshotsAreMissing", {
+								length: statusResult.missingSnapshots.length,
+								sourceCount: statusResult.sourceCount,
+							})}
 						</p>
 						<div className="rounded-md border max-h-64 overflow-y-auto">
 							<Table>
@@ -154,8 +160,10 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 											/>
 										</TableHead>
 										<TableHead>ID</TableHead>
-										<TableHead>Date</TableHead>
-										<TableHead className="text-right">Size</TableHead>
+										<TableHead>{t("backups.mirrorSyncDialog.date")}</TableHead>
+										<TableHead className="text-right">
+											{t("backups.mirrorSyncDialog.size")}
+										</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
@@ -188,12 +196,14 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 
 				<DialogFooter>
 					<Button variant="outline" onClick={onClose}>
-						Close
+						{t("common.close")}
 					</Button>
-					{lookupUnsuccessful ? <Button onClick={() => lookup.retry()}>Retry</Button> : null}
+					{lookupUnsuccessful ? (
+						<Button onClick={() => lookup.retry()}>{t("settings.machinesSection.retry")}</Button>
+					) : null}
 					{lookup.canCancel ? (
 						<Button variant="destructive" onClick={handleCancelLookup} loading={lookup.isCancelling}>
-							Cancel lookup
+							{t("backups.mirrorSyncDialog.cancelLookup")}
 						</Button>
 					) : null}
 					{statusResult && statusResult.missingSnapshots.length > 0 ? (
@@ -202,7 +212,9 @@ export const MirrorSyncDialog = ({ scheduleShortId, mirror, onClose }: Props) =>
 							loading={triggerSync.isPending}
 							disabled={selectedSnapshotCount === 0}
 						>
-							Sync {selectedSnapshotCount} snapshots
+							{t("backups.mirrorSyncDialog.syncSnapshots2", {
+								selectedSnapshotCount: selectedSnapshotCount,
+							})}
 						</Button>
 					) : null}
 				</DialogFooter>

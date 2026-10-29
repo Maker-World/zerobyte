@@ -6,6 +6,7 @@ import { Checkbox } from "~/client/components/ui/checkbox";
 import { Textarea } from "~/client/components/ui/textarea";
 import { WebhookRequestPreview } from "~/client/components/webhook-request-preview";
 import type { NotificationFormValues } from "../create-notification-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<NotificationFormValues>;
@@ -46,6 +47,7 @@ const WebhookPreview = ({ values }: { values: Partial<NotificationFormValues> })
 };
 
 export const GenericForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const watchedValues = useWatch({ control: form.control });
 	const useJson = useWatch({ control: form.control, name: "useJson" });
 
@@ -56,11 +58,11 @@ export const GenericForm = ({ form }: Props) => {
 				name="url"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Webhook URL</FormLabel>
+						<FormLabel>{t("notifications.discordForm.webhookUrl")}</FormLabel>
 						<FormControl>
 							<Input {...field} placeholder="https://api.example.com/webhook" />
 						</FormControl>
-						<FormDescription>The target origin must be listed in WEBHOOK_ALLOWED_ORIGINS.</FormDescription>
+						<FormDescription>{t("notifications.genericForm.theTargetOriginMust")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -70,11 +72,11 @@ export const GenericForm = ({ form }: Props) => {
 				name="method"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Method</FormLabel>
+						<FormLabel>{t("notifications.genericForm.method")}</FormLabel>
 						<Select onValueChange={field.onChange} value={field.value ?? ""}>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select method" />
+									<SelectValue placeholder={t("notifications.genericForm.selectMethod")} />
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
@@ -91,7 +93,7 @@ export const GenericForm = ({ form }: Props) => {
 				name="contentType"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Content Type</FormLabel>
+						<FormLabel>{t("notifications.genericForm.contentType")}</FormLabel>
 						<FormControl>
 							<Input {...field} placeholder="application/json" />
 						</FormControl>
@@ -104,11 +106,11 @@ export const GenericForm = ({ form }: Props) => {
 				name="headers"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Headers</FormLabel>
+						<FormLabel>{t("notifications.genericForm.headers")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
-								placeholder="Authorization: Bearer token&#10;X-Custom-Header: value"
+								placeholder={t("backups.advancedSection.authorizationBearerTokenX")}
 								value={Array.isArray(field.value) ? field.value.join("\n") : ""}
 								onChange={(e) =>
 									field.onChange(
@@ -120,9 +122,7 @@ export const GenericForm = ({ form }: Props) => {
 								}
 							/>
 						</FormControl>
-						<FormDescription>
-							One header per line in Key: Value format. Values are stored as plain text.
-						</FormDescription>
+						<FormDescription>{t("backups.advancedSection.oneHeaderPerLine")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -136,8 +136,8 @@ export const GenericForm = ({ form }: Props) => {
 							<Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(checked)} />
 						</FormControl>
 						<div className="space-y-1 leading-none">
-							<FormLabel>Use JSON Template</FormLabel>
-							<FormDescription>Send the message as a JSON object.</FormDescription>
+							<FormLabel>{t("notifications.genericForm.useJsonTemplate")}</FormLabel>
+							<FormDescription>{t("notifications.genericForm.sendTheMessageAs")}</FormDescription>
 						</div>
 					</FormItem>
 				)}
@@ -149,11 +149,11 @@ export const GenericForm = ({ form }: Props) => {
 						name="titleKey"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Title Key</FormLabel>
+								<FormLabel>{t("notifications.genericForm.titleKey")}</FormLabel>
 								<FormControl>
 									<Input {...field} placeholder="title" />
 								</FormControl>
-								<FormDescription>The JSON key for the notification title.</FormDescription>
+								<FormDescription>{t("notifications.genericForm.theJsonKeyFor")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
@@ -163,11 +163,11 @@ export const GenericForm = ({ form }: Props) => {
 						name="messageKey"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Message Key</FormLabel>
+								<FormLabel>{t("notifications.genericForm.messageKey")}</FormLabel>
 								<FormControl>
 									<Input {...field} placeholder="message" />
 								</FormControl>
-								<FormDescription>The JSON key for the notification message.</FormDescription>
+								<FormDescription>{t("notifications.genericForm.theJsonKeyFor2")}</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

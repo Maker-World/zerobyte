@@ -5,6 +5,7 @@ import { Textarea } from "~/client/components/ui/textarea";
 import type { Volume } from "~/client/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 import type { InternalFormValues } from "./types";
+import { useTranslation } from "~/client/lib/i18n";
 
 type PathsSectionProps = {
 	form: UseFormReturn<InternalFormValues>;
@@ -25,6 +26,7 @@ export const PathsSection = ({
 	showAllSelectedPaths,
 	onToggleShowAllPaths,
 }: PathsSectionProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<VolumeFileBrowser
@@ -34,11 +36,11 @@ export const PathsSection = ({
 				onSelectionChange={onSelectionChange}
 				withCheckboxes
 				className="relative border rounded-md bg-card p-2 h-100 overflow-y-auto"
-				emptyMessage="This volume appears to be empty."
+				emptyMessage={t("backups.pathsSection.thisVolumeAppearsTo")}
 			/>
 			{selectedPaths.size > 0 && (
 				<div className="mt-4">
-					<p className="text-xs text-muted-foreground mb-2">Selected paths:</p>
+					<p className="text-xs text-muted-foreground mb-2">{t("backups.pathsSection.selectedPaths")}</p>
 					<div className="flex flex-wrap gap-2">
 						{Array.from(selectedPaths)
 							.slice(0, showAllSelectedPaths ? undefined : 20)
@@ -64,7 +66,9 @@ export const PathsSection = ({
 								onClick={onToggleShowAllPaths}
 								className="text-xs text-primary hover:underline"
 							>
-								{showAllSelectedPaths ? "Show less" : `+ ${selectedPaths.size - 20} more`}
+								{showAllSelectedPaths
+									? t("repositories.snapshotDetails.showLess")
+									: t("repositories.snapshotDetails.more", { value: selectedPaths.size - 20 })}
 							</button>
 						)}
 					</div>
@@ -75,7 +79,7 @@ export const PathsSection = ({
 				name="includePatterns"
 				render={({ field }) => (
 					<FormItem className="mt-6">
-						<FormLabel>Additional include patterns</FormLabel>
+						<FormLabel>{t("backups.pathsSection.additionalIncludePatterns")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
@@ -83,10 +87,7 @@ export const PathsSection = ({
 								className="font-mono text-sm min-h-25"
 							/>
 						</FormControl>
-						<FormDescription>
-							Optionally add custom include patterns using glob syntax. Enter one pattern per line. These
-							will be combined with the paths selected above.
-						</FormDescription>
+						<FormDescription>{t("backups.pathsSection.optionallyAddCustomInclude")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

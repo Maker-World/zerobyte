@@ -27,6 +27,7 @@ import { Switch } from "~/client/components/ui/switch";
 import { authClient } from "~/client/lib/auth-client";
 import { parseError } from "~/client/lib/errors";
 import { useOrganizationContext } from "~/client/hooks/use-org-context";
+import { useTranslation } from "~/client/lib/i18n";
 
 const ssoProviderSchema = z.object({
 	providerId: z.string().min(1),
@@ -41,6 +42,7 @@ const ssoProviderSchema = z.object({
 type ProviderForm = z.infer<typeof ssoProviderSchema>;
 
 export function CreateSsoProviderPage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 	const { activeOrganization } = useOrganizationContext();
@@ -90,17 +92,17 @@ export function CreateSsoProviderPage() {
 					body: { enabled: formData.linkMatchingEmails },
 				})
 				.catch((updateError) => {
-					toast.warning("Auto-link setting could not be saved", {
+					toast.warning(t("sso.createSsoProvider.autoLinkSettingCould"), {
 						description: parseError(updateError)?.message,
 					});
 				});
 		},
 		onSuccess: () => {
-			toast.success("SSO provider registered successfully");
+			toast.success(t("sso.createSsoProvider.ssoProviderRegisteredSuccessfully"));
 			void navigate({ to: "/settings", search: { scope: "organization" } });
 		},
 		onError: (error) => {
-			toast.error("Failed to register provider", { description: error.message });
+			toast.error(t("sso.createSsoProvider.failedToRegisterProvider"), { description: error.message });
 		},
 	});
 
@@ -112,26 +114,23 @@ export function CreateSsoProviderPage() {
 						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
 							<ShieldCheck className="w-5 h-5 text-primary" />
 						</div>
-						<CardTitle>Register SSO Provider</CardTitle>
+						<CardTitle>{t("breadcrumb.registerSsoProvider")}</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<Alert>
-						<AlertTitle>Register this callback in your identity provider</AlertTitle>
+						<AlertTitle>{t("sso.createSsoProvider.registerThisCallbackIn")}</AlertTitle>
 						<AlertDescription>
 							<p className="break-all font-mono">
 								{authBaseURL}/sso/callback/
 								{providerId || "{providerId}"}
 							</p>
-							<p className="mt-2">
-								Use the exact address you access Zerobyte with. Behind an HTTPS reverse proxy, enable
-								TRUST_PROXY=true and forward X-Forwarded-Proto: https.
-							</p>
+							<p className="mt-2">{t("sso.createSsoProvider.useTheExactAddress")}</p>
 						</AlertDescription>
 					</Alert>
 					{registerProvider.isError && (
 						<Alert variant="destructive">
-							<AlertTitle>Provider could not be registered</AlertTitle>
+							<AlertTitle>{t("sso.createSsoProvider.providerCouldNotBe")}</AlertTitle>
 							<AlertDescription>{registerProvider.error.message}</AlertDescription>
 						</Alert>
 					)}
@@ -147,7 +146,7 @@ export function CreateSsoProviderPage() {
 									name="providerId"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Provider ID</FormLabel>
+											<FormLabel>{t("sso.ssoSettingsSection.providerId")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -155,7 +154,9 @@ export function CreateSsoProviderPage() {
 													disabled={registerProvider.isPending}
 												/>
 											</FormControl>
-											<FormDescription>Unique identifier used in callback URLs.</FormDescription>
+											<FormDescription>
+												{t("sso.createSsoProvider.uniqueIdentifierUsedIn")}
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -166,7 +167,7 @@ export function CreateSsoProviderPage() {
 									name="domain"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Organization Domain</FormLabel>
+											<FormLabel>{t("sso.editSsoProviderDialog.organizationDomain")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -174,7 +175,9 @@ export function CreateSsoProviderPage() {
 													disabled={registerProvider.isPending}
 												/>
 											</FormControl>
-											<FormDescription>Used to discover providers during login.</FormDescription>
+											<FormDescription>
+												{t("sso.createSsoProvider.usedToDiscoverProviders")}
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -185,7 +188,7 @@ export function CreateSsoProviderPage() {
 									name="issuer"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Issuer URL</FormLabel>
+											<FormLabel>{t("sso.editSsoProviderDialog.issuerUrl")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -195,8 +198,7 @@ export function CreateSsoProviderPage() {
 												/>
 											</FormControl>
 											<FormDescription>
-												Must match the issuer in the discovery document exactly, including any
-												trailing slash.
+												{t("sso.createSsoProvider.mustMatchTheIssuer")}
 											</FormDescription>
 											<FormMessage />
 										</FormItem>
@@ -208,7 +210,7 @@ export function CreateSsoProviderPage() {
 									name="discoveryEndpoint"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Discovery Endpoint</FormLabel>
+											<FormLabel>{t("sso.editSsoProviderDialog.discoveryEndpoint")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -226,7 +228,7 @@ export function CreateSsoProviderPage() {
 									name="clientId"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Client ID</FormLabel>
+											<FormLabel>{t("sso.editSsoProviderDialog.clientId")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -244,7 +246,7 @@ export function CreateSsoProviderPage() {
 									name="clientSecret"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Client Secret</FormLabel>
+											<FormLabel>{t("sso.editSsoProviderDialog.clientSecret")}</FormLabel>
 											<FormControl>
 												<Input
 													{...field}
@@ -266,10 +268,9 @@ export function CreateSsoProviderPage() {
 									<FormItem className="rounded-md border p-4">
 										<div className="flex items-start justify-between gap-4">
 											<div className="space-y-1">
-												<FormLabel>Link matching emails to existing accounts</FormLabel>
+												<FormLabel>{t("sso.createSsoProvider.linkMatchingEmailsTo")}</FormLabel>
 												<FormDescription>
-													If enabled, users who sign in with this provider will automatically
-													access their existing account when the email address matches.
+													{t("sso.createSsoProvider.ifEnabledUsersWho")}
 												</FormDescription>
 											</div>
 											<FormControl>
@@ -293,11 +294,11 @@ export function CreateSsoProviderPage() {
 							variant="secondary"
 							onClick={() => void navigate({ to: "/settings", search: { scope: "organization" } })}
 						>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button type="submit" form={formId} loading={registerProvider.isPending}>
 							<Plus className="h-4 w-4 mr-2" />
-							Register Provider
+							{t("sso.createSsoProvider.registerProvider")}
 						</Button>
 					</div>
 				</CardContent>

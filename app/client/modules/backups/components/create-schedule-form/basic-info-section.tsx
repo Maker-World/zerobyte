@@ -9,6 +9,7 @@ import type { UseFormReturn } from "react-hook-form";
 import type { InternalFormValues } from "./types";
 import { getBackupRepositoryCompatibility } from "@zerobyte/contracts/backup-context";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 type BasicInfoSectionProps = {
 	form: UseFormReturn<InternalFormValues>;
@@ -16,6 +17,7 @@ type BasicInfoSectionProps = {
 };
 
 export const BasicInfoSection = ({ form, volume }: BasicInfoSectionProps) => {
+	const { t } = useTranslation();
 	const { data: repositoriesData } = useQuery({
 		...listRepositoriesOptions(),
 	});
@@ -27,11 +29,11 @@ export const BasicInfoSection = ({ form, volume }: BasicInfoSectionProps) => {
 				name="name"
 				render={({ field }) => (
 					<FormItem className="@medium:col-span-2">
-						<FormLabel>Backup name</FormLabel>
+						<FormLabel>{t("backups.basicInfoSection.backupName")}</FormLabel>
 						<FormControl>
-							<Input placeholder="My backup" {...field} />
+							<Input placeholder={t("backups.basicInfoSection.myBackup")} {...field} />
 						</FormControl>
-						<FormDescription>A unique name to identify this backup schedule.</FormDescription>
+						<FormDescription>{t("backups.basicInfoSection.aUniqueNameTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -42,11 +44,11 @@ export const BasicInfoSection = ({ form, volume }: BasicInfoSectionProps) => {
 				name="repositoryId"
 				render={({ field }) => (
 					<FormItem className="@medium:col-span-2">
-						<FormLabel>Backup repository</FormLabel>
+						<FormLabel>{t("backups.basicInfoSection.backupRepository")}</FormLabel>
 						<FormControl>
 							<Select {...field} onValueChange={field.onChange} value={field.value ?? ""}>
 								<SelectTrigger>
-									<SelectValue placeholder="Select a repository" />
+									<SelectValue placeholder={t("backups.basicInfoSection.selectARepository")} />
 								</SelectTrigger>
 								<SelectContent>
 									{repositoriesData?.map((repo) => {
@@ -76,7 +78,8 @@ export const BasicInfoSection = ({ form, volume }: BasicInfoSectionProps) => {
 							</Select>
 						</FormControl>
 						<FormDescription>
-							Choose where encrypted backups for <strong>{volume.name}</strong> will be stored.
+							{t("backups.basicInfoSection.chooseWhereEncryptedBackups")} <strong>{volume.name}</strong>{" "}
+							{t("backups.basicInfoSection.willBeStored")}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>

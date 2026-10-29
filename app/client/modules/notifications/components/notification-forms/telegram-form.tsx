@@ -3,12 +3,14 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from "~/client/components/ui/input";
 import { SecretInput } from "~/client/components/ui/secret-input";
 import type { NotificationFormValues } from "../create-notification-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<NotificationFormValues>;
 };
 
 export const TelegramForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -16,13 +18,14 @@ export const TelegramForm = ({ form }: Props) => {
 				name="botToken"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Bot Token</FormLabel>
+						<FormLabel>{t("notifications.telegramForm.botToken")}</FormLabel>
 						<FormControl>
-							<SecretInput {...field} placeholder="123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" />
+							<SecretInput
+								{...field}
+								placeholder={t("notifications.telegramForm.n123456789AbcDef1234ghiklZyx57w2v1u123ew11")}
+							/>
 						</FormControl>
-						<FormDescription>
-							Telegram bot token. Get this from BotFather when you create your bot.
-						</FormDescription>
+						<FormDescription>{t("notifications.telegramForm.telegramBotTokenGet")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -32,11 +35,11 @@ export const TelegramForm = ({ form }: Props) => {
 				name="chatId"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Chat ID</FormLabel>
+						<FormLabel>{t("notifications.telegramForm.chatId")}</FormLabel>
 						<FormControl>
 							<Input {...field} placeholder="-1231234567890" />
 						</FormControl>
-						<FormDescription>Telegram chat ID to send notifications to.</FormDescription>
+						<FormDescription>{t("notifications.telegramForm.telegramChatIdTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -46,11 +49,11 @@ export const TelegramForm = ({ form }: Props) => {
 				name="threadId"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Thread ID (Optional)</FormLabel>
+						<FormLabel>{t("notifications.discordForm.threadIdOptional")}</FormLabel>
 						<FormControl>
 							<Input {...field} placeholder="3" />
 						</FormControl>
-						<FormDescription>Telegram Group Topic ID to send notifications to.</FormDescription>
+						<FormDescription>{t("notifications.telegramForm.telegramGroupTopicId")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

@@ -29,6 +29,7 @@ import { cn } from "~/client/lib/utils";
 import { useActiveMirrorSyncTasks } from "../mirror-tasks";
 import { MirrorSyncDialog } from "./mirror-sync-dialog";
 import { MirrorSyncProgressRow } from "./mirror-sync-progress-row";
+import { useTranslation } from "~/client/lib/i18n";
 
 type MirrorAssignment = {
 	repositoryId: string;
@@ -76,6 +77,7 @@ export const MirrorRepositoriesTable = ({
 	onToggleEnabled,
 	onRemove,
 }: Props) => {
+	const { t } = useTranslation();
 	const { formatTimeAgo } = useTimeFormat();
 	const [statusLookupMirror, setStatusLookupMirror] = useState<Repository | null>(null);
 	const [cancelConfirmationOpen, setCancelConfirmationOpen] = useState(false);
@@ -85,7 +87,7 @@ export const MirrorRepositoriesTable = ({
 	const cancelSync = useMutation({
 		...cancelTaskMutation(),
 		onError: (error) => {
-			toast.error("Failed to cancel mirror sync", {
+			toast.error(t("backups.mirrorRepositoriesTable.failedToCancelMirror"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -136,8 +138,8 @@ export const MirrorRepositoriesTable = ({
 		return (
 			<div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
 				<Copy className="h-8 w-8 mb-2 opacity-20" />
-				<p className="text-sm">No mirror repositories configured for this schedule.</p>
-				<p className="text-xs mt-1">Click "Add mirror" to replicate backups to additional repositories.</p>
+				<p className="text-sm">{t("backups.mirrorRepositoriesTable.noMirrorRepositoriesConfigured")}</p>
+				<p className="text-xs mt-1">{t("backups.mirrorRepositoriesTable.clickAddMirrorTo")}</p>
 			</div>
 		);
 	}
@@ -148,9 +150,9 @@ export const MirrorRepositoriesTable = ({
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>Repository</TableHead>
-							<TableHead className="text-center w-25">Enabled</TableHead>
-							<TableHead className="w-45">Last Sync</TableHead>
+							<TableHead>{t("breadcrumb.repository")}</TableHead>
+							<TableHead className="text-center w-25">{t("settings.twoFactorSection.enabled")}</TableHead>
+							<TableHead className="w-45">{t("backups.mirrorRepositoriesTable.lastSync")}</TableHead>
 							<TableHead className="w-12.5" />
 						</TableRow>
 					</TableHeader>
@@ -284,21 +286,23 @@ export const MirrorRepositoriesTable = ({
 			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Cancel mirror sync?</AlertDialogTitle>
+						<AlertDialogTitle>{t("backups.mirrorRepositoriesTable.cancelMirrorSync")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to cancel synchronization to&nbsp;
-							<strong>{cancelConfirmation?.repositoryName}</strong>? Snapshots that have already been
-							copied will remain available.
+							{t("backups.mirrorRepositoriesTable.areYouSureYou")}
+							<strong>{cancelConfirmation?.repositoryName}</strong>
+							{t("backups.mirrorRepositoriesTable.snapshotsThatHaveAlready")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<div className="flex gap-3 justify-end">
-						<AlertDialogCancel disabled={cancelSync.isPending}>Keep syncing</AlertDialogCancel>
+						<AlertDialogCancel disabled={cancelSync.isPending}>
+							{t("backups.mirrorRepositoriesTable.keepSyncing")}
+						</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={confirmCancellation}
 							disabled={cancelSync.isPending}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 						>
-							Cancel sync
+							{t("backups.mirrorRepositoriesTable.cancelSync")}
 						</AlertDialogAction>
 					</div>
 				</AlertDialogContent>

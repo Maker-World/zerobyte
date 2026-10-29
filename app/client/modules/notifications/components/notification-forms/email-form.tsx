@@ -4,12 +4,14 @@ import { Input } from "~/client/components/ui/input";
 import { SecretInput } from "~/client/components/ui/secret-input";
 import { Checkbox } from "~/client/components/ui/checkbox";
 import type { NotificationFormValues } from "../create-notification-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<NotificationFormValues>;
 };
 
 export const EmailForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -17,7 +19,7 @@ export const EmailForm = ({ form }: Props) => {
 				name="smtpHost"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>SMTP Host</FormLabel>
+						<FormLabel>{t("notifications.emailForm.smtpHost")}</FormLabel>
 						<FormControl>
 							<Input {...field} placeholder="smtp.example.com" />
 						</FormControl>
@@ -30,7 +32,7 @@ export const EmailForm = ({ form }: Props) => {
 				name="smtpPort"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>SMTP Port</FormLabel>
+						<FormLabel>{t("notifications.emailForm.smtpPort")}</FormLabel>
 						<FormControl>
 							<Input
 								{...field}
@@ -48,9 +50,9 @@ export const EmailForm = ({ form }: Props) => {
 				name="username"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Username (Optional)</FormLabel>
+						<FormLabel>{t("volumes.webdavForm.usernameOptional")}</FormLabel>
 						<FormControl>
-							<Input {...field} placeholder="user@example.com" />
+							<Input {...field} placeholder={t("notifications.emailForm.userExampleCom")} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -61,7 +63,7 @@ export const EmailForm = ({ form }: Props) => {
 				name="password"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Password (Optional)</FormLabel>
+						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
 							<SecretInput {...field} placeholder="••••••••" />
 						</FormControl>
@@ -74,9 +76,9 @@ export const EmailForm = ({ form }: Props) => {
 				name="from"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>From Address</FormLabel>
+						<FormLabel>{t("notifications.emailForm.fromAddress")}</FormLabel>
 						<FormControl>
-							<Input {...field} placeholder="noreply@example.com" />
+							<Input {...field} placeholder={t("notifications.emailForm.noreplyExampleCom")} />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -87,11 +89,11 @@ export const EmailForm = ({ form }: Props) => {
 				name="fromName"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>From Name (Optional)</FormLabel>
+						<FormLabel>{t("notifications.emailForm.fromNameOptional")}</FormLabel>
 						<FormControl>
-							<Input {...field} placeholder="Zerobyte Backup" />
+							<Input {...field} placeholder={t("notifications.emailForm.zerobyteBackup")} />
 						</FormControl>
-						<FormDescription>The display name shown in the email client.</FormDescription>
+						<FormDescription>{t("notifications.emailForm.theDisplayNameShown")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -101,11 +103,11 @@ export const EmailForm = ({ form }: Props) => {
 				name="to"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>To Addresses</FormLabel>
+						<FormLabel>{t("notifications.emailForm.toAddresses")}</FormLabel>
 						<FormControl>
 							<Input
 								{...field}
-								placeholder="user@example.com, admin@example.com"
+								placeholder={t("notifications.emailForm.userExampleComAdmin")}
 								value={Array.isArray(field.value) ? field.value.join(", ") : ""}
 								onChange={(e) =>
 									field.onChange(
@@ -117,7 +119,7 @@ export const EmailForm = ({ form }: Props) => {
 								}
 							/>
 						</FormControl>
-						<FormDescription>Comma-separated list of recipient email addresses.</FormDescription>
+						<FormDescription>{t("notifications.emailForm.commaSeparatedListOf")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -131,8 +133,8 @@ export const EmailForm = ({ form }: Props) => {
 							<Checkbox checked={field.value} onCheckedChange={field.onChange} />
 						</FormControl>
 						<div className="space-y-1 leading-none">
-							<FormLabel>Use TLS</FormLabel>
-							<FormDescription>Enable TLS encryption for SMTP connection.</FormDescription>
+							<FormLabel>{t("notifications.emailForm.useTls")}</FormLabel>
+							<FormDescription>{t("notifications.emailForm.enableTlsEncryptionFor")}</FormDescription>
 						</div>
 					</FormItem>
 				)}

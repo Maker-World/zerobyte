@@ -5,6 +5,7 @@ import type { InternalFormValues } from "./types";
 import { Input } from "~/client/components/ui/input";
 import { Checkbox } from "~/client/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/client/components/ui/select";
+import { type TranslationKey, useTranslation } from "~/client/lib/i18n";
 
 type AdvancedSectionProps = {
 	form: UseFormReturn<InternalFormValues>;
@@ -12,10 +13,10 @@ type AdvancedSectionProps = {
 
 type WebhookPhase = {
 	name: "preBackupWebhook" | "postBackupWebhook";
-	label: string;
+	label: TranslationKey;
 	urlPlaceholder: string;
 	bodyPlaceholder: string;
-	description: string;
+	description: TranslationKey;
 };
 
 type WebhookFieldsProps = {
@@ -26,21 +27,22 @@ type WebhookFieldsProps = {
 const WEBHOOK_PHASES: WebhookPhase[] = [
 	{
 		name: "preBackupWebhook",
-		label: "Pre-backup",
+		label: "backups.advancedSection.preBackup",
 		urlPlaceholder: "http://host.docker.internal:8080/stop",
 		bodyPlaceholder: '{"action":"stop"}',
-		description: "Called with POST before restic starts. A non-2xx response stops the backup.",
+		description: "backups.advancedSection.preBackupDescription",
 	},
 	{
 		name: "postBackupWebhook",
-		label: "Post-backup",
+		label: "backups.advancedSection.postBackup",
 		urlPlaceholder: "http://host.docker.internal:8080/start",
 		bodyPlaceholder: '{"action":"start"}',
-		description: "Called with POST after restic finishes, including failed or cancelled runs.",
+		description: "backups.advancedSection.postBackupDescription",
 	},
 ];
 
 const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -48,13 +50,12 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 				name={`${phase.name}.url`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>{phase.label} webhook</FormLabel>
+						<FormLabel>{t("backups.advancedSection.webhook", { label: t(phase.label) })}</FormLabel>
 						<FormControl>
 							<Input {...field} type="url" placeholder={phase.urlPlaceholder} />
 						</FormControl>
 						<FormDescription>
-							{phase.description} The URL origin must be listed in WEBHOOK_ALLOWED_ORIGINS; redirects are
-							not followed.
+							{t("backups.advancedSection.theUrlOriginMust", { description: t(phase.description) })}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>
@@ -69,10 +70,11 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 							<Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
 						</FormControl>
 						<div className="space-y-1 leading-none">
-							<FormLabel>Skip TLS certificate verification</FormLabel>
+							<FormLabel>{t("repositories.advancedTlsForm.skipTlsCertificateVerification")}</FormLabel>
 							<FormDescription>
-								Allow this {phase.label.toLowerCase()} webhook to use self-signed certificates. This is
-								insecure and should only be enabled for trusted endpoints.
+								{t("backups.advancedSection.allowThisWebhookTo", {
+									label: t(phase.label).toLowerCase(),
+								})}
 							</FormDescription>
 						</div>
 					</FormItem>
@@ -83,17 +85,15 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 				name={`${phase.name}.headersText`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>{phase.label} webhook headers</FormLabel>
+						<FormLabel>{t("backups.advancedSection.webhookHeaders", { label: t(phase.label) })}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
-								placeholder="Authorization: Bearer token&#10;X-Custom-Header: value"
+								placeholder={t("backups.advancedSection.authorizationBearerTokenX")}
 								className="font-mono text-sm min-h-24"
 							/>
 						</FormControl>
-						<FormDescription>
-							One header per line in Key: Value format. Values are stored as plain text.
-						</FormDescription>
+						<FormDescription>{t("backups.advancedSection.oneHeaderPerLine")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -103,7 +103,7 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 				name={`${phase.name}.body`}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>{phase.label} webhook body</FormLabel>
+						<FormLabel>{t("backups.advancedSection.webhookBody", { label: t(phase.label) })}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
@@ -111,9 +111,7 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 								className="font-mono text-sm min-h-24"
 							/>
 						</FormControl>
-						<FormDescription>
-							Optional raw POST body. Leave empty to send the backup context JSON.
-						</FormDescription>
+						<FormDescription>{t("backups.advancedSection.optionalRawPostBody")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -123,6 +121,7 @@ const WebhookFields = ({ form, phase }: WebhookFieldsProps) => {
 };
 
 export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -130,7 +129,7 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 				name="maxRetries"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Maximum retries</FormLabel>
+						<FormLabel>{t("backups.advancedSection.maximumRetries")}</FormLabel>
 						<FormControl>
 							<Input
 								{...field}
@@ -138,13 +137,11 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 								min={0}
 								max={32}
 								value={field.value ?? ""}
-								placeholder="e.g., 2"
+								placeholder={t("backups.advancedSection.eG2")}
 								onChange={(e) => field.onChange(e.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>
-							Maximum number of retry attempts if a backup fails (default: 2).
-						</FormDescription>
+						<FormDescription>{t("backups.advancedSection.maximumNumberOfRetry")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -154,7 +151,7 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 				name="retryDelay"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Retry delay</FormLabel>
+						<FormLabel>{t("backups.advancedSection.retryDelay")}</FormLabel>
 						<FormControl>
 							<Input
 								{...field}
@@ -162,14 +159,12 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 								min={1}
 								max={1440}
 								step={1}
-								placeholder="e.g., 15"
+								placeholder={t("backups.advancedSection.eG15")}
 								value={field.value ?? ""}
 								onChange={(e) => field.onChange(e.target.value)}
 							/>
 						</FormControl>
-						<FormDescription>
-							Delay in minutes before retrying a failed backup (default: 15 minutes).
-						</FormDescription>
+						<FormDescription>{t("backups.advancedSection.delayInMinutesBefore")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -182,26 +177,31 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 				name="compressionMode"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Compression mode</FormLabel>
+						<FormLabel>{t("backups.advancedSection.compressionMode")}</FormLabel>
 						<Select
 							onValueChange={(value) => field.onChange(value === "inherit" ? null : value)}
 							value={field.value ?? "inherit"}
 						>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select compression mode" />
+									<SelectValue
+										placeholder={t("repositories.createRepositoryForm.selectCompressionMode")}
+									/>
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
-								<SelectItem value="inherit">Inherit from repository</SelectItem>
-								<SelectItem value="off">Off</SelectItem>
-								<SelectItem value="auto">Auto (fast)</SelectItem>
-								<SelectItem value="max">Max (slower, better compression)</SelectItem>
+								<SelectItem value="inherit">
+									{t("backups.advancedSection.inheritFromRepository")}
+								</SelectItem>
+								<SelectItem value="off">{t("repositories.createRepositoryForm.off")}</SelectItem>
+								<SelectItem value="auto">{t("repositories.createRepositoryForm.autoFast")}</SelectItem>
+								<SelectItem value="max">
+									{t("repositories.createRepositoryForm.maxSlowerBetterCompression")}
+								</SelectItem>
 							</SelectContent>
 						</Select>
 						<FormDescription>
-							Override the repository compression mode for this job. Choosing "Inherit from repository"
-							uses the repository default.
+							{t("backups.advancedSection.overrideTheRepositoryCompression")}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>
@@ -212,18 +212,18 @@ export const AdvancedSection = ({ form }: AdvancedSectionProps) => {
 				name="customResticParamsText"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Custom restic parameters</FormLabel>
+						<FormLabel>{t("backups.advancedSection.customResticParameters")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
-								placeholder="--exclude-larger-than 500M&#10;--no-scan&#10;--read-concurrency 8"
+								placeholder={t("backups.advancedSection.excludeLargerThan500m")}
 								className="font-mono text-sm min-h-24"
 							/>
 						</FormControl>
 						<FormDescription>
-							Advanced: enter one restic flag per line (e.g.{" "}
-							<code className="bg-muted px-1 rounded">--exclude-larger-than 500M</code>). Only the
-							supported flag list is accepted.
+							{t("backups.advancedSection.advancedEnterOneRestic")}{" "}
+							<code className="bg-muted px-1 rounded">--exclude-larger-than 500M</code>
+							{t("backups.advancedSection.onlyTheSupportedFlag")}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>

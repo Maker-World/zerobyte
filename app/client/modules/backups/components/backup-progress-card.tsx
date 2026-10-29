@@ -7,12 +7,14 @@ import { Progress } from "~/client/components/ui/progress";
 import type { BackupTask } from "../backup-tasks";
 import { formatDuration } from "~/client/lib/datetime";
 import { getActiveBackupPercent, hasCoherentBackupEta } from "./backup-progress";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	progress: NonNullable<BackupTask["progress"]>["progress"] | null;
 };
 
 export const BackupProgressCard = ({ progress }: Props) => {
+	const { t } = useTranslation();
 	const formatBytes = useFormatBytes();
 	const { locale } = useRootLoaderData();
 	const progressHeadingId = useId();
@@ -50,7 +52,7 @@ export const BackupProgressCard = ({ progress }: Props) => {
 				<div className="flex items-center gap-2">
 					<div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
 					<h2 id={progressHeadingId} className="font-medium">
-						Backup in progress
+						{t("backups.status.inProgress")}
 					</h2>
 				</div>
 				<span className="text-sm font-medium text-primary">{progress ? progressLabel : "—"}</span>
@@ -60,11 +62,15 @@ export const BackupProgressCard = ({ progress }: Props) => {
 
 			<div className="grid grid-cols-2 gap-4 text-sm">
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Files</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("volumes.volumeDetails.files")}</p>
 					<p className="font-medium">
 						{progress ? (
 							isScanningForMoreData ? (
-								<>{files_done.toLocaleString(locale)} processed</>
+								<>
+									{t("backups.backupProgressCard.processed", {
+										files_done: files_done.toLocaleString(locale),
+									})}
+								</>
 							) : (
 								<>
 									{files_done.toLocaleString(locale)} / {total_files.toLocaleString(locale)}
@@ -76,13 +82,13 @@ export const BackupProgressCard = ({ progress }: Props) => {
 					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Data</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.backupProgressCard.data")}</p>
 					<p className="font-medium">
 						{progress ? (
 							isScanningForMoreData ? (
 								<>
 									<ByteSize bytes={bytes_done} base={1024} />
-									&nbsp;processed
+									{t("backups.backupProgressCard.processed2")}
 								</>
 							) : (
 								<>
@@ -97,23 +103,33 @@ export const BackupProgressCard = ({ progress }: Props) => {
 					</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Elapsed</p>
+					<p className="text-xs uppercase text-muted-foreground">{t("backups.backupProgressCard.elapsed")}</p>
 					<p className="font-medium">{progress ? formatDuration(seconds_elapsed) : "—"}</p>
 				</div>
 				<div>
-					<p className="text-xs uppercase text-muted-foreground">Processing speed</p>
+					<p className="text-xs uppercase text-muted-foreground">
+						{t("backups.backupProgressCard.processingSpeed")}
+					</p>
 					<p className="font-medium">
-						{progress ? (speed ? `${speed.text} ${speed.unit}/s` : "Calculating...") : "—"}
+						{progress
+							? speed
+								? `${speed.text} ${speed.unit}/s`
+								: t("backups.backupProgressCard.calculating")
+							: "—"}
 					</p>
 				</div>
 				<div>
 					<p className="text-xs uppercase text-muted-foreground">ETA</p>
-					<p className="font-medium">{progress ? (eta ?? "Calculating...") : "—"}</p>
+					<p className="font-medium">
+						{progress ? (eta ?? t("backups.backupProgressCard.calculating")) : "—"}
+					</p>
 				</div>
 			</div>
 
 			<div className="pt-2 border-t border-border">
-				<p className="text-xs uppercase text-muted-foreground mb-1">Current file</p>
+				<p className="text-xs uppercase text-muted-foreground mb-1">
+					{t("backups.backupProgressCard.currentFile")}
+				</p>
 				<p className="text-xs font-mono text-muted-foreground truncate" title={currentFile || undefined}>
 					{fileName || "—"}
 				</p>

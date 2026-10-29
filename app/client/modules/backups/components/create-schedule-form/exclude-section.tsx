@@ -3,12 +3,14 @@ import { Textarea } from "~/client/components/ui/textarea";
 import { Checkbox } from "~/client/components/ui/checkbox";
 import type { UseFormReturn } from "react-hook-form";
 import type { InternalFormValues } from "./types";
+import { useTranslation } from "~/client/lib/i18n";
 
 type ExcludeSectionProps = {
 	form: UseFormReturn<InternalFormValues>;
 };
 
 export const ExcludeSection = ({ form }: ExcludeSectionProps) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -16,25 +18,25 @@ export const ExcludeSection = ({ form }: ExcludeSectionProps) => {
 				name="excludePatternsText"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Exclusion patterns</FormLabel>
+						<FormLabel>{t("backups.excludeSection.exclusionPatterns")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
-								placeholder="*.tmp&#10;node_modules/**&#10;.cache/&#10;*.log"
+								placeholder={t("backups.excludeSection.tmpNodeModulesCache")}
 								className="font-mono text-sm min-h-30"
 							/>
 						</FormControl>
 						<FormDescription>
-							Patterns support glob syntax. See&nbsp;
+							{t("backups.excludeSection.patternsSupportGlobSyntax")}
 							<a
 								href="https://restic.readthedocs.io/en/stable/040_backup.html#excluding-files"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="underline hover:text-foreground"
 							>
-								Restic documentation
+								{t("backups.excludeSection.resticDocumentation")}
 							</a>
-							&nbsp;for more details.
+							{t("backups.excludeSection.forMoreDetails")}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>
@@ -45,7 +47,7 @@ export const ExcludeSection = ({ form }: ExcludeSectionProps) => {
 				name="excludeIfPresentText"
 				render={({ field }) => (
 					<FormItem className="mt-6">
-						<FormLabel>Exclude if file present</FormLabel>
+						<FormLabel>{t("backups.excludeSection.excludeIfFilePresent")}</FormLabel>
 						<FormControl>
 							<Textarea
 								{...field}
@@ -54,9 +56,10 @@ export const ExcludeSection = ({ form }: ExcludeSectionProps) => {
 							/>
 						</FormControl>
 						<FormDescription>
-							Exclude folders containing a file with the specified name. Enter one filename per line. For
-							example, use <code className="bg-muted px-1 rounded">.nobackup</code> to skip any folder
-							containing a <code className="bg-muted px-1 rounded">.nobackup</code> file.
+							{t("backups.excludeSection.excludeFoldersContainingA")}{" "}
+							<code className="bg-muted px-1 rounded">.nobackup</code>{" "}
+							{t("backups.excludeSection.toSkipAnyFolder")}{" "}
+							<code className="bg-muted px-1 rounded">.nobackup</code> {t("backups.excludeSection.file")}
 						</FormDescription>
 						<FormMessage />
 					</FormItem>
@@ -71,11 +74,8 @@ export const ExcludeSection = ({ form }: ExcludeSectionProps) => {
 							<Checkbox checked={field.value} onCheckedChange={field.onChange} />
 						</FormControl>
 						<div className="space-y-1 leading-none">
-							<FormLabel>Stay on one file system</FormLabel>
-							<FormDescription>
-								Prevent Restic from crossing file system boundaries. This is useful to avoid backing up
-								network mounts or other partitions that might be mounted inside your backup source.
-							</FormDescription>
+							<FormLabel>{t("backups.excludeSection.stayOnOneFile")}</FormLabel>
+							<FormDescription>{t("backups.excludeSection.preventResticFromCrossing")}</FormDescription>
 						</div>
 					</FormItem>
 				)}
