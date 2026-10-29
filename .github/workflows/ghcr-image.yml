@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - claude/vigilant-bohr-sx1r3t
     tags:
       - "v*"
   workflow_dispatch:
