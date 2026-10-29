@@ -11,12 +11,14 @@ import {
 import { Input } from "../../../../components/ui/input";
 import { SecretInput } from "../../../../components/ui/secret-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<FormValues>;
 };
 
 export const SMBForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const guest = useWatch({ control: form.control, name: "guest" });
 
 	return (
@@ -26,11 +28,11 @@ export const SMBForm = ({ form }: Props) => {
 				name="server"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Server</FormLabel>
+						<FormLabel>{t("volumes.info.server")}</FormLabel>
 						<FormControl>
 							<Input placeholder="192.168.1.100" value={field.value} onChange={field.onChange} />
 						</FormControl>
-						<FormDescription>SMB server IP address or hostname.</FormDescription>
+						<FormDescription>{t("volumes.smbForm.smbServerIpAddress")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -40,11 +42,11 @@ export const SMBForm = ({ form }: Props) => {
 				name="share"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Share</FormLabel>
+						<FormLabel>{t("volumes.info.share")}</FormLabel>
 						<FormControl>
 							<Input placeholder="myshare" value={field.value} onChange={field.onChange} />
 						</FormControl>
-						<FormDescription>SMB share name on the server.</FormDescription>
+						<FormDescription>{t("volumes.smbForm.smbShareNameOn")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -55,24 +57,22 @@ export const SMBForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Guest Mode</FormLabel>
+						<FormLabel>{t("volumes.smbForm.guestMode")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Connect as guest"
+									aria-label={t("volumes.smbForm.connectAsGuest")}
 									checked={field.value ?? false}
 									onChange={(e) => {
 										field.onChange(e.target.checked);
 									}}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Connect as guest (no authentication)</span>
+								<span className="text-sm">{t("volumes.smbForm.connectAsGuestNo")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>
-							Connect to the SMB share without credentials. Username and password fields will be disabled.
-						</FormDescription>
+						<FormDescription>{t("volumes.smbForm.connectToTheSmb")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -82,11 +82,11 @@ export const SMBForm = ({ form }: Props) => {
 				name="username"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Username</FormLabel>
+						<FormLabel>{t("auth.username")}</FormLabel>
 						<FormControl>
 							<Input placeholder="admin" value={field.value} onChange={field.onChange} disabled={guest} />
 						</FormControl>
-						<FormDescription>Username for SMB authentication.</FormDescription>
+						<FormDescription>{t("volumes.smbForm.usernameForSmbAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -96,7 +96,7 @@ export const SMBForm = ({ form }: Props) => {
 				name="password"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Password</FormLabel>
+						<FormLabel>{t("auth.password")}</FormLabel>
 						<FormControl>
 							<SecretInput
 								placeholder="••••••••"
@@ -105,7 +105,7 @@ export const SMBForm = ({ form }: Props) => {
 								disabled={guest}
 							/>
 						</FormControl>
-						<FormDescription>Password for SMB authentication.</FormDescription>
+						<FormDescription>{t("volumes.smbForm.passwordForSmbAuthentication")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -116,21 +116,21 @@ export const SMBForm = ({ form }: Props) => {
 				defaultValue="3.0"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>SMB Version</FormLabel>
+						<FormLabel>{t("volumes.smbForm.smbVersion")}</FormLabel>
 						<Select onValueChange={field.onChange} value={field.value}>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select SMB version" />
+									<SelectValue placeholder={t("volumes.smbForm.selectSmbVersion")} />
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
-								<SelectItem value="1.0">SMB v1.0</SelectItem>
-								<SelectItem value="2.0">SMB v2.0</SelectItem>
-								<SelectItem value="2.1">SMB v2.1</SelectItem>
-								<SelectItem value="3.0">SMB v3.0</SelectItem>
+								<SelectItem value="1.0">{t("volumes.smbForm.smbV10")}</SelectItem>
+								<SelectItem value="2.0">{t("volumes.smbForm.smbV20")}</SelectItem>
+								<SelectItem value="2.1">{t("volumes.smbForm.smbV21")}</SelectItem>
+								<SelectItem value="3.0">{t("volumes.smbForm.smbV30")}</SelectItem>
 							</SelectContent>
 						</Select>
-						<FormDescription>SMB protocol version to use (default: 3.0).</FormDescription>
+						<FormDescription>{t("volumes.smbForm.smbProtocolVersionTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -140,11 +140,15 @@ export const SMBForm = ({ form }: Props) => {
 				name="domain"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Domain (Optional)</FormLabel>
+						<FormLabel>{t("volumes.smbForm.domainOptional")}</FormLabel>
 						<FormControl>
-							<Input placeholder="WORKGROUP" value={field.value} onChange={field.onChange} />
+							<Input
+								placeholder={t("volumes.smbForm.workgroup")}
+								value={field.value}
+								onChange={field.onChange}
+							/>
 						</FormControl>
-						<FormDescription>Domain or workgroup for authentication (optional).</FormDescription>
+						<FormDescription>{t("volumes.smbForm.domainOrWorkgroupFor")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -155,7 +159,7 @@ export const SMBForm = ({ form }: Props) => {
 				defaultValue={445}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Port</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.port")}</FormLabel>
 						<FormControl>
 							<Input
 								type="number"
@@ -164,7 +168,7 @@ export const SMBForm = ({ form }: Props) => {
 								onChange={(e) => field.onChange(parseInt(e.target.value, 10) || undefined)}
 							/>
 						</FormControl>
-						<FormDescription>SMB server port (default: 445).</FormDescription>
+						<FormDescription>{t("volumes.smbForm.smbServerPortDefault")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -175,23 +179,20 @@ export const SMBForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Ownership Mapping</FormLabel>
+						<FormLabel>{t("volumes.smbForm.ownershipMapping")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Map all files to container user/group"
+									aria-label={t("volumes.smbForm.mapAllFilesTo")}
 									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Map all files to container user/group</span>
+								<span className="text-sm">{t("volumes.smbForm.mapAllFilesTo")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>
-							Keep the old behavior by forcing the SMB mount to present every file and directory as owned
-							by the container user and group instead of using server reported ownership.
-						</FormDescription>
+						<FormDescription>{t("volumes.smbForm.keepTheOldBehavior")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -202,22 +203,20 @@ export const SMBForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Read-only Mode</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.readOnlyMode")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Mount source as read-only"
+									aria-label={t("volumes.nfsForm.mountSourceAsRead")}
 									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Mount source as read-only</span>
+								<span className="text-sm">{t("volumes.nfsForm.mountSourceAsRead")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>
-							Prevent any modifications to the source. Recommended for sensitive data.
-						</FormDescription>
+						<FormDescription>{t("volumes.nfsForm.preventAnyModificationsTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

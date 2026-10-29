@@ -13,6 +13,7 @@ import { useScrollToFormError } from "~/client/hooks/use-scroll-to-form-error";
 import { getMachineStatus, isMachineAvailable, machineStatusLabels } from "~/client/lib/machine-status";
 import { cn } from "~/client/lib/utils";
 import { TrustedRootBrowser } from "./trusted-root-browser";
+import { useTranslation } from "~/client/lib/i18n";
 
 const filesystemSourceSchema = z.object({
 	name: z.string().trim().min(2).max(32),
@@ -33,6 +34,7 @@ type Props = {
 };
 
 export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: Props) => {
+	const { t } = useTranslation();
 	const form = useForm<z.input<typeof filesystemSourceSchema>, unknown, FilesystemSourceValues>({
 		resolver: zodResolver(filesystemSourceSchema),
 		defaultValues: initialValues ?? { name: "", agentId: "", trustedRootId: "", relativePath: null },
@@ -55,9 +57,13 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 					name="name"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Name</FormLabel>
+							<FormLabel>{t("common.name")}</FormLabel>
 							<FormControl>
-								<Input {...field} placeholder="Source name" maxLength={32} />
+								<Input
+									{...field}
+									placeholder={t("volumes.agentFilesystemSourceForm.sourceName")}
+									maxLength={32}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -67,7 +73,9 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 				{machinesQuery.isError && (
 					<Alert variant="destructive">
 						<AlertContent>
-							<AlertDescription>Machines could not be loaded.</AlertDescription>
+							<AlertDescription>
+								{t("volumes.agentFilesystemSourceForm.machinesCouldNotBe")}
+							</AlertDescription>
 						</AlertContent>
 						<AlertAction>
 							<Button
@@ -76,12 +84,16 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 								size="sm"
 								onClick={() => void machinesQuery.refetch()}
 							>
-								Retry
+								{t("settings.machinesSection.retry")}
 							</Button>
 						</AlertAction>
 					</Alert>
 				)}
-				{machinesQuery.isPending && <p className="text-sm text-muted-foreground">Loading machines…</p>}
+				{machinesQuery.isPending && (
+					<p className="text-sm text-muted-foreground">
+						{t("volumes.agentFilesystemSourceForm.loadingMachines")}
+					</p>
+				)}
 
 				{machinesQuery.isSuccess && (
 					<>
@@ -90,7 +102,7 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 							name="agentId"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Machine</FormLabel>
+									<FormLabel>{t("volumes.info.machine")}</FormLabel>
 									<Select
 										value={field.value}
 										onValueChange={(value) => {
@@ -101,7 +113,9 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 									>
 										<FormControl>
 											<SelectTrigger className="w-full">
-												<SelectValue placeholder="Choose a machine" />
+												<SelectValue
+													placeholder={t("volumes.agentFilesystemSourceForm.chooseAMachine")}
+												/>
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -124,11 +138,12 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 						{(machines.length === 0 || machine?.trustedRoots.length === 0) && (
 							<p className="text-sm text-muted-foreground">
 								<span className={cn({ hidden: machines.length > 0 })}>
-									No machines are connected yet.
+									{t("volumes.agentFilesystemSourceForm.noMachinesAreConnected")}
 								</span>
 								<span className={cn({ hidden: machines.length === 0 })}>
-									This machine does not share any folder yet. On {machine?.name}, run{" "}
-									<code>sudo zerobyte-agent folders add</code> to choose folders.
+									{t("volumes.agentFilesystemSourceForm.thisMachineDoesNot", { name: machine?.name })}
+									<code>sudo zerobyte-agent folders add</code>{" "}
+									{t("volumes.agentFilesystemSourceForm.toChooseFolders")}
 								</span>{" "}
 								<Link
 									to="/settings"
@@ -136,7 +151,7 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 									hash="machines"
 									className="underline underline-offset-4"
 								>
-									Manage machines
+									{t("volumes.agentFilesystemSourceForm.manageMachines")}
 								</Link>
 							</p>
 						)}
@@ -147,7 +162,7 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 								name="trustedRootId"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Allowed location</FormLabel>
+										<FormLabel>{t("volumes.agentFilesystemSourceForm.allowedLocation")}</FormLabel>
 										<Select
 											value={field.value}
 											disabled={!machineIsOnline}
@@ -158,7 +173,11 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 										>
 											<FormControl>
 												<SelectTrigger className="w-full">
-													<SelectValue placeholder="Choose an allowed location" />
+													<SelectValue
+														placeholder={t(
+															"volumes.agentFilesystemSourceForm.chooseAnAllowedLocation",
+														)}
+													/>
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
@@ -169,7 +188,8 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 														disabled={!item.canBackup}
 													>
 														{item.label}
-														{!item.canBackup && " · Backups disabled"}
+														{!item.canBackup &&
+															t("volumes.agentFilesystemSourceForm.backupsDisabled")}
 													</SelectItem>
 												))}
 											</SelectContent>
@@ -186,7 +206,7 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 								name="relativePath"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Folder</FormLabel>
+										<FormLabel>{t("volumes.info.folder")}</FormLabel>
 										<TrustedRootBrowser
 											key={`${agentId}:${trustedRootId}`}
 											agentId={agentId}
@@ -205,9 +225,8 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 				)}
 
 				<p className="text-xs text-muted-foreground">
-					Only folders shared by the machine can be selected. Network shares must already be mounted there.
-					{initialValues &&
-						" Existing backup schedules follow a location change, so review their selections after saving."}
+					{t("volumes.agentFilesystemSourceForm.onlyFoldersSharedBy")}
+					{initialValues && t("volumes.agentFilesystemSourceForm.existingBackupSchedulesFollow")}
 				</p>
 			</form>
 		</Form>

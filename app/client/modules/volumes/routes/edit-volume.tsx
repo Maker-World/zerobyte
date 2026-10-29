@@ -22,8 +22,10 @@ import { useNavigate } from "@tanstack/react-router";
 import { ManagedBadge } from "~/client/components/managed-badge";
 import { CreateVolumeForm, formSchema, type FormValues } from "../components/create-volume-form";
 import { AgentFilesystemSourceForm, type FilesystemSourceValues } from "../components/agent-filesystem-source-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function EditVolumePage({ volumeId }: { volumeId: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 
@@ -39,13 +41,13 @@ export function EditVolumePage({ volumeId }: { volumeId: string }) {
 	const updateVolume = useMutation({
 		...updateVolumeMutation(),
 		onSuccess: (updatedVolume: UpdateVolumeResponse) => {
-			toast.success("Source updated successfully");
+			toast.success(t("volumes.editVolume.sourceUpdatedSuccessfully"));
 			setOpen(false);
 			setPendingValues(null);
 			void navigate({ to: `/volumes/${updatedVolume.shortId}` });
 		},
 		onError: (error) => {
-			toast.error("Failed to update source", {
+			toast.error(t("volumes.editVolume.failedToUpdateSource"), {
 				description: parseError(error)?.message,
 			});
 			setOpen(false);
@@ -85,7 +87,7 @@ export function EditVolumePage({ volumeId }: { volumeId: string }) {
 								<HardDrive className="w-5 h-5 text-primary" />
 							</div>
 							<div className="flex items-center gap-2">
-								<CardTitle>Edit Source</CardTitle>
+								<CardTitle>{t("volumes.editVolume.editSource")}</CardTitle>
 								{volume.provisioningId && <ManagedBadge />}
 							</div>
 						</div>
@@ -94,7 +96,7 @@ export function EditVolumePage({ volumeId }: { volumeId: string }) {
 						{updateVolume.isError && (
 							<Alert variant="destructive">
 								<AlertDescription>
-									<strong>Failed to update source:</strong>
+									<strong>{t("volumes.editVolume.failedToUpdateSource2")}</strong>
 									<br />
 									{parseError(updateVolume.error)?.message}
 								</AlertDescription>
@@ -122,11 +124,11 @@ export function EditVolumePage({ volumeId }: { volumeId: string }) {
 								variant="secondary"
 								onClick={() => navigate({ to: `/volumes/${volume.shortId}` })}
 							>
-								Cancel
+								{t("common.cancel")}
 							</Button>
 							<Button type="submit" form={formId} loading={updateVolume.isPending}>
 								<Save className="h-4 w-4 mr-2" />
-								Save changes
+								{t("volumes.createVolumeForm.saveChanges")}
 							</Button>
 						</div>
 					</CardContent>
@@ -136,17 +138,16 @@ export function EditVolumePage({ volumeId }: { volumeId: string }) {
 				<AlertDialog open={open} onOpenChange={setOpen}>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Update Source Configuration</AlertDialogTitle>
+							<AlertDialogTitle>{t("volumes.editVolume.updateSourceConfiguration")}</AlertDialogTitle>
 							<AlertDialogDescription>
-								Editing the source will remount it with the new config immediately. This may temporarily
-								disrupt access to the source. Continue?
+								{t("volumes.editVolume.editingTheSourceWill")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 							<AlertDialogAction onClick={confirmUpdate} disabled={updateVolume.isPending}>
 								<Check className="h-4 w-4" />
-								Update
+								{t("volumes.editVolume.update")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>

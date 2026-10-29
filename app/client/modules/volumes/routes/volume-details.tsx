@@ -41,8 +41,10 @@ import { VolumeInfoTabContent } from "../tabs/info";
 import { FilesTabContent } from "../tabs/files";
 import { useTimeFormat } from "~/client/lib/datetime";
 import { getVolumeStatusLabel } from "../source-presentation";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function VolumeDetails({ volumeId }: { volumeId: string }) {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const searchParams = useSearch({ from: "/(dashboard)/volumes/$volumeId/" });
 	const activeTab = searchParams.tab || "info";
@@ -67,11 +69,11 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 	const deleteVol = useMutation({
 		...deleteVolumeMutation(),
 		onSuccess: () => {
-			toast.success("Source deleted successfully");
+			toast.success(t("volumes.volumeDetails.sourceDeletedSuccessfully"));
 			void navigate({ to: "/volumes" });
 		},
 		onError: (error) => {
-			toast.error("Failed to delete source", {
+			toast.error(t("volumes.volumeDetails.failedToDeleteSource"), {
 				description: parseError(error)?.message,
 			});
 		},
@@ -81,25 +83,29 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 		...healthCheckVolumeMutation(),
 		onSuccess: (d) => {
 			if (d.error) {
-				toast.error("Health check failed", { description: d.error });
+				toast.error(t("volumes.volumeDetails.healthCheckFailed"), { description: d.error });
 				return;
 			}
-			toast.success("Health check completed", { description: "The source is healthy." });
+			toast.success(t("volumes.volumeDetails.healthCheckCompleted"), {
+				description: t("volumes.volumeDetails.theSourceIsHealthy"),
+			});
 		},
 		onError: (error) => {
-			toast.error("Health check failed", { description: parseError(error)?.message });
+			toast.error(t("volumes.volumeDetails.healthCheckFailed"), { description: parseError(error)?.message });
 		},
 	});
 
 	const toggleAutoRemount = useMutation({
 		...updateVolumeMutation(),
 		onSuccess: (d) => {
-			toast.success("Source updated", {
-				description: `Auto remount is now ${d.autoRemount ? "enabled" : "paused"}.`,
+			toast.success(t("volumes.volumeDetails.sourceUpdated"), {
+				description: d.autoRemount
+					? t("volumes.volumeDetails.autoRemountEnabled")
+					: t("volumes.volumeDetails.autoRemountPaused"),
 			});
 		},
 		onError: (error) => {
-			toast.error("Update failed", { description: parseError(error)?.message });
+			toast.error(t("volumes.volumeDetails.updateFailed"), { description: parseError(error)?.message });
 		},
 	});
 
@@ -139,7 +145,7 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 									{volume.provisioningId && <ManagedBadge />}
 								</div>
 								<p className="text-sm text-muted-foreground mt-0.5">
-									Created {formatDateTime(volume.createdAt)}
+									{t("volumes.volumeDetails.created", { dateTime: formatDateTime(volume.createdAt) })}
 								</p>
 							</div>
 						</div>
@@ -157,7 +163,7 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 								loading={unmountVol.isPending}
 							>
 								<Unplug className="h-4 w-4 mr-2" />
-								Unmount
+								{t("volumes.volumeDetails.unmount")}
 							</Button>
 							<Button
 								className={cn({ hidden: !canMount || isMounted })}
@@ -171,12 +177,12 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 								loading={mountVol.isPending}
 							>
 								<Plug className="h-4 w-4 mr-2" />
-								Mount
+								{t("volumes.volumeDetails.mount")}
 							</Button>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="outline">
-										Actions
+										{t("common.actions")}
 										<ChevronDown className="h-4 w-4 ml-1" />
 									</Button>
 								</DropdownMenuTrigger>
@@ -185,7 +191,7 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 										onClick={() => navigate({ to: `/volumes/${volume.shortId}/edit` })}
 									>
 										<Pencil />
-										Edit
+										{t("common.edit")}
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem
@@ -194,7 +200,7 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 										disabled={deleteVol.isPending}
 									>
 										<Trash2 />
-										Delete
+										{t("settings.passkeysSection.delete")}
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
@@ -207,9 +213,9 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 						<div className="flex flex-wrap items-center gap-x-6 gap-y-3">
 							<div className="flex items-center gap-2">
 								<HeartIcon className="h-4 w-4 text-muted-foreground" />
-								<span className="text-sm font-medium">Health</span>
+								<span className="text-sm font-medium">{t("volumes.volumeDetails.health")}</span>
 								<Badge variant="destructive" className={cn("ml-1", { hidden: !isError })}>
-									Error
+									{t("status.error")}
 								</Badge>
 								<Badge
 									variant="outline"
@@ -217,21 +223,23 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 										hidden: !isMounted,
 									})}
 								>
-									Healthy
+									{t("status.healthy")}
 								</Badge>
 								<Badge variant="secondary" className={cn("ml-1", { hidden: isMounted || isError })}>
-									Unmounted
+									{t("status.unmounted")}
 								</Badge>
 							</div>
 							<Separator orientation="vertical" className="h-4 hidden @lg:block" />
 							<span className="text-sm text-muted-foreground">
-								Checked {formatTimeAgo(volume.lastHealthCheck)}
+								{t("volumes.volumeDetails.checked", { timeAgo: formatTimeAgo(volume.lastHealthCheck) })}
 							</span>
 							{canMount && (
 								<>
 									<Separator orientation="vertical" className="h-4 hidden @lg:block" />
 									<div className="flex items-center gap-2">
-										<span className="text-sm text-muted-foreground">Auto-remount</span>
+										<span className="text-sm text-muted-foreground">
+											{t("volumes.volumeDetails.autoRemount")}
+										</span>
 										<Switch
 											checked={volume.autoRemount}
 											onCheckedChange={() =>
@@ -255,14 +263,14 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 							onClick={() => healthcheck.mutate({ path: { shortId: volume.shortId } })}
 						>
 							<Activity className="h-4 w-4 mr-2" />
-							Check Now
+							{t("volumes.volumeDetails.checkNow")}
 						</Button>
 					</div>
 				</Card>
 
 				<Card className={cn("px-6 py-6", { hidden: !volume.lastError })}>
 					<div className="space-y-2">
-						<p className="text-sm font-medium text-destructive">Last Error</p>
+						<p className="text-sm font-medium text-destructive">{t("volumes.volumeDetails.lastError")}</p>
 						<p className="text-sm text-muted-foreground wrap-break-word">{volume.lastError}</p>
 					</div>
 				</Card>
@@ -272,8 +280,8 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 					onValueChange={(value) => navigate({ to: ".", search: () => ({ tab: value }) })}
 				>
 					<TabsList className="mb-2">
-						<TabsTrigger value="info">Configuration</TabsTrigger>
-						<TabsTrigger value="files">Files</TabsTrigger>
+						<TabsTrigger value="info">{t("volumes.volumeDetails.configuration")}</TabsTrigger>
+						<TabsTrigger value="files">{t("volumes.volumeDetails.files")}</TabsTrigger>
 					</TabsList>
 					<TabsContent value="info">
 						<VolumeInfoTabContent volume={volume} statfs={statfs} />
@@ -287,24 +295,24 @@ export function VolumeDetails({ volumeId }: { volumeId: string }) {
 			<AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Delete source?</AlertDialogTitle>
+						<AlertDialogTitle>{t("volumes.volumeDetails.deleteSource")}</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to delete the source <strong>{volume.name}</strong>? This action
-							cannot be undone.
+							{t("volumes.volumeDetails.areYouSureYou")} <strong>{volume.name}</strong>
+							{t("volumes.volumeDetails.thisActionCannotBe")}
 							<br />
 							<br />
-							All backup schedules associated with this source will also be removed.
+							{t("volumes.volumeDetails.allBackupSchedulesAssociated")}
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel>Cancel</AlertDialogCancel>
+						<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 						<AlertDialogAction
 							onClick={handleConfirmDelete}
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							disabled={deleteVol.isPending}
 						>
 							<Trash2 className="h-4 w-4 mr-2" />
-							Delete source
+							{t("volumes.volumeDetails.deleteSource2")}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

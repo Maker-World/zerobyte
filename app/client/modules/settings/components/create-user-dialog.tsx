@@ -102,11 +102,11 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								name="name"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Full Name</FormLabel>
+										<FormLabel>{t("settings.createUserDialog.fullName")}</FormLabel>
 										<FormControl>
 											<Input
 												{...field}
-												placeholder="John Doe"
+												placeholder={t("settings.createUserDialog.johnDoe")}
 												disabled={createUserMutation.isPending}
 											/>
 										</FormControl>
@@ -119,7 +119,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								name="username"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Username</FormLabel>
+										<FormLabel>{t("auth.username")}</FormLabel>
 										<FormControl>
 											<Input
 												{...field}
@@ -136,12 +136,12 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								name="email"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Email</FormLabel>
+										<FormLabel>{t("auth.email")}</FormLabel>
 										<FormControl>
 											<Input
 												{...field}
 												type="email"
-												placeholder="john@example.com"
+												placeholder={t("settings.createUserDialog.johnExampleCom")}
 												disabled={createUserMutation.isPending}
 											/>
 										</FormControl>
@@ -154,12 +154,12 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								name="password"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Password</FormLabel>
+										<FormLabel>{t("auth.password")}</FormLabel>
 										<FormControl>
 											<Input
 												{...field}
 												type="password"
-												placeholder="Min. 8 characters"
+												placeholder={t("settings.createUserDialog.min8Characters")}
 												disabled={createUserMutation.isPending}
 											/>
 										</FormControl>
@@ -172,7 +172,7 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 								name="role"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Role</FormLabel>
+										<FormLabel>{t("settings.orgMembersSection.role")}</FormLabel>
 										<Select
 											onValueChange={field.onChange}
 											value={field.value}
@@ -180,12 +180,18 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
 										>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Select a role" />
+													<SelectValue
+														placeholder={t("settings.createUserDialog.selectARole")}
+													/>
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												<SelectItem value="user">User</SelectItem>
-												<SelectItem value="admin">Admin</SelectItem>
+												<SelectItem value="user">
+													{t("settings.userManagement.user")}
+												</SelectItem>
+												<SelectItem value="admin">
+													{t("settings.createUserDialog.admin")}
+												</SelectItem>
 											</SelectContent>
 										</Select>
 										<FormMessage />

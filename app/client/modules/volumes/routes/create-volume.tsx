@@ -15,13 +15,15 @@ import { Alert, AlertDescription } from "~/client/components/ui/alert";
 import { useNavigate } from "@tanstack/react-router";
 import { usePermissions } from "~/client/hooks/use-permissions";
 import { cn } from "~/client/lib/utils";
+import { useTranslation } from "~/client/lib/i18n";
 
 const sourceHostOptions = [
-	{ value: "local", label: "This server", icon: Server },
-	{ value: "remote", label: "Another machine", icon: Laptop },
+	{ value: "local", label: "volumes.createVolume.thisServer", icon: Server },
+	{ value: "remote", label: "volumes.createVolume.anotherMachine", icon: Laptop },
 ] as const;
 
 export function CreateVolumePage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 	const permissions = usePermissions();
@@ -31,7 +33,7 @@ export function CreateVolumePage() {
 	const createVolume = useMutation({
 		...createVolumeMutation(),
 		onSuccess: (data) => {
-			toast.success("Source created successfully");
+			toast.success(t("volumes.createVolume.sourceCreatedSuccessfully"));
 			void navigate({ to: `/volumes/${data.shortId}` });
 		},
 	});
@@ -60,14 +62,14 @@ export function CreateVolumePage() {
 						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
 							<HardDrive className="w-5 h-5 text-primary" />
 						</div>
-						<CardTitle>Create Source</CardTitle>
+						<CardTitle>{t("volumes.create")}</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{createVolume.isError && (
 						<Alert variant="destructive">
 							<AlertDescription>
-								<strong>Failed to create source:</strong>
+								<strong>{t("volumes.createVolume.failedToCreateSource")}</strong>
 								<br />
 								{parseError(createVolume.error)?.message}
 							</AlertDescription>
@@ -75,7 +77,7 @@ export function CreateVolumePage() {
 					)}
 					{permissions.hasRuntimeFeature("remoteAgents") && (
 						<fieldset className="space-y-2">
-							<legend className="text-sm font-medium">Files are on</legend>
+							<legend className="text-sm font-medium">{t("volumes.createVolume.filesAreOn")}</legend>
 							<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 								{sourceHostOptions.map((option) => (
 									<label
@@ -94,7 +96,7 @@ export function CreateVolumePage() {
 											className="size-4 accent-primary"
 										/>
 										<option.icon className="size-4 text-muted-foreground" aria-hidden="true" />
-										{option.label}
+										{t(option.label)}
 									</label>
 								))}
 							</div>
@@ -113,11 +115,11 @@ export function CreateVolumePage() {
 					)}
 					<div className="flex justify-end gap-2 pt-4 border-t">
 						<Button type="button" variant="secondary" onClick={() => navigate({ to: "/volumes" })}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button type="submit" form={formId} loading={createVolume.isPending}>
 							<Plus className="h-4 w-4 mr-2" />
-							Create Source
+							{t("volumes.create")}
 						</Button>
 					</div>
 				</CardContent>

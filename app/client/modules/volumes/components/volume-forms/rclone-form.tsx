@@ -15,12 +15,14 @@ import { Input } from "../../../../components/ui/input";
 import { listRcloneRemotesOptions } from "~/client/api-client/@tanstack/react-query.gen";
 import { useSystemInfo } from "~/client/hooks/use-system-info";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<FormValues>;
 };
 
 export const RcloneForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const { capabilities } = useSystemInfo();
 
 	const { data: rcloneRemotes, isPending } = useQuery({
@@ -31,16 +33,16 @@ export const RcloneForm = ({ form }: Props) => {
 	if (!isPending && !rcloneRemotes?.length) {
 		return (
 			<Alert>
-				<AlertTitle>No rclone remotes configured</AlertTitle>
+				<AlertTitle>{t("volumes.rcloneForm.noRcloneRemotesConfigured")}</AlertTitle>
 				<AlertDescription className="space-y-2">
-					<p>To use rclone, you need to configure remotes on your host system</p>
+					<p>{t("volumes.rcloneForm.toUseRcloneYou")}</p>
 					<a
 						href="https://rclone.org/docs/"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-foreground underline underline-offset-4 inline-flex items-center gap-1"
 					>
-						View rclone documentation
+						{t("volumes.rcloneForm.viewRcloneDocumentation")}
 						<ExternalLink className="w-3 h-3" />
 					</a>
 				</AlertDescription>
@@ -55,17 +57,17 @@ export const RcloneForm = ({ form }: Props) => {
 				name="remote"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Remote</FormLabel>
+						<FormLabel>{t("settings.machineRow.remote")}</FormLabel>
 						<Select onValueChange={(v) => field.onChange(v)} value={field.value ?? ""}>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select an rclone remote" />
+									<SelectValue placeholder={t("volumes.rcloneForm.selectAnRcloneRemote")} />
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
 								{isPending && (
 									<SelectItem value="loading" disabled>
-										Loading remotes...
+										{t("volumes.rcloneForm.loadingRemotes")}
 									</SelectItem>
 								)}
 								{!isPending &&
@@ -76,7 +78,7 @@ export const RcloneForm = ({ form }: Props) => {
 									))}
 							</SelectContent>
 						</Select>
-						<FormDescription>Select the rclone remote configured on your host system.</FormDescription>
+						<FormDescription>{t("volumes.rcloneForm.selectTheRcloneRemote")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -86,11 +88,11 @@ export const RcloneForm = ({ form }: Props) => {
 				name="path"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Path</FormLabel>
+						<FormLabel>{t("volumes.info.path")}</FormLabel>
 						<FormControl>
 							<Input placeholder="/" {...field} />
 						</FormControl>
-						<FormDescription>Path on the remote to mount. Use "/" for the root.</FormDescription>
+						<FormDescription>{t("volumes.rcloneForm.pathOnTheRemote")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -101,22 +103,20 @@ export const RcloneForm = ({ form }: Props) => {
 				defaultValue={false}
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Read-only Mode</FormLabel>
+						<FormLabel>{t("volumes.nfsForm.readOnlyMode")}</FormLabel>
 						<FormControl>
 							<div className="flex items-center space-x-2">
 								<input
 									type="checkbox"
-									aria-label="Mount source as read-only"
+									aria-label={t("volumes.nfsForm.mountSourceAsRead")}
 									checked={field.value ?? false}
 									onChange={(e) => field.onChange(e.target.checked)}
 									className="rounded border-gray-300"
 								/>
-								<span className="text-sm">Mount source as read-only</span>
+								<span className="text-sm">{t("volumes.nfsForm.mountSourceAsRead")}</span>
 							</div>
 						</FormControl>
-						<FormDescription>
-							Prevent any modifications to the source. Recommended for sensitive data.
-						</FormDescription>
+						<FormDescription>{t("volumes.nfsForm.preventAnyModificationsTo")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
