@@ -16,12 +16,14 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../../..
 import type { RepositoryFormValues } from "../create-repository-form";
 import { cn } from "~/client/lib/utils";
 import { BANDWIDTH_UNITS } from "@zerobyte/core/restic";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
 };
 
 export const AdvancedForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const insecureTls = useWatch({ control: form.control, name: "insecureTls" });
 	const cacert = useWatch({ control: form.control, name: "cacert" });
 	const uploadLimitEnabled = useWatch({ control: form.control, name: "uploadLimit.enabled" });
@@ -30,7 +32,7 @@ export const AdvancedForm = ({ form }: Props) => {
 
 	return (
 		<Collapsible>
-			<CollapsibleTrigger>Advanced Settings</CollapsibleTrigger>
+			<CollapsibleTrigger>{t("volumes.sftpForm.advancedSettings")}</CollapsibleTrigger>
 			<CollapsibleContent className="pb-4 space-y-4">
 				<div className="space-y-4 mt-4">
 					<div className="grid gap-6">
@@ -44,9 +46,11 @@ export const AdvancedForm = ({ form }: Props) => {
 											<Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
 										</FormControl>
 										<div className="space-y-1">
-											<FormLabel>Enable upload speed limit</FormLabel>
+											<FormLabel>
+												{t("repositories.advancedTlsForm.enableUploadSpeedLimit")}
+											</FormLabel>
 											<FormDescription className="text-xs">
-												Limit upload speed to the repository
+												{t("repositories.advancedTlsForm.limitUploadSpeedTo")}
 											</FormDescription>
 										</div>
 									</FormItem>
@@ -124,9 +128,11 @@ export const AdvancedForm = ({ form }: Props) => {
 										<Checkbox checked={field.value ?? false} onCheckedChange={field.onChange} />
 									</FormControl>
 									<div className="space-y-1">
-										<FormLabel>Enable download speed limit</FormLabel>
+										<FormLabel>
+											{t("repositories.advancedTlsForm.enableDownloadSpeedLimit")}
+										</FormLabel>
 										<FormDescription className="text-xs">
-											Limit download speed from the repository
+											{t("repositories.advancedTlsForm.limitDownloadSpeedFrom")}
 										</FormDescription>
 									</div>
 								</FormItem>
@@ -217,17 +223,17 @@ export const AdvancedForm = ({ form }: Props) => {
 									</TooltipTrigger>
 									<TooltipContent className={cn({ hidden: !cacert })}>
 										<p className="max-w-xs">
-											This option is disabled because a CA certificate is provided. Remove the CA
-											certificate to skip TLS validation instead.
+											{t("repositories.advancedTlsForm.thisOptionIsDisabled")}
 										</p>
 									</TooltipContent>
 								</Tooltip>
 							</FormControl>
 							<div className="space-y-1 leading-none">
-								<FormLabel>Skip TLS certificate verification</FormLabel>
+								<FormLabel>
+									{t("repositories.advancedTlsForm.skipTlsCertificateVerification")}
+								</FormLabel>
 								<FormDescription>
-									Disable TLS certificate verification for HTTPS connections with self-signed
-									certificates. This is insecure and should only be used for testing.
+									{t("repositories.advancedTlsForm.disableTlsCertificateVerification")}
 								</FormDescription>
 							</div>
 						</FormItem>
@@ -238,7 +244,7 @@ export const AdvancedForm = ({ form }: Props) => {
 					name="cacert"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>CA Certificate (Optional)</FormLabel>
+							<FormLabel>{t("repositories.advancedTlsForm.caCertificateOptional")}</FormLabel>
 							<FormControl>
 								<Tooltip delayDuration={500}>
 									<TooltipTrigger asChild>
@@ -255,22 +261,20 @@ export const AdvancedForm = ({ form }: Props) => {
 									</TooltipTrigger>
 									<TooltipContent className={cn({ hidden: !insecureTls })}>
 										<p className="max-w-xs">
-											CA certificate is disabled because TLS validation is being skipped. Uncheck
-											"Skip TLS Certificate Verification" to provide a custom CA certificate.
+											{t("repositories.advancedTlsForm.caCertificateIsDisabled")}
 										</p>
 									</TooltipContent>
 								</Tooltip>
 							</FormControl>
 							<FormDescription>
-								Custom CA certificate for self-signed certificates (PEM format). This applies to HTTPS
-								connections.&nbsp;
+								{t("repositories.advancedTlsForm.customCaCertificateFor")}
 								<a
 									href="https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#rest-server"
 									target="_blank"
 									rel="noopener noreferrer"
 									className="text-primary hover:underline"
 								>
-									Learn more
+									{t("repositories.advancedTlsForm.learnMore")}
 								</a>
 							</FormDescription>
 							<FormMessage />
@@ -284,10 +288,10 @@ export const AdvancedForm = ({ form }: Props) => {
 						render={({ field }) => (
 							<FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
 								<div className="space-y-0.5">
-									<FormLabel>Allow legacy SSH RSA/SHA1 algorithms</FormLabel>
+									<FormLabel>{t("volumes.sftpForm.allowLegacySshRsa")}</FormLabel>
 									<FormDescription>
-										Only enable this for legacy SFTP servers that offer <code>ssh-rsa</code> only.
-										It permits RSA/SHA1 signatures, which are weaker than modern SSH algorithms.
+										{t("volumes.sftpForm.onlyEnableThisFor")} <code>ssh-rsa</code>{" "}
+										{t("volumes.sftpForm.onlyItPermitsRsa")}
 									</FormDescription>
 								</div>
 								<FormControl>

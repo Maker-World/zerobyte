@@ -169,7 +169,9 @@ export function RepositoriesPage() {
 							<SelectItem value="local">{t("repositories.local")}</SelectItem>
 							<SelectItem value="sftp">SFTP</SelectItem>
 							<SelectItem value="s3">S3</SelectItem>
-							<SelectItem value="gcs">Google Cloud Storage</SelectItem>
+							<SelectItem value="gcs">
+								{t("repositories.createRepositoryForm.googleCloudStorage")}
+							</SelectItem>
 						</SelectContent>
 					</Select>
 					{hasFilters && (

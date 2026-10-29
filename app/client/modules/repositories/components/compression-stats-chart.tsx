@@ -13,6 +13,7 @@ import { Separator } from "~/client/components/ui/separator";
 import { parseError } from "~/client/lib/errors";
 import { cn } from "~/client/lib/utils";
 import { toast } from "sonner";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	repositoryShortId: string;
@@ -28,14 +29,15 @@ const toSafeNumber = (value: number | undefined) => {
 };
 
 export function CompressionStatsChart({ repositoryShortId, initialStats }: Props) {
+	const { t } = useTranslation();
 	const { locale } = useRootLoaderData();
 	const refreshStats = useMutation({
 		...refreshRepositoryStatsMutation(),
 		onSuccess: () => {
-			toast.success("Repository stats refreshed");
+			toast.success(t("repositories.compressionStatsChart.repositoryStatsRefreshed"));
 		},
 		onError: (mutationError) => {
-			toast.error("Failed to refresh repository stats", {
+			toast.error(t("repositories.compressionStatsChart.failedToRefreshRepository"), {
 				description: parseError(mutationError)?.message,
 			});
 		},
@@ -71,7 +73,7 @@ export function CompressionStatsChart({ repositoryShortId, initialStats }: Props
 			<div className="flex items-start justify-between gap-3 mb-5">
 				<CardTitle className="flex items-center gap-2">
 					<Archive className="h-4 w-4 shrink-0 text-muted-foreground" />
-					Compression Statistics
+					{t("repositories.compressionStatsChart.compressionStatistics")}
 				</CardTitle>
 				<Button
 					type="button"
@@ -80,20 +82,22 @@ export function CompressionStatsChart({ repositoryShortId, initialStats }: Props
 					className="shrink-0"
 					onClick={() => refreshStats.mutate({ path: { shortId: repositoryShortId } })}
 					disabled={refreshStats.isPending}
-					title="Refresh statistics"
+					title={t("repositories.compressionStatsChart.refreshStatistics")}
 				>
 					<RefreshCw className={cn("h-4 w-4", { "animate-spin": refreshStats.isPending })} />
 				</Button>
 			</div>
 			<p className={cn("text-sm text-muted-foreground", { hidden: !isPending })}>
-				Loading compression statistics...
+				{t("repositories.compressionStatsChart.loadingCompressionStatistics")}
 			</p>
 			<div className={cn("space-y-2", { hidden: !error || isPending })}>
-				<p className="text-sm font-medium text-destructive">Failed to load compression statistics</p>
+				<p className="text-sm font-medium text-destructive">
+					{t("repositories.compressionStatsChart.failedToLoadCompression")}
+				</p>
 				<p className="text-sm text-muted-foreground wrap-break-word">{error?.message}</p>
 			</div>
 			<p className={cn("text-sm text-muted-foreground", { hidden: isPending || !!error || hasStats })}>
-				Stats will be populated after your first backup. You can also refresh them manually.
+				{t("repositories.compressionStatsChart.statsWillBePopulated")}
 			</p>
 			<div className={cn({ hidden: isPending || !!error || !hasStats })}>
 				<div className="mb-6">
@@ -104,8 +108,9 @@ export function CompressionStatsChart({ repositoryShortId, initialStats }: Props
 								bytes={uncompressedSize}
 								className="font-mono font-semibold text-foreground"
 							/>{" "}
-							of data across{" "}
-							<span className="font-mono font-semibold text-foreground">{snapshotsCount}</span> snapshots
+							{t("repositories.compressionStatsChart.ofDataAcross")}{" "}
+							<span className="font-mono font-semibold text-foreground">{snapshotsCount}</span>{" "}
+							{t("repositories.compressionStatsChart.snapshots")}
 						</span>
 					</div>
 					<div className="h-9 rounded overflow-hidden flex">
@@ -113,7 +118,7 @@ export function CompressionStatsChart({ repositoryShortId, initialStats }: Props
 							className="h-full bg-strong-accent/80 flex items-center px-3 text-xs font-medium text-white transition-all"
 							style={{ width: `${storedPercent}%` }}
 						>
-							On disk
+							{t("repositories.compressionStatsChart.onDisk")}
 						</div>
 						<div
 							className={cn(
@@ -121,30 +126,36 @@ export function CompressionStatsChart({ repositoryShortId, initialStats }: Props
 							)}
 							style={{ width: `${100 - storedPercent}%` }}
 						>
-							<span className={cn({ hidden: storedPercent >= 80 })}>Freed by compression</span>
+							<span className={cn({ hidden: storedPercent >= 80 })}>
+								{t("repositories.compressionStatsChart.freedByCompression")}
+							</span>
 						</div>
 					</div>
 					<div className="flex items-center justify-between mt-2 text-sm">
 						<ByteSize base={1024} bytes={storedSize} className="font-mono font-semibold" />
 						<span className="font-mono text-muted-foreground">
-							<ByteSize base={1024} bytes={savedSize} /> freed
+							<ByteSize base={1024} bytes={savedSize} /> {t("repositories.compressionStatsChart.freed")}
 						</span>
 					</div>
 				</div>
 				<Separator className="mb-4" />
 				<div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
 					<div className="flex items-center gap-2 whitespace-nowrap">
-						<span className="text-muted-foreground">Ratio</span>
+						<span className="text-muted-foreground">{t("repositories.compressionStatsChart.ratio")}</span>
 						<span className="font-mono font-semibold">
 							{compressionRatio > 0 ? `${compressionRatio.toFixed(2)}x` : "-"}
 						</span>
 					</div>
 					<div className="flex items-center gap-2 whitespace-nowrap">
-						<span className="text-muted-foreground">Snapshots</span>
+						<span className="text-muted-foreground">
+							{t("repositories.compressionStatsChart.snapshots2")}
+						</span>
 						<span className="font-mono font-semibold">{snapshotsCount.toLocaleString(locale)}</span>
 					</div>
 					<div className="flex items-center gap-2 whitespace-nowrap">
-						<span className="text-muted-foreground">Compressed</span>
+						<span className="text-muted-foreground">
+							{t("repositories.compressionStatsChart.compressed")}
+						</span>
 						<span className="font-mono font-semibold">{compressionProgressPercent.toFixed(0)}%</span>
 					</div>
 				</div>

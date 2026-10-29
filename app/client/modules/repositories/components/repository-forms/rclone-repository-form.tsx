@@ -14,27 +14,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/alert";
 import { listRcloneRemotesOptions } from "../../../../api-client/@tanstack/react-query.gen";
 import type { RepositoryFormValues } from "../create-repository-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
 };
 
 export const RcloneRepositoryForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	const { data: rcloneRemotes, isLoading: isLoadingRemotes } = useQuery(listRcloneRemotesOptions());
 
 	if (!isLoadingRemotes && (!rcloneRemotes || rcloneRemotes.length === 0)) {
 		return (
 			<Alert>
-				<AlertTitle>No rclone remotes configured</AlertTitle>
+				<AlertTitle>{t("volumes.rcloneForm.noRcloneRemotesConfigured")}</AlertTitle>
 				<AlertDescription className="space-y-2">
-					<p>To use rclone, you need to configure remotes on your host system</p>
+					<p>{t("volumes.rcloneForm.toUseRcloneYou")}</p>
 					<a
 						href="https://rclone.org/docs/"
 						target="_blank"
 						rel="noopener noreferrer"
 						className="text-foreground underline underline-offset-4 inline-flex items-center gap-1"
 					>
-						View rclone documentation
+						{t("volumes.rcloneForm.viewRcloneDocumentation")}
 						<ExternalLink className="w-3 h-3" />
 					</a>
 				</AlertDescription>
@@ -49,17 +51,17 @@ export const RcloneRepositoryForm = ({ form }: Props) => {
 				name="remote"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Remote</FormLabel>
+						<FormLabel>{t("settings.machineRow.remote")}</FormLabel>
 						<Select onValueChange={(v) => field.onChange(v)} value={field.value ?? ""}>
 							<FormControl>
 								<SelectTrigger>
-									<SelectValue placeholder="Select an rclone remote" />
+									<SelectValue placeholder={t("volumes.rcloneForm.selectAnRcloneRemote")} />
 								</SelectTrigger>
 							</FormControl>
 							<SelectContent>
 								{isLoadingRemotes ? (
 									<SelectItem value="loading" disabled>
-										Loading remotes...
+										{t("volumes.rcloneForm.loadingRemotes")}
 									</SelectItem>
 								) : (
 									rcloneRemotes?.map((remote: { name: string; type: string }) => (
@@ -70,7 +72,7 @@ export const RcloneRepositoryForm = ({ form }: Props) => {
 								)}
 							</SelectContent>
 						</Select>
-						<FormDescription>Select the rclone remote configured on your host system.</FormDescription>
+						<FormDescription>{t("volumes.rcloneForm.selectTheRcloneRemote")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -80,11 +82,11 @@ export const RcloneRepositoryForm = ({ form }: Props) => {
 				name="path"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Path</FormLabel>
+						<FormLabel>{t("volumes.info.path")}</FormLabel>
 						<FormControl>
 							<Input placeholder="backups/zerobyte" {...field} />
 						</FormControl>
-						<FormDescription>Path within the remote where backups will be stored.</FormDescription>
+						<FormDescription>{t("repositories.rcloneRepositoryForm.pathWithinTheRemote")}</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

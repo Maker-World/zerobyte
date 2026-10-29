@@ -141,7 +141,7 @@ export const AgentFilesystemSourceForm = ({ formId, initialValues, onSubmit }: P
 									{t("volumes.agentFilesystemSourceForm.noMachinesAreConnected")}
 								</span>
 								<span className={cn({ hidden: machines.length === 0 })}>
-									{t("volumes.agentFilesystemSourceForm.thisMachineDoesNot", { name: machine?.name })}
+									{t("volumes.agentFilesystemSourceForm.thisMachineDoesNot", { name: machine?.name })}{" "}
 									<code>sudo zerobyte-agent folders add</code>{" "}
 									{t("volumes.agentFilesystemSourceForm.toChooseFolders")}
 								</span>{" "}

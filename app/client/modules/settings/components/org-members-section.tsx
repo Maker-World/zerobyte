@@ -154,7 +154,7 @@ export function OrgMembersSection({ initialMembers }: Props) {
 															{t("settings.orgMembersSection.removeMember")}
 														</AlertDialogTitle>
 														<AlertDialogDescription>
-															{t("settings.orgMembersSection.areYouSureYou")}
+															{t("settings.orgMembersSection.areYouSureYou")}{" "}
 															<strong>{memberToRemove?.name}</strong>{" "}
 															{t("settings.orgMembersSection.fromThisOrganizationThey")}
 														</AlertDialogDescription>

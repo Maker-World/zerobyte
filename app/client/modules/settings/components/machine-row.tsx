@@ -147,7 +147,7 @@ export function MachineRow({
 								<p className="flex items-start gap-2 text-amber-700 dark:text-amber-400">
 									<AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
 									<span>
-										{t("settings.machineRow.chooseAllowedLocationsOn")}
+										{t("settings.machineRow.chooseAllowedLocationsOn")}{" "}
 										<code>sudo zerobyte-agent folders add</code>
 										{t("settings.machineRow.thenCreateASource")}
 									</span>

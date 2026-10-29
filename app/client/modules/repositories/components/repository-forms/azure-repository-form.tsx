@@ -10,12 +10,14 @@ import {
 import { Input } from "../../../../components/ui/input";
 import { SecretInput } from "../../../../components/ui/secret-input";
 import type { RepositoryFormValues } from "../create-repository-form";
+import { useTranslation } from "~/client/lib/i18n";
 
 type Props = {
 	form: UseFormReturn<RepositoryFormValues>;
 };
 
 export const AzureRepositoryForm = ({ form }: Props) => {
+	const { t } = useTranslation();
 	return (
 		<>
 			<FormField
@@ -23,11 +25,13 @@ export const AzureRepositoryForm = ({ form }: Props) => {
 				name="container"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Container</FormLabel>
+						<FormLabel>{t("repositories.azureRepositoryForm.container")}</FormLabel>
 						<FormControl>
 							<Input placeholder="my-backup-container" {...field} />
 						</FormControl>
-						<FormDescription>Azure Blob Storage container name for storing backups.</FormDescription>
+						<FormDescription>
+							{t("repositories.azureRepositoryForm.azureBlobStorageContainer")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -37,11 +41,13 @@ export const AzureRepositoryForm = ({ form }: Props) => {
 				name="accountName"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Account Name</FormLabel>
+						<FormLabel>{t("repositories.azureRepositoryForm.accountName")}</FormLabel>
 						<FormControl>
 							<Input placeholder="mystorageaccount" {...field} />
 						</FormControl>
-						<FormDescription>Azure Storage account name.</FormDescription>
+						<FormDescription>
+							{t("repositories.azureRepositoryForm.azureStorageAccountName")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -51,11 +57,13 @@ export const AzureRepositoryForm = ({ form }: Props) => {
 				name="accountKey"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Account Key</FormLabel>
+						<FormLabel>{t("repositories.azureRepositoryForm.accountKey")}</FormLabel>
 						<FormControl>
 							<SecretInput placeholder="••••••••" value={field.value ?? ""} onChange={field.onChange} />
 						</FormControl>
-						<FormDescription>Azure Storage account key for authentication.</FormDescription>
+						<FormDescription>
+							{t("repositories.azureRepositoryForm.azureStorageAccountKey")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}
@@ -65,11 +73,13 @@ export const AzureRepositoryForm = ({ form }: Props) => {
 				name="endpointSuffix"
 				render={({ field }) => (
 					<FormItem>
-						<FormLabel>Endpoint Suffix (Optional)</FormLabel>
+						<FormLabel>{t("repositories.azureRepositoryForm.endpointSuffixOptional")}</FormLabel>
 						<FormControl>
 							<Input placeholder="core.windows.net" {...field} />
 						</FormControl>
-						<FormDescription>Custom Azure endpoint suffix (defaults to core.windows.net).</FormDescription>
+						<FormDescription>
+							{t("repositories.azureRepositoryForm.customAzureEndpointSuffix")}
+						</FormDescription>
 						<FormMessage />
 					</FormItem>
 				)}

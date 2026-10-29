@@ -13,15 +13,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/client/components/ui
 import { parseError } from "~/client/lib/errors";
 import { Alert, AlertDescription } from "~/client/components/ui/alert";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "~/client/lib/i18n";
 
 export function CreateRepositoryPage() {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formId = useId();
 
 	const createRepository = useMutation({
 		...createRepositoryMutation(),
 		onSuccess: (data) => {
-			toast.success("Repository created successfully");
+			toast.success(t("repositories.createRepository.repositoryCreatedSuccessfully"));
 			void navigate({ to: `/repositories/${data.repository.shortId}` });
 		},
 	});
@@ -47,14 +49,14 @@ export function CreateRepositoryPage() {
 						<div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
 							<Database className="w-5 h-5 text-primary" />
 						</div>
-						<CardTitle>Create Repository</CardTitle>
+						<CardTitle>{t("repositories.create")}</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{createRepository.isError && (
 						<Alert variant="destructive">
 							<AlertDescription>
-								<strong>Failed to create repository:</strong>
+								<strong>{t("repositories.createRepository.failedToCreateRepository")}</strong>
 								<br />
 								{parseError(createRepository.error)?.message}
 							</AlertDescription>
@@ -68,11 +70,11 @@ export function CreateRepositoryPage() {
 					/>
 					<div className="flex justify-end gap-2 pt-4 border-t">
 						<Button type="button" variant="secondary" onClick={() => navigate({ to: "/repositories" })}>
-							Cancel
+							{t("common.cancel")}
 						</Button>
 						<Button type="submit" form={formId} loading={createRepository.isPending}>
 							<Plus className="h-4 w-4 mr-2" />
-							Create repository
+							{t("repositories.createRepository.createRepository")}
 						</Button>
 					</div>
 				</CardContent>

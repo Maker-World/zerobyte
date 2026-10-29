@@ -156,7 +156,7 @@ export function DeploymentInstructions({ credential }: { credential: CreateRemot
 			</Tabs>
 			<p className="text-sm text-muted-foreground">{t("settings.machineSetupForms.keepThisPageOpen")}</p>
 			<p className="text-xs text-muted-foreground">
-				{t("settings.machineSetupForms.expires", { dateTime: formatDateTime(credential.expiresAt) })}
+				{t("settings.machineSetupForms.expires", { dateTime: formatDateTime(credential.expiresAt) })}{" "}
 				<a href={installationGuide} target="_blank" rel="noreferrer" className="underline underline-offset-4">
 					{t("settings.machineSetupForms.setupGuide")}
 				</a>
