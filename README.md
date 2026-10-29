@@ -1,4 +1,5 @@
 <div align="center">
+  <p><b>English</b> | <a href="README.zh-CN.md">简体中文</a></p>
   <h1>Zerobyte</h1>
   <h3>Powerful backup automation for your remote storage<br />Encrypt, compress, and protect your data with ease</h3>
   <a href="https://github.com/nicotsx/zerobyte/blob/main/LICENSE">
