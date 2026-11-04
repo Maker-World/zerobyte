@@ -30,6 +30,17 @@ export const zhCN: Messages = {
 		toggleSidebar: "切换侧边栏",
 		tryAgain: "重试",
 	},
+	secretInput: {
+		storedCredential: "已保存的凭据",
+		replace: "替换",
+		clear: "清除",
+		clearStoredCredentialTitle: "清除已保存的凭据？",
+		clearStoredCredentialDescription:
+			"保存更改后将移除该凭据。依赖该凭据的连接可能会停止工作，之后需要重新输入才能使用。",
+		keepCredential: "保留凭据",
+		clearCredential: "清除凭据",
+		keepStored: "保留已存储",
+	},
 	nav: {
 		activity: "活动",
 		backupJobs: "备份任务",
@@ -249,7 +260,8 @@ export const zhCN: Messages = {
 			deploymentMethod: "部署方式",
 			linuxInstaller: "Linux 安装程序",
 			docker: "Docker",
-			copyAndRunThis: "在 {machineDisplayName} 上复制并运行此命令。",
+			copyAndRunThis: "在 {machineDisplayName} 上复制并运行此命令，并在提示时粘贴连接码。",
+			connectionCode: "连接码",
 			saveThisAs: "将其保存为",
 			on: "（位于 {machineDisplayName}）。",
 			replace: "将",

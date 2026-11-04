@@ -28,6 +28,17 @@ export const en = {
 		toggleSidebar: "Toggle Sidebar",
 		tryAgain: "Try again",
 	},
+	secretInput: {
+		storedCredential: "Stored credential",
+		replace: "Replace",
+		clear: "Clear",
+		clearStoredCredentialTitle: "Clear stored credential?",
+		clearStoredCredentialDescription:
+			"This removes the credential when you save your changes. Connections that require it may stop working. You will need to enter it again to use it later.",
+		keepCredential: "Keep credential",
+		clearCredential: "Clear credential",
+		keepStored: "Keep stored",
+	},
 	nav: {
 		activity: "Activity",
 		backupJobs: "Backup Jobs",
@@ -257,7 +268,9 @@ export const en = {
 			deploymentMethod: "Deployment method",
 			linuxInstaller: "Linux installer",
 			docker: "Docker",
-			copyAndRunThis: "Copy and run this command on {machineDisplayName}.",
+			copyAndRunThis:
+				"Copy and run this command on {machineDisplayName}, then paste the connection code when prompted.",
+			connectionCode: "Connection code",
 			saveThisAs: "Save this as",
 			on: "on {machineDisplayName}.",
 			replace: "Replace",

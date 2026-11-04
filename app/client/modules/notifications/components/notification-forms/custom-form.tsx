@@ -1,6 +1,6 @@
 import type { UseFormReturn } from "react-hook-form";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/client/components/ui/form";
-import { Input } from "~/client/components/ui/input";
+import { SecretInput } from "~/client/components/ui/secret-input";
 import type { NotificationFormValues } from "../create-notification-form";
 import { useTranslation } from "~/client/lib/i18n";
 
@@ -18,7 +18,7 @@ export const CustomForm = ({ form }: Props) => {
 				<FormItem>
 					<FormLabel>{t("notifications.customForm.shoutrrrUrl")}</FormLabel>
 					<FormControl>
-						<Input {...field} placeholder={t("notifications.customForm.smtpUserPassSmtp")} />
+						<SecretInput {...field} placeholder={t("notifications.customForm.smtpUserPassSmtp")} />
 					</FormControl>
 					<FormDescription>
 						{t("notifications.customForm.directShoutrrrUrlFor")}

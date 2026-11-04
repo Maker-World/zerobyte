@@ -58,7 +58,7 @@ export const R2RepositoryForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("repositories.r2RepositoryForm.accessKeyId")}</FormLabel>
 						<FormControl>
-							<Input placeholder={t("repositories.r2RepositoryForm.accessKeyIdFrom")} {...field} />
+							<SecretInput placeholder={t("repositories.r2RepositoryForm.accessKeyIdFrom")} {...field} />
 						</FormControl>
 						<FormDescription>{t("repositories.r2RepositoryForm.r2ApiTokenAccess")}</FormDescription>
 						<FormMessage />

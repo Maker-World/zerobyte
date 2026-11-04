@@ -103,9 +103,13 @@ describe("configuration import", () => {
 		const storedOrganization = await db.query.organization.findFirst({
 			where: { id: targetSession.organizationId },
 		});
+		const storedOrganizationSecrets = await db.query.organizationSecretsTable.findFirst({
+			where: { organizationId: targetSession.organizationId },
+		});
 		expect(storedPrimaryRepository?.config.customPassword).toMatch(/^encv1:/);
 		expect(storedPrimaryRepository?.autoCheckEnabled).toBe(true);
-		expect(storedOrganization?.metadata?.resticPassword).toMatch(/^encv1:/);
+		expect(storedOrganizationSecrets?.resticPassword).toMatch(/^encv1:/);
+		expect(storedOrganization?.metadata ?? {}).not.toHaveProperty("resticPassword");
 		expect(storedOrganization?.recoveryKeyExportedAt).toBeInstanceOf(Date);
 
 		const storedSchedule = await db.query.backupSchedulesTable.findFirst({
@@ -363,6 +367,29 @@ describe("configuration import", () => {
 			await db.query.notificationDestinationsTable.findFirst({
 				where: { organizationId: targetSession.organizationId },
 			}),
+		).toBeUndefined();
+	});
+
+	test("rejects non-name rclone references before writing", async () => {
+		const payload = await loadPayload();
+		const repository = payload.repositories.find(
+			(item: { config: { backend: string } }) => item.config.backend === "rclone",
+		);
+		const volume = payload.volumes.find(
+			(item: { config?: { backend: string } }) => item.config?.backend === "rclone",
+		);
+		if (!repository || !volume?.config) throw new Error("Expected rclone fixtures");
+
+		repository.config.remote = ":sftp,ssh=/bin/sh";
+		volume.config.remote = "remote,ssh=/bin/sh";
+		const targetSession = await createTestSession();
+
+		const response = await requestConfigImport(targetSession.headers, await encryptPayload(payload));
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({ message: "Invalid export file or passphrase" });
+		expect(
+			await db.query.repositoriesTable.findFirst({ where: { organizationId: targetSession.organizationId } }),
 		).toBeUndefined();
 	});
 

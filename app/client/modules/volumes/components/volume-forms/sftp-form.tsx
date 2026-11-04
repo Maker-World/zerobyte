@@ -80,7 +80,12 @@ export const SFTPForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
-							<SecretInput placeholder="••••••••" value={field.value ?? ""} onChange={field.onChange} />
+							<SecretInput
+								allowClear
+								placeholder="••••••••"
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
 						</FormControl>
 						<FormDescription>{t("volumes.sftpForm.passwordForSftpAuthentication")}</FormDescription>
 						<FormMessage />
@@ -94,7 +99,9 @@ export const SFTPForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.sftpForm.privateKeyOptional")}</FormLabel>
 						<FormControl>
-							<Textarea
+							<SecretInput
+								allowClear
+								multiline
 								placeholder={t("volumes.sftpForm.beginOpensshPrivateKey")}
 								className="font-mono text-xs"
 								rows={5}

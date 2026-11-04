@@ -378,6 +378,7 @@ export const CreateRepositoryForm = ({
 										</FormLabel>
 										<FormControl>
 											<SecretInput
+												allowClear
 												placeholder={t(
 													"repositories.createRepositoryForm.enterRepositoryPassword",
 												)}

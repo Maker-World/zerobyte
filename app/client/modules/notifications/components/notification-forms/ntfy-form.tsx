@@ -63,7 +63,7 @@ export const NtfyForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
-							<SecretInput {...field} placeholder="••••••••" />
+							<SecretInput allowClear {...field} placeholder="••••••••" />
 						</FormControl>
 						<FormDescription>{t("notifications.ntfyForm.passwordForServerAuthentication")}</FormDescription>
 						<FormMessage />
@@ -77,7 +77,7 @@ export const NtfyForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("notifications.ntfyForm.accessTokenOptional")}</FormLabel>
 						<FormControl>
-							<SecretInput {...field} placeholder="••••••••" />
+							<SecretInput allowClear {...field} placeholder="••••••••" />
 						</FormControl>
 						<FormDescription>{t("notifications.ntfyForm.accessTokenForServer")}</FormDescription>
 						<FormMessage />

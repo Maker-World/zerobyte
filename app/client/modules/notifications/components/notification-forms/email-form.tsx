@@ -65,7 +65,7 @@ export const EmailForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
-							<SecretInput {...field} placeholder="••••••••" />
+							<SecretInput allowClear {...field} placeholder="••••••••" />
 						</FormControl>
 						<FormMessage />
 					</FormItem>
