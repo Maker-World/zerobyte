@@ -55,7 +55,7 @@ export const RestRepositoryForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.webdavForm.usernameOptional")}</FormLabel>
 						<FormControl>
-							<Input placeholder="username" {...field} />
+							<SecretInput allowClear placeholder="username" {...field} />
 						</FormControl>
 						<FormDescription>{t("repositories.restRepositoryForm.usernameForRestServer")}</FormDescription>
 						<FormMessage />
@@ -69,7 +69,12 @@ export const RestRepositoryForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("volumes.sftpForm.passwordOptional")}</FormLabel>
 						<FormControl>
-							<SecretInput placeholder="••••••••" value={field.value ?? ""} onChange={field.onChange} />
+							<SecretInput
+								allowClear
+								placeholder="••••••••"
+								value={field.value ?? ""}
+								onChange={field.onChange}
+							/>
 						</FormControl>
 						<FormDescription>{t("repositories.restRepositoryForm.passwordForRestServer")}</FormDescription>
 						<FormMessage />

@@ -126,7 +126,12 @@ export function DeploymentInstructions({ credential }: { credential: CreateRemot
 							machineDisplayName: getMachineDisplayName(credential.agent.name),
 						})}
 					</p>
-					<CopyField value={createConnectionCommand(credential.controllerUrl, credential.token)} />
+					<CopyField
+						label={t("settings.machineSetupForms.connectionCode")}
+						rows={2}
+						value={credential.token}
+					/>
+					<CopyField value={createConnectionCommand(credential.controllerUrl)} />
 				</TabsContent>
 				<TabsContent value="docker" className="min-w-0 space-y-4">
 					<ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">

@@ -69,6 +69,7 @@ export type FormValues = z.input<typeof formSchema>;
 type Props = {
 	onSubmit: (values: FormValues) => void;
 	mode?: "create" | "update";
+	shortId?: string;
 	initialValues?: Partial<FormValues>;
 	formId?: string;
 	loading?: boolean;
@@ -101,7 +102,15 @@ const defaultValuesForType = {
 	},
 };
 
-export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, formId, loading, className }: Props) => {
+export const CreateVolumeForm = ({
+	onSubmit,
+	mode = "create",
+	shortId,
+	initialValues,
+	formId,
+	loading,
+	className,
+}: Props) => {
 	const { t } = useTranslation();
 	const form = useForm<FormValues>({
 		resolver: zodResolver(formSchema, undefined, { raw: true }),
@@ -157,7 +166,7 @@ export const CreateVolumeForm = ({ onSubmit, mode = "create", initialValues, for
 			parsedConfig.data.backend === "sftp"
 		) {
 			testBackendConnection.mutate({
-				body: { config: parsedConfig.data },
+				body: { config: parsedConfig.data, shortId },
 			});
 		}
 	};

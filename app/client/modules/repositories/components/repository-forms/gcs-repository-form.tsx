@@ -8,7 +8,7 @@ import {
 	FormMessage,
 } from "../../../../components/ui/form";
 import { Input } from "../../../../components/ui/input";
-import { Textarea } from "../../../../components/ui/textarea";
+import { SecretInput } from "~/client/components/ui/secret-input";
 import type { RepositoryFormValues } from "../create-repository-form";
 import { useTranslation } from "~/client/lib/i18n";
 
@@ -55,7 +55,8 @@ export const GCSRepositoryForm = ({ form }: Props) => {
 					<FormItem>
 						<FormLabel>{t("repositories.gcsRepositoryForm.serviceAccountJson")}</FormLabel>
 						<FormControl>
-							<Textarea
+							<SecretInput
+								multiline
 								placeholder={t("repositories.gcsRepositoryForm.pasteServiceAccountJson")}
 								{...field}
 							/>
