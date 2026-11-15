@@ -46,12 +46,12 @@ Zerobyte 是一款备份自动化工具，可帮助您将数据保存到多种�
 
 ## 安装
 
-运行 Zerobyte 需要在服务器上安装 Docker 和 Docker Compose。然后，您可以使用下面的 `compose.yaml` 文件启动应用。
+在服务器上安装 Docker 和 Docker Compose 后，可使用下面的 `compose.yaml` 启动汉化版。版本和更新说明见 [汉化版发布页](https://github.com/Maker-World/zerobyte/releases)。
 
 ```yaml
 services:
   zerobyte:
-    image: ghcr.io/nicotsx/zerobyte:v0.43
+    image: ghcr.io/maker-world/zerobyte:v0.44.2
     container_name: zerobyte
     restart: unless-stopped
     cap_add:
@@ -110,7 +110,7 @@ Zerobyte 可通过环境变量进行自定义。可用选项如下：
 | `GOMAXPROCS`              | 可选的正整数，传递给 Restic 进程以限制 CPU 调度线程数。可用于降低备份期间的 CPU 压力。                       | Restic 默认值          |
 | `TZ`                      | 容器时区（例如 `Asia/Shanghai`）。**对备份计划的准确执行至关重要。**                                         | `UTC`                  |
 | `TRUST_PROXY`             | 设为 `true` 时，信任反向代理传入的 `X-Forwarded-For` 请求头。直接部署时请保持 `false`。                      | `false`                |
-| `TRUSTED_ORIGINS`         | 以逗号分隔的额外 CORS 受信任源列表（例如 `http://localhost:3000,http://example.com`）。                      | （无）                 |
+| `TRUSTED_ORIGINS`         | 以逗号分隔的额外浏览器受信任源，用于身份验证、CORS 和 CSRF 防护。                                            | （无）                 |
 | `WEBHOOK_ALLOWED_ORIGINS` | 以逗号分隔的 HTTP 源列表，允许用于备份 Webhook 和对外 HTTP 通知目标。                                        | （无）                 |
 | `WEBHOOK_TIMEOUT`         | 备份 Webhook 请求的超时时间（秒）。                                                                          | `60`                   |
 | `LOG_LEVEL`               | 日志详细程度。可选值：`debug`、`info`、`warn`、`error`。                                                     | `info`                 |
@@ -176,7 +176,7 @@ Zerobyte 可以在启动时从 JSON 文件同步由运维管理的存储库和�
 ```yaml
 services:
   zerobyte:
-    image: ghcr.io/nicotsx/zerobyte:v0.43
+    image: ghcr.io/maker-world/zerobyte:v0.44.2
     container_name: zerobyte
     restart: unless-stopped
     ports:
@@ -215,7 +215,7 @@ Zerobyte 支持多种数据源后端，包括 NFS、SMB、WebDAV、SFTP 和本�
 ```diff
 services:
   zerobyte:
-    image: ghcr.io/nicotsx/zerobyte:v0.43
+    image: ghcr.io/maker-world/zerobyte:v0.44.2
     container_name: zerobyte
     restart: unless-stopped
     cap_add:
@@ -290,7 +290,7 @@ Zerobyte 可以使用 [rclone](https://rclone.org/) 支持 40 多种云存储服
    ```diff
    services:
      zerobyte:
-       image: ghcr.io/nicotsx/zerobyte:v0.43
+       image: ghcr.io/maker-world/zerobyte:v0.44.2
        container_name: zerobyte
        restart: unless-stopped
        cap_add:
@@ -379,7 +379,9 @@ Zerobyte 目前没有为备份操作提供细粒度的 RBAC。经过身份验证
 
 - `BASE_URL` 必须以 `https://` 开头才会启用安全 Cookie
 - 浏览器**不会**将本地 IP 地址（例如 `http://192.168.x.x`）视为安全上下文，因此会自动禁用安全 Cookie
-- `TRUSTED_ORIGINS` 只是为身份验证相关的请求允许额外的源。它不会禁用安全 Cookie，也无法在 `BASE_URL` 为 HTTPS 时让通过 HTTP 的已登录访问正常工作。
+- `BASE_URL` 自动受信任。通过其他地址访问时，可在 `TRUSTED_ORIGINS` 中添加可信地址的源，包括协议和非默认端口。
+- 反向代理须保留浏览器发送的 `Origin` 和 `Sec-Fetch-Site` 请求头。代理可以终止 HTTPS，并通过 HTTP 转发到 Zerobyte。
+- CORS 使用精确的源。为 CSRF 配置通配符时，请显式写出协议，例如 `https://*.example.com`。
 - 如果 `BASE_URL` 是 HTTPS，浏览器只会通过 HTTPS 发送 Zerobyte 的身份验证 Cookie。通过纯 HTTP 访问时可能仍能看到登录页，但由于没有会话 Cookie，登录后的操作都会失败。
 
 ## 故障排除

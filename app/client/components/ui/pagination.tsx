@@ -7,9 +7,10 @@ import { cn } from "~/client/lib/utils";
 import { useTranslation } from "~/client/lib/i18n";
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+	const { t } = useTranslation();
 	return (
 		<nav
-			aria-label="pagination"
+			aria-label={t("pagination.navigation")}
 			data-slot="pagination"
 			className={cn("mx-auto flex w-full justify-center", className)}
 			{...props}

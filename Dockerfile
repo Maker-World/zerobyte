@@ -3,7 +3,7 @@ ARG RESTIC_VERSION="0.19.1"
 # renovate: datasource=github-releases depName=rclone/rclone versioning=semver extractVersion=^v?(?<version>.+)$
 ARG RCLONE_VERSION="1.75.2"
 # renovate: datasource=github-releases depName=nicholas-fedor/shoutrrr versioning=semver extractVersion=^v?(?<version>.+)$
-ARG SHOUTRRR_VERSION="0.22.1"
+ARG SHOUTRRR_VERSION="0.23.0"
 
 FROM oven/bun:1.4.4-alpine@sha256:4cf82f5686b196504fe119db3fcd9185b191f82ece82c40680e597228ec6070a AS base
 

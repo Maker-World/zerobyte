@@ -51,6 +51,8 @@ export const zhCN: Messages = {
 		sources: "数据源",
 	},
 	breadcrumb: {
+		more: "更多",
+		navigation: "面包屑导航",
 		connectMachine: "连接机器",
 		job: "任务",
 		jobDetails: "任务详情",
@@ -67,6 +69,8 @@ export const zhCN: Messages = {
 		reportIssue: "报告问题",
 	},
 	sidebar: {
+		mobileDescription: "显示移动端侧边栏。",
+		mobileTitle: "侧边栏",
 		checkUpdatesFailed: "检查更新失败",
 		clickToCheck: "点击检查更新",
 		lastCheckFailed: "上次检查失败",
@@ -1434,6 +1438,7 @@ export const zhCN: Messages = {
 		},
 	},
 	pagination: {
+		navigation: "分页导航",
 		morePages: "更多页",
 		next: "下一页",
 		nextPage: "转到下一页",
